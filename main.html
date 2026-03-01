@@ -8,18 +8,24 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f9fafb;
+  background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+  min-height: 100vh;
 }
 
 /* ===== 헤더 ===== */
 .header {
   height: 70px;
   padding: 0 40px;
-  background-color: #ffffff;
+
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e5e7eb;
+
+  border-bottom: 1px solid rgba(255,255,255,0.4);
 }
 
 .logo {
@@ -51,12 +57,13 @@ body {
 .logout {
   cursor: pointer;
   padding: 6px 10px;
-  border-radius: 6px;
-  background: #f3f4f6;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.6);
+  transition: 0.2s;
 }
 
 .logout:hover {
-  background: #e5e7eb;
+  background: rgba(255,255,255,0.9);
 }
 
 /* ===== 레이아웃 ===== */
@@ -67,19 +74,23 @@ body {
 
 .sidebar {
   width: 220px;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
   padding-top: 20px;
+
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(12px);
+
+  border-right: 1px solid rgba(255,255,255,0.4);
 }
 
 .menu-item {
   padding: 15px 20px;
   cursor: pointer;
   color: #374151;
+  transition: 0.2s;
 }
 
 .menu-item:hover {
-  background: #f3f4f6;
+  background: rgba(255,255,255,0.6);
 }
 
 .main {
@@ -87,28 +98,25 @@ body {
   padding: 30px;
 }
 
-.banner {
-  background: #2563eb;
-  color: white;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.notice {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #e5e7eb;
-}
-
+/* ===== 카드 (유리 효과) ===== */
 .card {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #e5e7eb;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 16px;
+
+  padding: 18px;
+  margin-bottom: 18px;
+
+  box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.08);
 }
 
 .card-title {
@@ -121,12 +129,34 @@ body {
   color: gray;
 }
 
-/* ===== 입력 스타일 ===== */
+/* ===== 배너 ===== */
+.banner {
+  background: rgba(37,99,235,0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+/* ===== 공지 ===== */
+.notice {
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+/* ===== 입력 ===== */
 .input-box {
   width: 75%;
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border-radius: 12px;
+
+  border: 1px solid rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(6px);
+
   font-size: 14px;
   outline: none;
   transition: 0.2s;
@@ -134,14 +164,14 @@ body {
 
 .input-box:focus {
   border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+  background: rgba(255,255,255,0.8);
 }
 
 /* ===== 버튼 ===== */
 .btn-primary {
   padding: 10px 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: #2563eb;
   color: white;
   font-weight: 500;
@@ -156,7 +186,7 @@ body {
 .btn-danger {
   padding: 6px 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: #ef4444;
   color: white;
   font-size: 12px;
@@ -169,11 +199,14 @@ body {
 
 /* ===== 답변 ===== */
 .answer-item {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(6px);
+
   font-size: 13px;
-  margin-top: 6px;
-  padding: 6px 8px;
-  background: #f3f4f6;
-  border-radius: 6px;
 }
 </style>
 </head>
@@ -213,7 +246,6 @@ body {
       - 학번 공개 금지
     </div>
 
-    <!-- 질문 작성 -->
     <div class="card">
       <input type="text" id="questionInput"
         placeholder="질문을 입력하세요"
@@ -223,7 +255,6 @@ body {
       </button>
     </div>
 
-    <!-- 질문 리스트 -->
     <div id="questionList"></div>
 
   </div>
@@ -233,9 +264,9 @@ body {
 <script type="module">
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged, signOut }
-  from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { collection, getDocs, doc, getDoc, addDoc, deleteDoc }
-  from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const nicknameEl = document.querySelector(".nickname");
 const pointsEl = document.querySelector(".points");
