@@ -47,10 +47,15 @@ body {
 .question-delete { position:absolute; top:10px; right:10px; background:#ef4444; color:white; border:none; border-radius:8px; font-size:11px; padding:4px 8px; cursor:pointer;}
 .question-delete:hover { background:#dc2626;}
 
+/* 질문 채택 버튼 오른쪽 상단 */
+.accept-btn { position:absolute; top:10px; right:80px; background:#22c55e; color:white; border:none; border-radius:8px; font-size:11px; padding:4px 8px; cursor:pointer;}
+.accept-btn:hover { background:#16a34a;}
+
 /* 답변 */
 .answer-item { position:relative; margin-top:8px; padding:8px 12px; border-radius:12px; background:rgba(255,255,255,0.4); font-size:13px;}
 .answer-delete { position:absolute; right:8px; top:6px; font-size:11px; background:#ef4444; color:white; border:none; border-radius:6px; padding:2px 6px; cursor:pointer;}
 .answer-delete:hover { background:#dc2626;}
+.accepted-answer { background:#d1fae5 !important; }
 
 /* 입력창 */
 .input-box { border-radius:12px; border:1px solid rgba(255,255,255,0.5); background:rgba(255,255,255,0.5); padding:10px 12px; font-size:14px; outline:none;}
@@ -113,62 +118,71 @@ import { auth, db } from "./firebase.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-const nicknameEl = document.querySelector(".nickname");
-const pointsEl = document.querySelector(".points");
-const logoutBtn = document.querySelector(".logout");
-const questionList = document.getElementById("questionList");
-const input = document.getElementById("questionInput");
-const submitBtn = document.getElementById("submitQuestion");
+const nicknameEl=document.querySelector(".nickname");
+const pointsEl=document.querySelector(".points");
+const logoutBtn=document.querySelector(".logout");
+const questionList=document.getElementById("questionList");
+const input=document.getElementById("questionInput");
+const submitBtn=document.getElementById("submitQuestion");
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, async(user)=>{
   if(!user) return window.location.href="/sbh_qna/login.html";
-  const snap = await getDoc(doc(db,"users",user.uid));
+  const snap=await getDoc(doc(db,"users",user.uid));
   if(snap.exists()){ const data=snap.data(); nicknameEl.innerText=data.nickname; pointsEl.innerText=data.points+"P";}
   loadQuestions();
 });
 
-submitBtn.onclick = async () => {
-  const title = input.value.trim();
+submitBtn.onclick=async()=>{
+  const title=input.value.trim();
   if(!title) return alert("질문을 입력하세요");
-  await addDoc(collection(db,"questions"),{title, nickname:nicknameEl.innerText, uid:auth.currentUser.uid, answerCount:0});
+  await addDoc(collection(db,"questions"),{title,nickname:nicknameEl.innerText,uid:auth.currentUser.uid,answerCount:0});
   input.value="";
   loadQuestions();
 };
 
 async function loadQuestions(){
-  const snapshot = await getDocs(collection(db,"questions"));
+  const snapshot=await getDocs(collection(db,"questions"));
   questionList.innerHTML="";
 
   for(const questionDoc of snapshot.docs){
-    const data = questionDoc.data();
-    const card = document.createElement("div");
-    card.className="card";
+    const data=questionDoc.data();
+    const card=document.createElement("div"); card.className="card";
 
+    // 삭제 버튼
     if(auth.currentUser.uid===data.uid){
-      const delBtn=document.createElement("button");
-      delBtn.innerText="삭제";
-      delBtn.className="question-delete";
-      delBtn.onclick=async()=>{
-        await deleteDoc(doc(db,"questions",questionDoc.id));
-        loadQuestions();
-      };
+      const delBtn=document.createElement("button"); delBtn.innerText="삭제"; delBtn.className="question-delete";
+      delBtn.onclick=async()=>{ await deleteDoc(doc(db,"questions",questionDoc.id)); loadQuestions(); };
       card.appendChild(delBtn);
+
+      // 채택 버튼
+      const acceptBtn=document.createElement("button"); acceptBtn.innerText="채택"; acceptBtn.className="accept-btn";
+      acceptBtn.onclick=async()=>{ await updateDoc(doc(db,"questions",questionDoc.id),{acceptedAnswerId:null}); loadQuestions(); }; 
+      card.appendChild(acceptBtn);
     }
 
     card.innerHTML+=`<div class="card-title">${data.title}</div>
       <div class="card-meta">작성자: ${data.nickname} | 답변 ${data.answerCount||0}개</div>`;
 
-    const answerSnapshot = await getDocs(collection(db,"questions",questionDoc.id,"answers"));
+    const answerSnapshot=await getDocs(collection(db,"questions",questionDoc.id,"answers"));
     for(const answerDoc of answerSnapshot.docs){
-      const aData = answerDoc.data();
-      const item = document.createElement("div");
-      item.className="answer-item";
+      const aData=answerDoc.data();
+      const item=document.createElement("div"); item.className="answer-item";
       item.innerText="↳ "+aData.nickname+" : "+aData.content;
 
+      // 채택 강조
+      if(data.acceptedAnswerId===answerDoc.id){ item.classList.add("accepted-answer"); }
+
+      if(auth.currentUser.uid===data.uid && data.acceptedAnswerId!==answerDoc.id){
+        const acceptBtn=document.createElement("button"); acceptBtn.innerText="채택"; acceptBtn.className="accept-btn";
+        acceptBtn.onclick=async()=>{
+          await updateDoc(doc(db,"questions",questionDoc.id),{acceptedAnswerId:answerDoc.id});
+          loadQuestions();
+        };
+        item.appendChild(acceptBtn);
+      }
+
       if(auth.currentUser.uid===aData.uid){
-        const aDel=document.createElement("button");
-        aDel.innerText="삭제";
-        aDel.className="answer-delete";
+        const aDel=document.createElement("button"); aDel.innerText="삭제"; aDel.className="answer-delete";
         aDel.onclick=async()=>{
           await deleteDoc(doc(db,"questions",questionDoc.id,"answers",answerDoc.id));
           await updateDoc(doc(db,"questions",questionDoc.id),{answerCount:increment(-1)});
@@ -176,26 +190,21 @@ async function loadQuestions(){
         };
         item.appendChild(aDel);
       }
+
       card.appendChild(item);
     }
 
     // 답변 입력 줄
-    const row=document.createElement("div");
-    row.className="answer-input-row";
-    const answerInput=document.createElement("input");
-    answerInput.placeholder="답변을 입력하세요";
-    answerInput.className="input-box";
-    const answerBtn=document.createElement("button");
-    answerBtn.className="btn-primary"; answerBtn.innerText="답변";
+    const row=document.createElement("div"); row.className="answer-input-row";
+    const answerInput=document.createElement("input"); answerInput.placeholder="답변을 입력하세요"; answerInput.className="input-box";
+    const answerBtn=document.createElement("button"); answerBtn.className="btn-primary"; answerBtn.innerText="답변";
     answerBtn.onclick=async()=>{
-      const content=answerInput.value.trim();
-      if(!content) return alert("답변을 입력하세요");
+      const content=answerInput.value.trim(); if(!content) return alert("답변을 입력하세요");
       await addDoc(collection(db,"questions",questionDoc.id,"answers"),{content,nickname:nicknameEl.innerText,uid:auth.currentUser.uid});
       await updateDoc(doc(db,"questions",questionDoc.id),{answerCount:increment(1)});
       answerInput.value=""; loadQuestions();
     };
-    row.appendChild(answerBtn);
-    row.appendChild(answerInput);
+    row.appendChild(answerBtn); row.appendChild(answerInput);
     card.appendChild(row);
 
     questionList.appendChild(card);
