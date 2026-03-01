@@ -5,7 +5,7 @@
 <title>求援</title>
 
 <style>
-/* 🔹 배경 움직이는 그라데이션 */
+/* 배경 움직이는 그라데이션 */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -14,134 +14,65 @@ body {
   animation: gradientMove 20s ease infinite;
   min-height: 100vh;
 }
-
 @keyframes gradientMove {
-  0% {background-position: 0% 50%;}
-  50% {background-position: 100% 50%;}
-  100% {background-position: 0% 50%;}
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
 }
 
 /* 헤더 */
-.header {
-  height: 70px;
-  padding: 0 40px;
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(12px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(255,255,255,0.4);
-}
-.logo { font-size: 24px; font-weight: 700; color: #0f172a; }
-.dot { color: #2563eb; }
-.header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
-.points { color: #2563eb; font-weight: 600; }
-.nickname { color: #374151; }
-.logout { cursor: pointer; padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,0.6); }
-.logout:hover { background: rgba(255,255,255,0.9); }
+.header { height:70px; padding:0 40px; background:rgba(255,255,255,0.6); backdrop-filter:blur(12px); display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.4);}
+.logo { font-size:24px; font-weight:700; color:#0f172a;}
+.dot { color:#2563eb;}
+.header-right { display:flex; align-items:center; gap:20px; font-size:14px;}
+.points { color:#2563eb; font-weight:600;}
+.nickname { color:#374151;}
+.logout { cursor:pointer; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.6);}
+.logout:hover { background:rgba(255,255,255,0.9);}
 
 /* 레이아웃 */
-.layout { display: flex; min-height: calc(100vh - 70px); }
-.sidebar {
-  width: 220px; padding-top: 20px;
-  background: rgba(255,255,255,0.5); backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255,255,255,0.4);
-}
-.menu-item { padding: 15px 20px; cursor: pointer; }
-.menu-item:hover { background: rgba(255,255,255,0.6); }
-.main { flex: 1; padding: 30px; }
+.layout { display:flex; min-height:calc(100vh-70px);}
+.sidebar { width:220px; padding-top:20px; background:rgba(255,255,255,0.5); backdrop-filter:blur(12px); border-right:1px solid rgba(255,255,255,0.4);}
+.menu-item { padding:15px 20px; cursor:pointer;}
+.menu-item:hover { background:rgba(255,255,255,0.6);}
+.main { flex:1; padding:30px;}
 
 /* 카드 */
-.card {
-  position: relative;
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.4);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 18px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.05);
-  transition: transform 0.5s ease, box-shadow 0.5s ease; /* 부드럽게 느리게 */
-}
-.card:hover { transform: translateY(-6px); box-shadow: 0 14px 36px rgba(0,0,0,0.08); }
-.card-title { font-weight: bold; margin-bottom: 8px; }
-.card-meta { font-size: 12px; color: gray; }
+.card { position:relative; background:rgba(255,255,255,0.6); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.4); border-radius:16px; padding:20px; margin-bottom:18px; box-shadow:0 8px 32px rgba(0,0,0,0.05); transition:transform 0.5s ease, box-shadow 0.5s ease;}
+.card:hover { transform:translateY(-6px); box-shadow:0 14px 36px rgba(0,0,0,0.08);}
+.card-title { font-weight:bold; margin-bottom:8px;}
+.card-meta { font-size:12px; color:gray;}
 
-/* 질문 삭제 버튼 */
-.question-delete {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 11px;
-  padding: 4px 8px;
-  cursor: pointer;
-}
-.question-delete:hover { background: #dc2626; }
+/* 질문 삭제 버튼 오른쪽 위 */
+.question-delete { position:absolute; top:10px; right:10px; background:#ef4444; color:white; border:none; border-radius:8px; font-size:11px; padding:4px 8px; cursor:pointer;}
+.question-delete:hover { background:#dc2626;}
 
 /* 답변 */
-.answer-item {
-  position: relative;
-  margin-top: 8px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.4);
-  font-size: 13px;
-}
-.answer-delete {
-  position: absolute;
-  right: 8px;
-  top: 6px;
-  font-size: 11px;
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 2px 6px;
-  cursor: pointer;
-}
-.answer-delete:hover { background: #dc2626; }
+.answer-item { position:relative; margin-top:8px; padding:8px 12px; border-radius:12px; background:rgba(255,255,255,0.4); font-size:13px;}
+.answer-delete { position:absolute; right:8px; top:6px; font-size:11px; background:#ef4444; color:white; border:none; border-radius:6px; padding:2px 6px; cursor:pointer;}
+.answer-delete:hover { background:#dc2626;}
 
 /* 입력창 */
-.input-box {
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.5);
-  background: rgba(255,255,255,0.5);
-  padding: 10px 12px;
-  font-size: 14px;
-  outline: none;
-}
-.input-box:focus {
-  border-color: #2563eb;
-  background: rgba(255,255,255,0.8);
-}
+.input-box { border-radius:12px; border:1px solid rgba(255,255,255,0.5); background:rgba(255,255,255,0.5); padding:10px 12px; font-size:14px; outline:none;}
+.input-box:focus { border-color:#2563eb; background:rgba(255,255,255,0.8);}
 
 /* 버튼 */
-.btn-primary {
-  padding: 10px 14px;
-  border: none;
-  border-radius: 12px;
-  background-color: #2563eb;
-  color: white;
-  cursor: pointer;
-}
-.btn-primary:hover { background-color: #1d4ed8; }
+.btn-primary { padding:10px 14px; border:none; border-radius:12px; background-color:#2563eb; color:white; cursor:pointer;}
+.btn-primary:hover { background-color:#1d4ed8; }
 
 /* 배너, 공지 */
-.banner { background: rgba(37,99,235,0.9); color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; }
-.notice { background: rgba(255,255,255,0.6); padding: 15px; border-radius: 16px; margin-bottom: 20px; }
+.banner { background:rgba(37,99,235,0.9); color:white; padding:20px; border-radius:16px; margin-bottom:20px;}
+.notice { background:rgba(255,255,255,0.6); padding:15px; border-radius:16px; margin-bottom:20px;}
 
-/* 답변 입력 줄 flex (버튼 왼쪽, 입력창 오른쪽) */
-.answer-input-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-}
-.answer-input-row .input-box { flex: 1; order: 2; }
-.answer-input-row button { order: 1; }
+/* 답변 입력줄 flex (버튼 왼쪽, 입력창 오른쪽) */
+.answer-input-row { display:flex; gap:8px; margin-top:10px; }
+.answer-input-row .input-box { flex:1; order:2;}
+.answer-input-row button { order:1;}
+
+/* 질문 입력창과 등록 버튼 flex */
+.question-input-row { display:flex; gap:8px; margin-bottom:18px; }
+.question-input-row #questionInput { flex:1; }
+.question-input-row #submitQuestion { width:120px; }
 </style>
 </head>
 
@@ -167,7 +98,8 @@ body {
     <div class="banner">📢 이번 주 질문 이벤트 진행 중!</div>
     <div class="notice"><b>공지</b><br>- 비속어 사용 금지<br>- 학번 공개 금지</div>
 
-    <div class="card">
+    <!-- 질문 입력창 + 등록 버튼 -->
+    <div class="card question-input-row">
       <input type="text" id="questionInput" placeholder="질문을 입력하세요" class="input-box">
       <button id="submitQuestion" class="btn-primary">등록</button>
     </div>
@@ -189,31 +121,37 @@ const input = document.getElementById("questionInput");
 const submitBtn = document.getElementById("submitQuestion");
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return window.location.href="/sbh_qna/login.html";
+  if(!user) return window.location.href="/sbh_qna/login.html";
   const snap = await getDoc(doc(db,"users",user.uid));
-  if (snap.exists()){const data=snap.data(); nicknameEl.innerText=data.nickname; pointsEl.innerText=data.points+"P";}
+  if(snap.exists()){ const data=snap.data(); nicknameEl.innerText=data.nickname; pointsEl.innerText=data.points+"P";}
   loadQuestions();
 });
 
 submitBtn.onclick = async () => {
   const title = input.value.trim();
   if(!title) return alert("질문을 입력하세요");
-  await addDoc(collection(db,"questions"), {title, nickname: nicknameEl.innerText, uid: auth.currentUser.uid, answerCount:0});
-  input.value = ""; loadQuestions();
+  await addDoc(collection(db,"questions"),{title, nickname:nicknameEl.innerText, uid:auth.currentUser.uid, answerCount:0});
+  input.value="";
+  loadQuestions();
 };
 
-async function loadQuestions() {
+async function loadQuestions(){
   const snapshot = await getDocs(collection(db,"questions"));
   questionList.innerHTML="";
 
-  snapshot.forEach(async questionDoc => {
+  for(const questionDoc of snapshot.docs){
     const data = questionDoc.data();
-    const card=document.createElement("div"); card.className="card";
+    const card = document.createElement("div");
+    card.className="card";
 
     if(auth.currentUser.uid===data.uid){
       const delBtn=document.createElement("button");
-      delBtn.innerText="삭제"; delBtn.className="question-delete";
-      delBtn.onclick=async()=>{await deleteDoc(doc(db,"questions",questionDoc.id)); loadQuestions();};
+      delBtn.innerText="삭제";
+      delBtn.className="question-delete";
+      delBtn.onclick=async()=>{
+        await deleteDoc(doc(db,"questions",questionDoc.id));
+        loadQuestions();
+      };
       card.appendChild(delBtn);
     }
 
@@ -221,13 +159,16 @@ async function loadQuestions() {
       <div class="card-meta">작성자: ${data.nickname} | 답변 ${data.answerCount||0}개</div>`;
 
     const answerSnapshot = await getDocs(collection(db,"questions",questionDoc.id,"answers"));
-    answerSnapshot.forEach(answerDoc=>{
-      const aData=answerDoc.data();
-      const item=document.createElement("div"); item.className="answer-item";
+    for(const answerDoc of answerSnapshot.docs){
+      const aData = answerDoc.data();
+      const item = document.createElement("div");
+      item.className="answer-item";
       item.innerText="↳ "+aData.nickname+" : "+aData.content;
 
       if(auth.currentUser.uid===aData.uid){
-        const aDel=document.createElement("button"); aDel.innerText="삭제"; aDel.className="answer-delete";
+        const aDel=document.createElement("button");
+        aDel.innerText="삭제";
+        aDel.className="answer-delete";
         aDel.onclick=async()=>{
           await deleteDoc(doc(db,"questions",questionDoc.id,"answers",answerDoc.id));
           await updateDoc(doc(db,"questions",questionDoc.id),{answerCount:increment(-1)});
@@ -236,21 +177,29 @@ async function loadQuestions() {
         item.appendChild(aDel);
       }
       card.appendChild(item);
-    });
+    }
 
-    const row=document.createElement("div"); row.className="answer-input-row";
-    const answerInput=document.createElement("input"); answerInput.placeholder="답변을 입력하세요"; answerInput.className="input-box";
-    const answerBtn=document.createElement("button"); answerBtn.className="btn-primary"; answerBtn.innerText="답변";
+    // 답변 입력 줄
+    const row=document.createElement("div");
+    row.className="answer-input-row";
+    const answerInput=document.createElement("input");
+    answerInput.placeholder="답변을 입력하세요";
+    answerInput.className="input-box";
+    const answerBtn=document.createElement("button");
+    answerBtn.className="btn-primary"; answerBtn.innerText="답변";
     answerBtn.onclick=async()=>{
-      const content=answerInput.value.trim(); if(!content) return alert("답변을 입력하세요");
+      const content=answerInput.value.trim();
+      if(!content) return alert("답변을 입력하세요");
       await addDoc(collection(db,"questions",questionDoc.id,"answers"),{content,nickname:nicknameEl.innerText,uid:auth.currentUser.uid});
       await updateDoc(doc(db,"questions",questionDoc.id),{answerCount:increment(1)});
       answerInput.value=""; loadQuestions();
     };
+    row.appendChild(answerBtn);
+    row.appendChild(answerInput);
+    card.appendChild(row);
 
-    row.appendChild(answerBtn); row.appendChild(answerInput); card.appendChild(row);
     questionList.appendChild(card);
-  });
+  }
 }
 
 logoutBtn.onclick=async()=>{await signOut(auth); window.location.href="/sbh_qna/login.html";};
