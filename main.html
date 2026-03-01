@@ -11,6 +11,7 @@ body {
   background: #f9fafb;
 }
 
+/* ===== 헤더 ===== */
 .header {
   height: 70px;
   padding: 0 40px;
@@ -58,6 +59,7 @@ body {
   background: #e5e7eb;
 }
 
+/* ===== 레이아웃 ===== */
 .layout {
   display: flex;
   min-height: calc(100vh - 70px);
@@ -118,6 +120,61 @@ body {
   font-size: 12px;
   color: gray;
 }
+
+/* ===== 입력 스타일 ===== */
+.input-box {
+  width: 75%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.input-box:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+}
+
+/* ===== 버튼 ===== */
+.btn-primary {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-danger {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+}
+
+/* ===== 답변 ===== */
+.answer-item {
+  font-size: 13px;
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: #f3f4f6;
+  border-radius: 6px;
+}
 </style>
 </head>
 
@@ -158,16 +215,10 @@ body {
 
     <!-- 질문 작성 -->
     <div class="card">
-      <input 
-        type="text" 
-        id="questionInput"
+      <input type="text" id="questionInput"
         placeholder="질문을 입력하세요"
-        style="width: 75%; padding: 8px;"
-      />
-      <button 
-        id="submitQuestion"
-        style="padding: 8px 12px; margin-left: 10px;"
-      >
+        class="input-box" />
+      <button id="submitQuestion" class="btn-primary">
         등록
       </button>
     </div>
@@ -183,33 +234,23 @@ body {
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  getDoc, 
-  addDoc, 
-  deleteDoc 
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { collection, getDocs, doc, getDoc, addDoc, deleteDoc }
+  from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const nicknameEl = document.querySelector(".nickname");
 const pointsEl = document.querySelector(".points");
 const logoutBtn = document.querySelector(".logout");
 const questionList = document.getElementById("questionList");
-
 const input = document.getElementById("questionInput");
 const submitBtn = document.getElementById("submitQuestion");
 
-// 로그인 확인
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "/sbh_qna/login.html";
     return;
   }
 
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
-
+  const userSnap = await getDoc(doc(db, "users", user.uid));
   if (userSnap.exists()) {
     const data = userSnap.data();
     nicknameEl.innerText = data.nickname;
@@ -219,18 +260,14 @@ onAuthStateChanged(auth, async (user) => {
   loadQuestions();
 });
 
-// 질문 등록
 submitBtn.addEventListener("click", async () => {
   const title = input.value.trim();
   if (!title) return alert("질문을 입력하세요");
 
-  const user = auth.currentUser;
-  if (!user) return;
-
   await addDoc(collection(db, "questions"), {
     title,
     nickname: nicknameEl.innerText,
-    uid: user.uid,
+    uid: auth.currentUser.uid,
     answerCount: 0
   });
 
@@ -238,7 +275,6 @@ submitBtn.addEventListener("click", async () => {
   loadQuestions();
 });
 
-// 질문 불러오기
 async function loadQuestions() {
   const snapshot = await getDocs(collection(db, "questions"));
   questionList.innerHTML = "";
@@ -256,10 +292,10 @@ async function loadQuestions() {
       </div>
     `;
 
-    // 삭제 버튼
     if (auth.currentUser.uid === data.uid) {
       const deleteBtn = document.createElement("button");
       deleteBtn.innerText = "삭제";
+      deleteBtn.className = "btn-danger";
       deleteBtn.style.marginTop = "8px";
 
       deleteBtn.addEventListener("click", async () => {
@@ -270,7 +306,6 @@ async function loadQuestions() {
       card.appendChild(deleteBtn);
     }
 
-    // 답변 리스트
     const answerList = document.createElement("div");
     answerList.style.marginTop = "10px";
     card.appendChild(answerList);
@@ -282,21 +317,20 @@ async function loadQuestions() {
     answerSnapshot.forEach((answerDoc) => {
       const answerData = answerDoc.data();
       const item = document.createElement("div");
-      item.style.fontSize = "13px";
-      item.style.marginTop = "5px";
+      item.className = "answer-item";
       item.innerText =
         "↳ " + answerData.nickname + " : " + answerData.content;
       answerList.appendChild(item);
     });
 
-    // 답변 입력창
     const answerInput = document.createElement("input");
     answerInput.placeholder = "답변을 입력하세요";
-    answerInput.style.width = "70%";
+    answerInput.className = "input-box";
     answerInput.style.marginTop = "8px";
 
     const answerBtn = document.createElement("button");
     answerBtn.innerText = "답변";
+    answerBtn.className = "btn-primary";
     answerBtn.style.marginLeft = "8px";
 
     answerBtn.addEventListener("click", async () => {
@@ -323,7 +357,6 @@ async function loadQuestions() {
   });
 }
 
-// 로그아웃
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "/sbh_qna/login.html";
