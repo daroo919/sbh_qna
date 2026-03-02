@@ -15,19 +15,21 @@
     .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
     .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; }
     .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
-    .main { flex: 1; padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
     
-    .item-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.4); transition: 0.3s; }
-    .item-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.8); }
-    .price { font-weight: bold; color: #2563eb; margin: 10px 0; }
-    .buy-btn { width: 100%; padding: 10px; border: none; border-radius: 10px; background: #0f172a; color: white; cursor: pointer; font-weight: bold; }
-    .buy-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+    /* 상점 그리드: 한 줄에 여러 개 나오도록 수정 */
+    .main { flex: 1; padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); grid-auto-rows: min-content; gap: 20px; align-content: start; }
+    
+    .item-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border-radius: 20px; padding: 30px 20px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.4); transition: 0.3s; height: fit-content; }
+    .item-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.8); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .price { font-weight: bold; color: #2563eb; margin: 15px 0; font-size: 18px; }
+    .buy-btn { width: 100%; padding: 12px; border: none; border-radius: 12px; background: #0f172a; color: white; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .buy-btn:hover { background: #1e293b; }
 
-    /* 상점 뱃지 이펙트 미리보기 */
-    .preview-nick { font-weight: bold; font-size: 18px; display: block; margin-bottom: 5px; }
+    /* 뱃지 이펙트 미리보기 */
+    .preview-nick { font-weight: bold; font-size: 20px; display: block; margin-bottom: 5px; }
     .nick-지존::before, .nick-지존::after { content: "⭐"; font-size: 12px; margin: 0 4px; animation: twinkle 1s infinite alternate; }
     @keyframes twinkle { from { opacity: 0.4; } to { opacity: 1; } }
-    .nick-星 { background: linear-gradient(to right, #000000, #64748b, #000000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 1px rgba(255,255,255,0.3); }
+    .nick-星 { background: linear-gradient(to right, #000, #64748b, #000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .nick-火 { color: #ef4444; text-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
   </style>
 </head>
@@ -45,7 +47,7 @@
       <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
       <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
     </div>
-    <div class="main" id="shopList">
+    <div class="main">
       <div class="item-card">
         <span class="preview-nick nick-지존">지존</span>
         <div class="price">500P</div>
@@ -82,13 +84,12 @@
     window.buyBadge = async (name, price) => {
       if (userPoints < price) return alert("포인트가 부족합니다!");
       if (confirm(`${name} 뱃지를 구매하시겠습니까?`)) {
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        await updateDoc(userRef, {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
           points: increment(-price),
           badges: arrayUnion(name),
-          currentBadge: name // 구매 즉시 장착
+          currentBadge: name 
         });
-        alert("구매 완료 및 장착되었습니다!");
+        alert("구매 및 장착 완료!");
         location.reload();
       }
     };
