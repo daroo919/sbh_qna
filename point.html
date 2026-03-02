@@ -2,41 +2,28 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>求援 - 뱃지 상점</title>
+  <title>求援 - 상점</title>
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
-    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top: 0; z-index: 100; }
-    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; user-select: none; }
-    .dot { color: #2563eb; }
-    .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
-    .points { color: #2563eb; font-weight: 600; }
-    .logout { cursor: pointer; padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); }
+    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
     .layout { display: flex; min-height: calc(100vh - 70px); }
     .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
     .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; }
-    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
     .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
-    .point-card { width: 100%; max-width: 700px; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 30px; text-align: center; }
-    .point-val { font-size: 48px; font-weight: 800; color: #2563eb; margin: 10px 0; }
-    .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; width: 100%; max-width: 700px; }
-    .shop-item { background: white; border-radius: 20px; padding: 20px; text-align: center; border: 1px solid #f1f5f9; }
-    .buy-btn { width: 100%; padding: 10px; border: none; border-radius: 12px; background: #2563eb; color: white; cursor: pointer; }
-    .equip-btn { width: 100%; padding: 10px; border: 1px solid #2563eb; border-radius: 12px; background: white; color: #2563eb; cursor: pointer; margin-top: 5px;}
-    .equip-btn.active { background: #0f172a; color: white; border: none;}
-    .role-text { font-size: 11px; font-weight: bold; margin-right: 5px; }
-    .role-admin { color: #ef4444; }
-    .role-teacher { color: #f59e0b; }
-    .role-student { color: #64748b; }
+    .point-box { width: 100%; max-width: 600px; background: white; border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 600px; }
+    .item-card { background: white; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; }
+    .buy-btn { width: 100%; padding: 10px; border: none; border-radius: 10px; background: #2563eb; color: white; cursor: pointer; font-weight: bold; }
+    .equip-btn { width: 100%; padding: 10px; border: 1px solid #2563eb; border-radius: 10px; background: white; color: #2563eb; cursor: pointer; margin-top: 5px; }
+    .active { background: #0f172a; color: white; border: none; }
   </style>
 </head>
 <body>
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
     <div class="header-right">
-      <div class="points">0P</div>
-      <div class="nickname" style="cursor:pointer" onclick="location.href='mypage.html'">로딩 중...</div>
-      <div class="logout">로그아웃</div>
+      <div class="points" id="hPoints">0P</div>
+      <div class="nickname" id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩...</div>
     </div>
   </header>
   <div class="layout">
@@ -47,79 +34,46 @@
       <div class="menu-item" onclick="location.href='mypage.html'">⚙️ 마이페이지</div>
     </div>
     <div class="main">
-      <div class="point-card">
-        <div style="color: #64748b;">나의 보유 포인트</div>
-        <div id="myPointDisplay" class="point-val">0P</div>
-        <div id="myBadges" style="margin-top:10px; font-size: 14px;">현재 장착: 없음</div>
+      <div class="point-box">
+        <div style="font-size: 14px; color: #64748b;">보유 포인트</div>
+        <div id="mPoints" style="font-size: 40px; font-weight: 800; color: #2563eb;">0P</div>
       </div>
-      <h3 style="color: #1e293b; margin-bottom: 20px;">한정판 뱃지 상점</h3>
-      <div class="shop-grid" id="shopGrid"></div>
+      <div class="shop-grid" id="grid"></div>
     </div>
   </div>
-
   <script type="module">
     import { auth, db } from "./firebase.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { doc, getDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    const shopItems = [
-      {id:'alpha', name:'알파 생존자', price:0, icon:'α'},
-      {id:'gem', name:'보석', price:500, icon:'💎'},
-      {id:'king', name:'知尊지존', price:1000, icon:'👑'},
-      {id:'star', name:'星별', price:2000, icon:'𓇻'}
-    ];
-    let userPoints = 0, ownedBadges = [], currentBadge = "";
+    const items = [{n:'알파', p:0, i:'α'}, {n:'보석', p:500, i:'💎'}, {n:'지존', p:1000, i:'👑'}, {n:'별', p:2000, i:'𓇻'}];
+    let user = null;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        const role = data.role || "student";
-        userPoints = data.points || 0;
-        ownedBadges = data.badges || [];
-        currentBadge = data.currentBadge || "";
-
-        let roleName = role === "admin" ? "관리자" : (role === "teacher" ? "선생님" : "학생");
-        let roleClass = `role-${role}`;
-
-        document.querySelector(".nickname").innerHTML = `<span class="role-text ${roleClass}">[${roleName}]</span> ${currentBadge} ${data.nickname}`;
-        document.querySelector(".points").innerText = userPoints + "P";
-        document.getElementById("myPointDisplay").innerText = userPoints + "P";
-        document.getElementById("myBadges").innerText = "현재 장착 뱃지: " + (currentBadge || "없음");
-        renderShop();
-      }
+    onAuthStateChanged(auth, async u => {
+      if(!u) return location.href="login.html";
+      const s = await getDoc(doc(db, "users", u.uid));
+      user = s.data(); user.uid = u.uid;
+      document.getElementById("hNick").innerText = user.nickname;
+      document.getElementById("hPoints").innerText = document.getElementById("mPoints").innerText = (user.points||0)+"P";
+      render();
     });
 
-    function renderShop() {
-      const grid = document.getElementById("shopGrid");
-      grid.innerHTML = "";
-      shopItems.forEach(item => {
-        const isOwned = ownedBadges.includes(item.icon);
-        const isEquipped = currentBadge === item.icon;
-        grid.innerHTML += `
-          <div class="shop-item">
-            <span style="font-size:50px; display:block; margin-bottom:10px;">${item.icon}</span>
-            <div style="font-weight:bold;">${item.name}</div>
-            <div style="color:#2563eb; margin-bottom:15px;">${item.price} P</div>
-            ${isOwned ? `<button class="equip-btn ${isEquipped ? 'active' : ''}" onclick="equipBadge('${item.icon}')">${isEquipped ? '장착됨' : '장착하기'}</button>` : `<button class="buy-btn" onclick="buyBadge('${item.icon}', ${item.price})">구매</button>`}
+    function render() {
+      const g = document.getElementById("grid"); g.innerHTML = "";
+      items.forEach(it => {
+        const owned = (user.badges||[]).includes(it.i);
+        const eq = user.currentBadge === it.i;
+        g.innerHTML += `
+          <div class="item-card">
+            <div style="font-size:40px">${it.i}</div>
+            <div style="font-weight:bold">${it.n}</div>
+            <div style="color:#2563eb; margin-bottom:10px">${it.p}P</div>
+            ${owned ? `<button class="equip-btn ${eq?'active':''}" onclick="window.eq('${it.i}')">${eq?'장착됨':'장착'}</button>` : `<button class="buy-btn" onclick="window.buy('${it.i}',${it.p})">구매</button>`}
           </div>`;
       });
     }
-
-    window.buyBadge = async (emoji, price) => {
-      if (userPoints < price) return alert("포인트 부족!");
-      if (confirm("구매하시겠습니까?")) {
-        await updateDoc(doc(db, "users", auth.currentUser.uid), { points: increment(-price), badges: arrayUnion(emoji) });
-        location.reload();
-      }
-    };
-    window.equipBadge = async (emoji) => {
-      await updateDoc(doc(db, "users", auth.currentUser.uid), { currentBadge: emoji });
-      alert("뱃지가 장착되었습니다!");
-      location.reload();
-    };
-    document.querySelector(".logout").onclick = async () => { if(confirm("로그아웃 하시겠습니까?")) { await signOut(auth); window.location.href = "login.html"; } };
+    window.buy = async (i, p) => { if(user.points < p) return alert("부족"); await updateDoc(doc(db,"users",user.uid),{points:increment(-p), badges:arrayUnion(i)}); location.reload(); };
+    window.eq = async i => { await updateDoc(doc(db,"users",user.uid),{currentBadge:i}); location.reload(); };
   </script>
 </body>
 </html>
