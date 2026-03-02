@@ -1,39 +1,28 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8">
-  <title>Site4School</title>
+  <title>求援 - 시작하기</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
-    }
-
-    a {
-      display: block;
-      margin: 10px auto;
-      text-decoration: none;
-      color: black;
-      font-size: 18px;
-      padding: 12px 20px;
-      border: 2px solid #444;
-      border-radius: 8px;
-      width: 200px;
-      transition: 0.2s;
-    }
-
-    a:hover {
-      background: #eee;
-    }
+    body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    
+    .card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 24px; padding: 50px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 320px; }
+    h1 { font-size: 40px; font-weight: 800; color: #0f172a; margin-bottom: 30px; }
+    .dot { color: #2563eb; }
+    
+    a { display: block; margin: 15px 0; text-decoration: none; color: white; font-size: 16px; font-weight: bold; padding: 14px; border-radius: 12px; transition: 0.3s; }
+    .btn-login { background: #2563eb; }
+    .btn-login:hover { background: #1d4ed8; transform: translateY(-2px); }
+    .btn-signup { background: #0f172a; }
+    .btn-signup:hover { background: #1e293b; transform: translateY(-2px); }
   </style>
 </head>
-
 <body>
-  <h1>求援</h1>
-  <a href="signup.html">회원가입</a>
-  <a href="login.html">로그인</a>
+  <div class="card">
+    <h1>求援<span class="dot">.</span></h1>
+    <a href="login.html" class="btn-login">로그인</a>
+    <a href="signup.html" class="btn-signup">회원가입</a>
+  </div>
 </body>
-
 </html>
