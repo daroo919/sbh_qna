@@ -40,7 +40,7 @@
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
     <div class="header-right">
       <div class="points">0P</div>
-      <div class="nickname">불러오는 중...</div>
+      <div class="nickname" style="cursor:pointer" onclick="location.href='mypage.html'">불러오는 중...</div>
       <div class="logout">로그아웃</div>
     </div>
   </header>
@@ -49,6 +49,7 @@
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
       <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
       <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
+      <div class="menu-item" onclick="location.href='mypage.html'">⚙️ 마이페이지</div>
     </div>
     <div class="main">
       <div class="card question-input-row">
@@ -178,7 +179,7 @@
       }
     }
 
-    document.querySelector(".logout").onclick = () => signOut(auth);
+    document.querySelector(".logout").onclick = async () => { if(confirm("로그아웃 하시겠습니까?")) { await signOut(auth); window.location.href = "login.html"; } };
   </script>
 </body>
 </html>
