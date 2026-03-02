@@ -196,48 +196,73 @@
       <div id="talkList"></div>
     </div>
   </div>
-  
+
   <script type="module">
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { collection, doc, getDoc, addDoc, deleteDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    const nicknameEl = document.querySelector(".nickname"), pointsEl = document.querySelector(".points"), talkList = document.getElementById("talkList"), input = document.getElementById("talkInput");
-    let myBadge = "";
+    const nicknameEl = document.querySelector(".nickname");
+    const pointsEl = document.querySelector(".points");
+    const talkList = document.getElementById("talkList");
+    const talkInput = document.getElementById("talkInput"); // 이름 통일
+
+    let currentUserProfile = null; // 유저 정보를 담을 변수
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
+
+      // 유저 정보 가져오기 (경로 확인 필요: "users" 인지 "artifacts/appId/users" 인지)
       const snap = await getDoc(doc(db, "users", user.uid));
+
       if (snap.exists()) {
-        myBadge = snap.data().currentBadge || "";
-        nicknameEl.innerText = (myBadge + " " + snap.data().nickname).trim();
-        pointsEl.innerText = (snap.data().points || 0) + "P";
+        currentUserProfile = snap.data();
+        const myBadge = currentUserProfile.currentBadge || "";
+        nicknameEl.innerText = (myBadge + " " + currentUserProfile.nickname).trim();
+        pointsEl.innerText = (currentUserProfile.points || 0) + "P";
       }
-      loadTalks();
+
+      // 세션 유지된 유저 객체를 넘겨주며 로드
+      loadTalks(user);
     });
 
+    // 게시글 등록
     document.getElementById("submitTalk").onclick = async () => {
       const user = auth.currentUser;
-      if (!user || !talkInput.value.trim()) return;
+      const content = talkInput.value.trim();
 
-      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'talks'), {
-        content: talkInput.value,
-        nickname: currentUserProfile.nickname,
-        uid: user.uid,
-        createdAt: Date.now()
-      });
-      talkInput.value = "";
+      if (!user || !content || !currentUserProfile) {
+        alert("내용을 입력하거나 잠시만 기다려주세요.");
+        return;
+      }
+
+      try {
+        // 경로에서 'artifacts', appId 부분을 실제 사용하는 컬렉션 명으로 수정하거나 appId를 정의해야 합니다.
+        // 여기서는 간단하게 "talks" 컬렉션에 바로 저장하는 예시로 수정합니다.
+        await addDoc(collection(db, "talks"), {
+          content: content,
+          nickname: currentUserProfile.nickname,
+          uid: user.uid,
+          createdAt: Date.now()
+        });
+        talkInput.value = "";
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     };
 
     function loadTalks(currentUser) {
-      const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'talks'), orderBy("createdAt", "desc"));
+      // query 경로도 등록 경로와 일치시켜야 합니다.
+      const q = query(collection(db, "talks"), orderBy("createdAt", "desc"));
+
       onSnapshot(q, (snapshot) => {
         talkList.innerHTML = "";
         snapshot.docs.forEach(async (tDoc) => {
           const tData = tDoc.data();
           const talkId = tDoc.id;
 
-          const uRef = doc(db, 'artifacts', appId, 'users', tData.uid, 'profile', 'info');
+          // 유저의 실시간 뱃지 정보를 가져오는 로직 (필요 시 유지)
+          const uRef = doc(db, "users", tData.uid);
           const uSnap = await getDoc(uRef);
           const badge = (uSnap.exists() && uSnap.data().currentBadge) ? uSnap.data().currentBadge : "";
           const tClass = badge ? `nick-${badge}` : "";
@@ -245,24 +270,23 @@
           const card = document.createElement("div");
           card.className = "card";
           card.innerHTML = `
-            <div style="margin-bottom: 12px;">
-              <span style="color:#2563eb; font-weight:bold; font-size:12px; margin-right:5px;">${badge}</span>
-              <span class="user-nickname ${tClass}">${tData.nickname}</span>
-              ${currentUser.uid === tData.uid ? `<button class="del-talk" style="float:right; background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px;">삭제</button>` : ""}
-            </div>
-            <div style="line-height:1.6; font-size: 15px;">${tData.content}</div>
-            
-            <div class="comment-section">
-              <div id="comments-${talkId}"></div>
-              <div class="comment-input-wrap">
-                <input type="text" id="commentInput-${talkId}" placeholder="댓글을 입력하세요..." class="input-box" style="flex:1; font-size:12px; padding: 6px 10px;">
-                <button class="btn-primary add-comment-btn" data-id="${talkId}" style="padding: 6px 12px; font-size:12px;">등록</button>
-              </div>
-            </div>
-          `;
+                <div style="margin-bottom: 12px;">
+                    <span style="color:#2563eb; font-weight:bold; font-size:12px; margin-right:5px;">${badge}</span>
+                    <span class="user-nickname ${tClass}">${tData.nickname}</span>
+                    ${currentUser.uid === tData.uid ? `<button class="del-talk" style="float:right; background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px;">삭제</button>` : ""}
+                </div>
+                <div style="line-height:1.6; font-size: 15px;">${tData.content}</div>
+                <div class="comment-section" style="margin-top:15px; border-top:1px solid #eee; pt:10px;">
+                    <div id="comments-${talkId}"></div>
+                    <div class="comment-input-wrap" style="display:flex; gap:5px; margin-top:10px;">
+                        <input type="text" id="commentInput-${talkId}" placeholder="댓글을 입력하세요..." class="input-box" style="flex:1; font-size:12px; padding: 6px 10px;">
+                        <button class="btn-primary add-comment-btn" data-id="${talkId}" style="padding: 6px 12px; font-size:12px;">등록</button>
+                    </div>
+                </div>
+            `;
 
           card.querySelector(".del-talk")?.addEventListener("click", async () => {
-            if (confirm("게시글을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'talks', talkId));
+            if (confirm("게시글을 삭제하시겠습니까?")) await deleteDoc(doc(db, "talks", talkId));
           });
 
           card.querySelector(".add-comment-btn").onclick = () => addComment(talkId);
@@ -270,14 +294,14 @@
           talkList.appendChild(card);
           loadComments(talkId, currentUser);
         });
-      }, (err) => console.error(err));
+      });
     }
 
     async function addComment(talkId) {
       const input = document.getElementById(`commentInput-${talkId}`);
-      if (!input.value.trim()) return;
+      if (!input.value.trim() || !currentUserProfile) return;
 
-      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'talks', talkId, 'comments'), {
+      await addDoc(collection(db, "talks", talkId, "comments"), {
         content: input.value,
         nickname: currentUserProfile.nickname,
         uid: auth.currentUser.uid,
@@ -287,33 +311,22 @@
     }
 
     function loadComments(talkId, currentUser) {
-      const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'talks', talkId, 'comments'), orderBy("createdAt", "asc"));
+      const q = query(collection(db, "talks", talkId, "comments"), orderBy("createdAt", "asc"));
       const container = document.getElementById(`comments-${talkId}`);
 
       onSnapshot(q, (snapshot) => {
         container.innerHTML = "";
-        snapshot.docs.forEach(async (cDoc) => {
+        snapshot.docs.forEach((cDoc) => {
           const cData = cDoc.data();
-          const commentId = cDoc.id;
-
-          const uRef = doc(db, 'artifacts', appId, 'users', cData.uid, 'profile', 'info');
-          const uSnap = await getDoc(uRef);
-          const cBadge = (uSnap.exists() && uSnap.data().currentBadge) ? uSnap.data().currentBadge : "";
-
           const item = document.createElement("div");
-          item.className = "comment-item";
+          item.style = "font-size:13px; margin-bottom:5px; display:flex; justify-content:space-between;";
           item.innerHTML = `
-            <div class="comment-content">
-              <span class="comment-user">${cBadge} ${cData.nickname}</span>
-              <span>${cData.content}</span>
-            </div>
-            ${currentUser.uid === cData.uid ? `<span class="comment-del">✕</span>` : ""}
-          `;
-
+                <span><strong>${cData.nickname}</strong>: ${cData.content}</span>
+                ${currentUser.uid === cData.uid ? `<span class="comment-del" style="cursor:pointer; color:red;">✕</span>` : ""}
+            `;
           item.querySelector(".comment-del")?.addEventListener("click", async () => {
-            if (confirm("댓글을 삭제하시겠습니까?")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'talks', talkId, 'comments', commentId));
+            await deleteDoc(doc(db, "talks", talkId, "comments", cDoc.id));
           });
-
           container.appendChild(item);
         });
       });
