@@ -4,50 +4,34 @@
   <meta charset="UTF-8">
   <title>求援 - 잡담</title>
   <style>
+    /* 공통 디자인 유지 */
     body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
     @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top: 0; z-index: 100; }
-    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; user-select: none; }
-    .dot { color: #2563eb; }
-    .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
-    .points { color: #2563eb; font-weight: 600; }
-    .logout { cursor: pointer; padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); }
-
+    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
+    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; }
     .layout { display: flex; min-height: calc(100vh - 70px); }
-    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top: 70px; height: calc(100vh - 70px); }
-    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; }
-    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
+    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
+    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; }
     .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
-
-    .write-card { width: 100%; max-width: 600px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; box-sizing: border-box; }
-    .talk-input { width: 100%; border: none; resize: none; outline: none; font-family: inherit; font-size: 16px; min-height: 80px; margin-bottom: 10px; color: #334155; }
-    .post-btn { float: right; padding: 8px 20px; border: none; border-radius: 25px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
-
-    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.4); position: relative; box-sizing: border-box; transition: 0.3s; }
-    .talk-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-    .talk-user { font-weight: bold; font-size: 14px; color: #1e293b; margin-bottom: 15px; display: block; text-align: left; }
-    .talk-delete { position: absolute; top: 20px; right: 20px; color: #ef4444; cursor: pointer; font-size: 11px; font-weight: bold; opacity: 0.5; }
-    .talk-content { font-size: 15px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 15px; color: #334155; }
-    .talk-footer { font-size: 11px; color: #94a3b8; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; text-align: right; }
-
-    .comment-section { margin-top: 15px; background: rgba(0,0,0,0.03); border-radius: 12px; padding: 12px; }
-    .comment-item { font-size: 13px; margin-bottom: 8px; display: flex; justify-content: space-between; }
-    .comment-user { font-weight: bold; color: #1e293b; margin-right: 6px; }
-    .comment-input-row { display: flex; gap: 8px; margin-top: 10px; }
-    .comment-input { flex: 1; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 12px; font-size: 13px; outline: none; font-family: inherit; }
-    .comment-btn { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 0 12px; font-size: 12px; cursor: pointer; font-weight: bold; }
+    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.7); border-radius: 16px; padding: 20px; margin-bottom: 15px; position: relative; border: 1px solid white; }
+    .talk-user { font-size: 13px; font-weight: bold; color: #2563eb; margin-bottom: 8px; }
+    .talk-delete { position: absolute; top: 15px; right: 15px; color: #ef4444; cursor: pointer; font-size: 12px; }
+    .input-row { width: 100%; max-width: 600px; display: flex; gap: 10px; margin-bottom: 25px; }
+    .input-box { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: white; outline: none; }
+    .btn-send { padding: 0 20px; background: #2563eb; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+    .role-text { font-size: 11px; font-weight: bold; margin-right: 5px; }
+    .role-admin { color: #ef4444; } .role-teacher { color: #f59e0b; } .role-student { color: #64748b; }
   </style>
 </head>
 <body>
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
     <div class="header-right">
-      <div class="points">0P</div>
-      <div class="nickname" style="cursor:pointer" onclick="location.href='mypage.html'">불러오는 중...</div>
-      <div class="logout">로그아웃</div>
+      <div class="points" id="hPoints">0P</div>
+      <div class="nickname" id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩...</div>
+      <div class="logout" onclick="signOut(auth)">로그아웃</div>
     </div>
   </header>
-
   <div class="layout">
     <div class="sidebar">
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
@@ -56,97 +40,55 @@
       <div class="menu-item" onclick="location.href='mypage.html'">⚙️ 마이페이지</div>
     </div>
     <div class="main">
-      <div class="write-card">
-        <textarea id="talkInput" class="talk-input" placeholder="무슨 생각을 하고 계신가요?"></textarea>
-        <button id="postBtn" class="post-btn">공유하기</button>
+      <div class="input-row">
+        <input type="text" id="talkInput" class="input-box" placeholder="무슨 생각을 하고 계신가요?">
+        <button id="talkBtn" class="btn-send">게시</button>
       </div>
-      <div id="talkList" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
+      <div id="talkList" style="width: 100%; max-width: 600px;"></div>
     </div>
   </div>
-
   <script type="module">
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { collection, addDoc, doc, getDoc, deleteDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { collection, addDoc, query, orderBy, onSnapshot, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    const nicknameEl = document.querySelector(".nickname"), pointsEl = document.querySelector(".points"), talkInput = document.getElementById("talkInput"), talkList = document.getElementById("talkList");
-    let currentNickname = "";
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        currentNickname = data.nickname;
-        nicknameEl.innerText = ((data.currentBadge || "") + " " + currentNickname).trim();
-        pointsEl.innerText = (data.points || 0) + "P";
-      }
+    let myInfo = null;
+    onAuthStateChanged(auth, async user => {
+      if(!user) return location.href="login.html";
+      const s = await getDoc(doc(db, "users", user.uid));
+      myInfo = s.data();
+      myInfo.uid = user.uid;
+      const roleName = myInfo.role === "admin" ? "관리자" : (myInfo.role === "teacher" ? "선생님" : "학생");
+      document.getElementById("hNick").innerHTML = `<span class="role-text role-${myInfo.role}">[${roleName}]</span> ${myInfo.currentBadge||''} ${myInfo.nickname}`;
+      document.getElementById("hPoints").innerText = (myInfo.points||0)+"P";
       loadTalks();
     });
 
-    document.getElementById("postBtn").onclick = async () => {
-      const content = talkInput.value.trim();
-      if (!content) return;
-      await addDoc(collection(db, "talks"), { content, nickname: currentNickname, uid: auth.currentUser.uid, createdAt: Date.now() });
-      talkInput.value = "";
+    document.getElementById("talkBtn").onclick = async () => {
+      const val = document.getElementById("talkInput").value.trim();
+      if(!val) return;
+      await addDoc(collection(db, "talks"), { content: val, nickname: myInfo.nickname, uid: myInfo.uid, badge: myInfo.currentBadge||'', createdAt: Date.now() });
+      document.getElementById("talkInput").value = "";
     };
 
     function loadTalks() {
       const q = query(collection(db, "talks"), orderBy("createdAt", "desc"));
-      onSnapshot(q, async (snapshot) => {
-        talkList.innerHTML = "";
-        for (const docSnap of snapshot.docs) {
-          const talkId = docSnap.id, data = docSnap.data();
-          const userSnap = await getDoc(doc(db, "users", data.uid));
-          const badge = (userSnap.exists() && userSnap.data().currentBadge) ? userSnap.data().currentBadge : "";
-          
-          const card = document.createElement("div");
-          card.className = "talk-card";
-          card.innerHTML = `
-            <div class="talk-user">${badge} ${data.nickname}</div>
-            ${auth.currentUser.uid === data.uid ? `<div class="talk-delete" onclick="deleteTalk('${talkId}')">삭제</div>` : ''}
-            <div class="talk-content">${data.content}</div>
-            <div class="talk-footer"><span>${new Date(data.createdAt).toLocaleString()}</span></div>
-            <div class="comment-section"><div id="comments-${talkId}"></div>
-              <div class="comment-input-row">
-                <input type="text" class="comment-input" placeholder="댓글..." id="commentInput-${talkId}">
-                <button class="comment-btn" onclick="addComment('${talkId}')">등록</button>
-              </div>
+      onSnapshot(q, snap => {
+        const list = document.getElementById("talkList");
+        list.innerHTML = "";
+        snap.forEach(d => {
+          const data = d.data();
+          const canDelete = (myInfo.uid === data.uid || myInfo.role === "admin" || myInfo.role === "teacher");
+          list.innerHTML += `
+            <div class="talk-card">
+              <div class="talk-user">${data.badge} ${data.nickname}</div>
+              ${canDelete ? `<div class="talk-delete" onclick="window.delTalk('${d.id}')">삭제</div>` : ""}
+              <div>${data.content}</div>
             </div>`;
-          talkList.appendChild(card);
-          loadComments(talkId);
-        }
+        });
       });
     }
-
-    function loadComments(talkId) {
-      const commQ = query(collection(db, "talks", talkId, "comments"), orderBy("createdAt", "asc"));
-      const commentDiv = document.getElementById(`comments-${talkId}`);
-      onSnapshot(commQ, async (snap) => {
-        commentDiv.innerHTML = "";
-        for (const cDoc of snap.docs) {
-          const cData = cDoc.data();
-          const cUserSnap = await getDoc(doc(db, "users", cData.uid));
-          const cBadge = (cUserSnap.exists() && cUserSnap.data().currentBadge) ? cUserSnap.data().currentBadge : "";
-          const item = document.createElement("div");
-          item.className = "comment-item";
-          item.innerHTML = `<div><span class="comment-user">${cBadge} ${cData.nickname}</span>${cData.content}</div>
-            ${auth.currentUser.uid === cData.uid ? `<span style="color:#ef4444;cursor:pointer;font-size:10px;" onclick="deleteComment('${talkId}', '${cDoc.id}')">✕</span>` : ''}`;
-          commentDiv.appendChild(item);
-        }
-      });
-    }
-
-    window.addComment = async (talkId) => {
-      const input = document.getElementById(`commentInput-${talkId}`), text = input.value.trim();
-      if (!text) return;
-      await addDoc(collection(db, "talks", talkId, "comments"), { content: text, nickname: currentNickname, uid: auth.currentUser.uid, createdAt: Date.now() });
-      input.value = "";
-    };
-
-    window.deleteTalk = async (id) => { if(confirm("삭제할까요?")) await deleteDoc(doc(db, "talks", id)); };
-    window.deleteComment = async (tId, cId) => { if(confirm("삭제할까요?")) await deleteDoc(doc(db, "talks", tId, "comments", cId)); };
-    document.querySelector(".logout").onclick = async () => { if(confirm("로그아웃 하시겠습니까?")) { await signOut(auth); window.location.href = "login.html"; } };
+    window.delTalk = async id => { if(confirm("삭제하시겠습니까?")) await deleteDoc(doc(db, "talks", id)); };
   </script>
 </body>
 </html>
