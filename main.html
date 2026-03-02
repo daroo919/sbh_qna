@@ -1,65 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>求援 - 메인</title>
-  <style>
-    /* 기본 레이아웃 및 배경 애니메이션 */
-    body { margin: 0; font-family: 'Pretendard', -apple-system, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; padding-bottom: 70px; }
-    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    
-    /* 헤더 스타일 */
-    .header { height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
-    .logo { font-size: 22px; font-weight: 800; color: #0f172a; cursor: pointer; }
-    .dot { color: #2563eb; }
-    .header-right { display: flex; align-items: center; gap: 12px; font-size: 13px; }
-    .points { color: #2563eb; font-weight: 700; background: rgba(37, 99, 235, 0.1); padding: 4px 10px; border-radius: 20px; }
-    
-    /* 로그아웃 버튼 */
-    .logout { cursor: pointer; padding: 6px 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold; font-size: 12px; transition: 0.3s; border: none; }
-    .logout:hover { background: #ef4444; color: white; }
-
-    .layout { display: flex; }
-
-    /* 사이드바 (데스크톱 전용) */
-    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); min-height: calc(100vh - 70px); }
-    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; font-weight: 500; }
-    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
-
-    /* 하단 탭 바 (모바일 전용) */
-    .bottom-tab { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
-    .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #64748b; cursor: pointer; flex: 1; gap: 4px; }
-    .tab-item.active { color: #2563eb; font-weight: bold; }
-    .tab-icon { font-size: 20px; }
-
-    /* 메인 콘텐츠 영역 */
-    .main { flex: 1; padding: 25px; max-width: 800px; margin: 0 auto; box-sizing: border-box; }
-    
-    .banner { background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); font-weight: 600; line-height: 1.4; }
-    
-    .notice { background: rgba(255, 255, 255, 0.7); padding: 18px; border-radius: 20px; margin-bottom: 20px; border: 1px solid white; backdrop-filter: blur(10px); }
-    .notice b { color: #0f172a; display: block; margin-bottom: 5px; }
-    
-    .card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid white; border-radius: 24px; padding: 25px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); }
-    .card h3 { margin-top: 0; color: #0f172a; font-size: 18px; }
-    
-    .date-blue { color: #2563eb; font-weight: bold; margin-right: 5px; }
-    .update-item { font-size: 14px; color: #475569; margin-bottom: 12px; line-height: 1.5; }
-    .role-text { font-size: 11px; font-weight: bold; margin-right: 5px; }
-    .role-admin { color: #ef4444; } .role-teacher { color: #f59e0b; } .role-student { color: #64748b; }
-
-    /* 모바일 반응형 미디어 쿼리 */
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .bottom-tab { display: flex; }
-      .header { padding: 0 15px; }
-      .main { padding: 20px 15px; }
-      .banner { font-size: 14px; padding: 18px; }
-      .card h3 { font-size: 16px; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css"> 
 </head>
+
 <body>
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
@@ -80,12 +29,12 @@
 
     <main class="main">
       <div class="banner">📢 환영합니다! 구원(求援)의 최신 소식을 확인하세요.</div>
-      
+
       <div class="notice">
         <b>📌 필독 공지사항</b>
         <span style="font-size: 14px; color: #475569;">- 비속어 사용 금지 / 학번 공개 금지</span>
       </div>
-      
+
       <div class="card">
         <h3>🚀 최근 업데이트</h3>
         <div class="update-item"><span class="date-blue">[2026.03.02]</span> 전 페이지 모바일 하단 탭 바 적용 및 UI 최적화</div>
@@ -128,12 +77,19 @@
         const roleName = role === "admin" ? "관리자" : (role === "teacher" ? "선생님" : "학생");
         document.getElementById("hNick").innerHTML = `<span class="role-text role-${role}">[${roleName}]</span> ${d.currentBadge || ''} ${d.nickname}`;
         document.getElementById("hPoints").innerText = (d.points || 0) + "P";
+
+        // 로컬 스토리지에서 이미지 가져오기
+        const localBg = localStorage.getItem(`bg_${user.uid}`);
+        if (localBg) {
+          document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${localBg}')`;
+        }
       }
     });
 
-    document.getElementById("logoutBtn").onclick = () => { 
-      if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); 
+    document.getElementById("logoutBtn").onclick = () => {
+      if (confirm("로그아웃 하시겠습니까?")) signOut(auth).then(() => location.href = "login.html");
     };
   </script>
 </body>
+
 </html>

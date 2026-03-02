@@ -1,71 +1,341 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>求援 - 잡담</title>
   <style>
     /* 기본 레이아웃 및 배경 애니메이션 */
-    body { margin: 0; font-family: 'Pretendard', sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; padding-bottom: 80px; }
-    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    
-    /* 헤더 스타일 */
-    .header { height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
-    .logo { font-size: 22px; font-weight: 800; color: #0f172a; cursor: pointer; }
-    .dot { color: #2563eb; }
-    .header-right { display: flex; align-items: center; gap: 12px; font-size: 13px; }
-    .points { color: #2563eb; font-weight: 700; background: rgba(37, 99, 235, 0.1); padding: 4px 10px; border-radius: 20px; }
-    
-    /* 로그아웃 버튼 */
-    .logout { cursor: pointer; padding: 6px 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold; font-size: 12px; transition: 0.3s; border: none; }
-    .logout:hover { background: #ef4444; color: white; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      /* 기본 그라데이션 */
+      background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe);
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      min-height: 100vh;
+      padding-bottom: 80px;
+      transition: background-image 0.5s ease-in-out;
+    }
 
-    .layout { display: flex; }
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* 헤더 스타일 */
+    .header {
+      height: 70px;
+      padding: 0 20px;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+      cursor: pointer;
+    }
+
+    .dot {
+      color: #2563eb;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .points {
+      color: #2563eb;
+      font-weight: 700;
+      background: rgba(37, 99, 235, 0.1);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    /* 로그아웃 버튼 */
+    .logout {
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      font-weight: bold;
+      font-size: 12px;
+      transition: 0.3s;
+      border: none;
+    }
+
+    .logout:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    .layout {
+      display: flex;
+    }
 
     /* 사이드바 (데스크톱 전용) */
-    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); min-height: calc(100vh - 70px); }
-    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; font-weight: 500; }
-    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
+    .sidebar {
+      width: 220px;
+      padding-top: 20px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(255, 255, 255, 0.4);
+      min-height: calc(100vh - 70px);
+    }
+
+    .menu-item {
+      padding: 15px 20px;
+      cursor: pointer;
+      transition: 0.3s;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.6);
+      color: #2563eb;
+    }
 
     /* 하단 탭 바 (모바일 전용) */
-    .bottom-tab { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
-    .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #64748b; cursor: pointer; flex: 1; gap: 4px; }
-    .tab-item.active { color: #2563eb; font-weight: bold; }
-    .tab-icon { font-size: 20px; }
+    .bottom-tab {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 11px;
+      color: #64748b;
+      cursor: pointer;
+      flex: 1;
+      gap: 4px;
+    }
+
+    .tab-item.active {
+      color: #2563eb;
+      font-weight: bold;
+    }
+
+    .tab-icon {
+      font-size: 20px;
+    }
 
     /* 메인 콘텐츠 영역 */
-    .main { flex: 1; padding: 20px; max-width: 650px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
-    
-    .input-row { width: 100%; display: flex; gap: 10px; margin-bottom: 25px; align-items: stretch; }
-    .input-box { flex: 1; padding: 15px; border-radius: 16px; border: 1px solid white; background: rgba(255, 255, 255, 0.7); outline: none; transition: 0.3s; font-size: 15px; }
-    .input-box:focus { background: white; border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
-    .btn-send { width: 70px; background: #2563eb; color: white; border: none; border-radius: 16px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .btn-send:active { transform: scale(0.95); }
+    .main {
+      flex: 1;
+      padding: 20px;
+      max-width: 650px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+    }
 
-    .talk-card { width: 100%; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-radius: 24px; padding: 20px; margin-bottom: 15px; position: relative; border: 1px solid white; box-shadow: 0 8px 24px rgba(0,0,0,0.03); box-sizing: border-box; }
-    .talk-user { font-size: 13px; font-weight: bold; color: #2563eb; margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
-    .talk-delete { position: absolute; top: 20px; right: 20px; color: #ef4444; cursor: pointer; font-size: 12px; font-weight: bold; opacity: 0.6; }
-    .talk-delete:hover { opacity: 1; }
-    
-    .comment-input-row { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px; }
-    .comment-input { flex: 1; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); background: white; outline: none; font-size: 13px; }
-    .btn-comment { padding: 0 15px; background: #0f172a; color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: bold; }
-    
-    .comment-item { background: rgba(255,255,255,0.5); padding: 10px 12px; border-radius: 12px; margin-bottom: 6px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
-    .role-text { font-size: 11px; font-weight: bold; margin-right: 5px; }
-    .role-admin { color: #ef4444; } .role-teacher { color: #f59e0b; } .role-student { color: #64748b; }
+    .input-row {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      align-items: stretch;
+    }
+
+    .input-box {
+      flex: 1;
+      padding: 15px;
+      border-radius: 16px;
+      border: 1px solid white;
+      background: rgba(255, 255, 255, 0.7);
+      outline: none;
+      transition: 0.3s;
+      font-size: 15px;
+    }
+
+    .input-box:focus {
+      background: white;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn-send {
+      width: 70px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .btn-send:active {
+      transform: scale(0.95);
+    }
+
+    .talk-card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 15px;
+      position: relative;
+      border: 1px solid white;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+      box-sizing: border-box;
+    }
+
+    .talk-user {
+      font-size: 13px;
+      font-weight: bold;
+      color: #2563eb;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .talk-delete {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      opacity: 0.6;
+    }
+
+    .talk-delete:hover {
+      opacity: 1;
+    }
+
+    .comment-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      padding-top: 15px;
+    }
+
+    .comment-input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      background: white;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .btn-comment {
+      padding: 0 15px;
+      background: #0f172a;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .comment-item {
+      background: rgba(255, 255, 255, 0.5);
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .role-text {
+      font-size: 11px;
+      font-weight: bold;
+      margin-right: 5px;
+    }
+
+    .role-admin {
+      color: #ef4444;
+    }
+
+    .role-teacher {
+      color: #f59e0b;
+    }
+
+    .role-student {
+      color: #64748b;
+    }
 
     /* 모바일 반응형 */
     @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .bottom-tab { display: flex; }
-      .header { padding: 0 15px; }
-      .main { padding: 20px 15px; }
-      .input-box { padding: 12px; }
-      .talk-card { padding: 18px; border-radius: 20px; }
+      .sidebar {
+        display: none;
+      }
+
+      .bottom-tab {
+        display: flex;
+      }
+
+      .header {
+        padding: 0 15px;
+      }
+
+      .main {
+        padding: 20px 15px;
+      }
+
+      .input-box {
+        padding: 12px;
+      }
+
+      .talk-card {
+        padding: 18px;
+        border-radius: 20px;
+      }
     }
   </style>
 </head>
+
 <body>
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
@@ -121,22 +391,28 @@
     const talkInput = document.getElementById("talkInput");
 
     // 엔터키 게시 기능
-    talkInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById("talkBtn").click(); });
+    talkInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById("talkBtn").click(); });
 
     onAuthStateChanged(auth, async u => {
-      if(!u) return location.href="login.html";
+      if (!u) return location.href = "login.html";
       const s = await getDoc(doc(db, "users", u.uid));
       my = s.data(); my.uid = u.uid;
       const rName = my.role === "admin" ? "관리자" : (my.role === "teacher" ? "선생님" : "학생");
-      document.getElementById("hNick").innerHTML = `<span class="role-text role-${my.role}">[${rName}]</span> ${my.currentBadge||''} ${my.nickname}`;
-      document.getElementById("hPoints").innerText = (my.points||0)+"P";
+      document.getElementById("hNick").innerHTML = `<span class="role-text role-${my.role}">[${rName}]</span> ${my.currentBadge || ''} ${my.nickname}`;
+      document.getElementById("hPoints").innerText = (my.points || 0) + "P";
       loadTalks();
+
+      // 로컬 스토리지에서 이미지 가져오기
+      const localBg = localStorage.getItem(`bg_${u.uid}`);
+      if (localBg) {
+        document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${localBg}')`;
+      }
     });
 
     document.getElementById("talkBtn").onclick = async () => {
       const v = talkInput.value.trim();
-      if(!v) return;
-      await addDoc(collection(db, "talks"), { content: v, nickname: my.nickname, uid: my.uid, badge: my.currentBadge||'', createdAt: Date.now() });
+      if (!v) return;
+      await addDoc(collection(db, "talks"), { content: v, nickname: my.nickname, uid: my.uid, badge: my.currentBadge || '', createdAt: Date.now() });
       talkInput.value = "";
     };
 
@@ -160,11 +436,11 @@
               </div>
             </div>`;
           list.appendChild(card);
-          
+
           // 댓글 입력창 엔터키 기능 추가
           const cInput = document.getElementById(`cInput-${d.id}`);
-          cInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') window.addComment(d.id); });
-          
+          cInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') window.addComment(d.id); });
+
           loadComments(d.id);
         });
       });
@@ -172,7 +448,7 @@
 
     function loadComments(tid) {
       onSnapshot(query(collection(db, "talks", tid, "comments"), orderBy("createdAt", "asc")), snap => {
-        const box = document.getElementById(`comments-${tid}`); if(!box) return; box.innerHTML = "";
+        const box = document.getElementById(`comments-${tid}`); if (!box) return; box.innerHTML = "";
         snap.forEach(cd => {
           const c = cd.data();
           const canDelC = (my.uid === c.uid || my.role === "admin" || my.role === "teacher");
@@ -188,16 +464,17 @@
     }
 
     window.addComment = async (tid) => {
-      const i = document.getElementById(`cInput-${tid}`); if(!i.value.trim()) return;
-      await addDoc(collection(db, "talks", tid, "comments"), { content: i.value, nickname: my.nickname, uid: my.uid, badge: my.currentBadge||'', createdAt: Date.now() });
+      const i = document.getElementById(`cInput-${tid}`); if (!i.value.trim()) return;
+      await addDoc(collection(db, "talks", tid, "comments"), { content: i.value, nickname: my.nickname, uid: my.uid, badge: my.currentBadge || '', createdAt: Date.now() });
       i.value = "";
     };
-    window.delTalk = async id => { if(confirm("이 게시글을 삭제할까요?")) await deleteDoc(doc(db, "talks", id)); };
-    window.delComm = async (tid, cid) => { if(confirm("댓글을 삭제할까요?")) await deleteDoc(doc(db, "talks", tid, "comments", cid)); };
-    
-    document.getElementById("logoutBtn").onclick = () => { 
-      if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); 
+    window.delTalk = async id => { if (confirm("이 게시글을 삭제할까요?")) await deleteDoc(doc(db, "talks", id)); };
+    window.delComm = async (tid, cid) => { if (confirm("댓글을 삭제할까요?")) await deleteDoc(doc(db, "talks", tid, "comments", cid)); };
+
+    document.getElementById("logoutBtn").onclick = () => {
+      if (confirm("로그아웃 하시겠습니까?")) signOut(auth).then(() => location.href = "login.html");
     };
   </script>
 </body>
+
 </html>

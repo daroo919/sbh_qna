@@ -1,87 +1,281 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>求援 - 상점</title>
   <style>
     /* 기본 레이아웃 및 배경 */
-    body { margin: 0; font-family: 'Pretendard', sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; padding-bottom: 80px; }
-    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    
-    /* 헤더 */
-    .header { height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
-    .logo { font-size: 22px; font-weight: 800; color: #0f172a; cursor: pointer; }
-    .dot { color: #2563eb; }
-    .header-right { display: flex; align-items: center; gap: 12px; font-size: 13px; }
-    .points { color: #2563eb; font-weight: 700; background: rgba(37, 99, 235, 0.1); padding: 4px 10px; border-radius: 20px; }
-    
-    .logout { cursor: pointer; padding: 6px 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold; font-size: 12px; transition: 0.3s; border: none; }
-    .logout:hover { background: #ef4444; color: white; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      /* 기본 그라데이션 */
+      background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe);
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      min-height: 100vh;
+      padding-bottom: 80px;
+      transition: background-image 0.5s ease-in-out;
+    }
 
-    .layout { display: flex; }
+    /* 헤더 */
+    .header {
+      height: 70px;
+      padding: 0 20px;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+      cursor: pointer;
+    }
+
+    .dot {
+      color: #2563eb;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .points {
+      color: #2563eb;
+      font-weight: 700;
+      background: rgba(37, 99, 235, 0.1);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .logout {
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      font-weight: bold;
+      font-size: 12px;
+      transition: 0.3s;
+      border: none;
+    }
+
+    .logout:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    .layout {
+      display: flex;
+    }
 
     /* 사이드바 (데스크톱) */
-    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); min-height: calc(100vh - 70px); }
-    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; font-weight: 500; }
-    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
+    .sidebar {
+      width: 220px;
+      padding-top: 20px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(255, 255, 255, 0.4);
+      min-height: calc(100vh - 70px);
+    }
+
+    .menu-item {
+      padding: 15px 20px;
+      cursor: pointer;
+      transition: 0.3s;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.6);
+      color: #2563eb;
+    }
 
     /* 하단 탭 바 (모바일) */
-    .bottom-tab { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
-    .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #64748b; cursor: pointer; flex: 1; gap: 4px; }
-    .tab-item.active { color: #2563eb; font-weight: bold; }
-    .tab-icon { font-size: 20px; }
+    .bottom-tab {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 11px;
+      color: #64748b;
+      cursor: pointer;
+      flex: 1;
+      gap: 4px;
+    }
+
+    .tab-item.active {
+      color: #2563eb;
+      font-weight: bold;
+    }
+
+    .tab-icon {
+      font-size: 20px;
+    }
 
     /* 메인 콘텐츠 */
-    .main { flex: 1; padding: 25px; max-width: 800px; margin: 0 auto; box-sizing: border-box; }
-    
-    .point-box { 
-      width: 100%; 
-      background: rgba(255,255,255,0.7); 
-      backdrop-filter: blur(15px); 
-      border-radius: 24px; 
-      padding: 30px; 
-      text-align: center; 
-      margin-bottom: 25px; 
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-      border: 1px solid white; 
+    .main {
+      flex: 1;
+      padding: 25px;
+      max-width: 800px;
+      margin: 0 auto;
       box-sizing: border-box;
     }
-    .point-val { font-size: 42px; font-weight: 900; color: #2563eb; margin: 10px 0; }
-    
-    .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
-    
-    .item-card { 
-      background: rgba(255,255,255,0.7); 
-      backdrop-filter: blur(10px); 
-      padding: 25px; 
-      border-radius: 24px; 
-      text-align: center; 
-      border: 1px solid white; 
-      transition: 0.3s; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-    }
-    .item-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); border-color: #2563eb; }
-    
-    .btn-buy { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    .btn-eq { width: 100%; padding: 14px; background: white; color: #2563eb; border: 2px solid #2563eb; border-radius: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
-    .btn-active { background: #0f172a; color: white; border: none; }
-    .btn-buy:active, .btn-eq:active { transform: scale(0.96); }
 
-    .role-text { font-size: 11px; font-weight: bold; margin-right: 5px; }
-    .role-admin { color: #ef4444; } .role-student { color: #64748b; }
+    .point-box {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(15px);
+      border-radius: 24px;
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+
+    .point-val {
+      font-size: 42px;
+      font-weight: 900;
+      color: #2563eb;
+      margin: 10px 0;
+    }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .item-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 25px;
+      border-radius: 24px;
+      text-align: center;
+      border: 1px solid white;
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .item-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+      border-color: #2563eb;
+    }
+
+    .btn-buy {
+      width: 100%;
+      padding: 14px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-eq {
+      width: 100%;
+      padding: 14px;
+      background: white;
+      color: #2563eb;
+      border: 2px solid #2563eb;
+      border-radius: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      box-sizing: border-box;
+    }
+
+    .btn-active {
+      background: #0f172a;
+      color: white;
+      border: none;
+    }
+
+    .btn-buy:active,
+    .btn-eq:active {
+      transform: scale(0.96);
+    }
+
+    .role-text {
+      font-size: 11px;
+      font-weight: bold;
+      margin-right: 5px;
+    }
+
+    .role-admin {
+      color: #ef4444;
+    }
+
+    .role-student {
+      color: #64748b;
+    }
 
     /* 모바일 반응형 */
     @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .bottom-tab { display: flex; }
-      .header { padding: 0 15px; }
-      .main { padding: 20px 15px; }
-      .shop-grid { grid-template-columns: 1fr; } /* 모바일에서는 한 줄로 */
-      .point-val { font-size: 32px; }
+      .sidebar {
+        display: none;
+      }
+
+      .bottom-tab {
+        display: flex;
+      }
+
+      .header {
+        padding: 0 15px;
+      }
+
+      .main {
+        padding: 20px 15px;
+      }
+
+      .shop-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* 모바일에서는 한 줄로 */
+      .point-val {
+        font-size: 32px;
+      }
     }
   </style>
 </head>
+
 <body>
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
@@ -105,7 +299,7 @@
         <div style="color: #64748b; font-size: 14px; font-weight: 600;">나의 보유 포인트</div>
         <div id="mPoints" class="point-val">0P</div>
       </div>
-      
+
       <h3 style="width: 100%; margin: 10px 0 20px 5px; font-size: 18px; color: #0f172a;">✨ 뱃지 상점</h3>
       <div class="shop-grid" id="grid"></div>
     </main>
@@ -138,60 +332,67 @@
     let user = null;
 
     onAuthStateChanged(auth, async u => {
-      if(!u) return location.href="login.html";
+      if (!u) return location.href = "login.html";
       const s = await getDoc(doc(db, "users", u.uid));
       user = s.data(); user.uid = u.uid;
       const rName = user.role === "admin" ? "관리자" : (user.role === "teacher" ? "선생님" : "학생");
-      
-      document.getElementById("hNick").innerHTML = `<span class="role-text role-${user.role}">[${rName}]</span> ${user.currentBadge||''} ${user.nickname}`;
-      document.getElementById("hPoints").innerText = document.getElementById("mPoints").innerText = (user.points||0)+"P";
+
+      document.getElementById("hNick").innerHTML = `<span class="role-text role-${user.role}">[${rName}]</span> ${user.currentBadge || ''} ${user.nickname}`;
+      document.getElementById("hPoints").innerText = document.getElementById("mPoints").innerText = (user.points || 0) + "P";
       render();
+
+      // 로컬 스토리지에서 이미지 가져오기
+      const localBg = localStorage.getItem(`bg_${u.uid}`);
+      if (localBg) {
+        document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${localBg}')`;
+      }
     });
 
     const items = [
-      {n:'알파', p:0, i:'α'}, 
-      {n:'보석', p:500, i:'💎'}, 
-      {n:'지존', p:1000, i:'👑'}, 
-      {n:'별', p:2000, i:'𓇻'}
+      { n: '알파', p: 0, i: 'α' },
+      { n: '보석', p: 500, i: '💎' },
+      { n: '지존', p: 1000, i: '👑' },
+      { n: '별', p: 2000, i: '𓇻' }
     ];
 
     function render() {
-      const g = document.getElementById("grid"); 
+      const g = document.getElementById("grid");
       g.innerHTML = "";
       items.forEach(it => {
-        const owned = (user.badges||[]).includes(it.i);
+        const owned = (user.badges || []).includes(it.i);
         const eq = user.currentBadge === it.i;
-        
+
         const card = document.createElement("div");
         card.className = "item-card";
         card.innerHTML = `
           <div style="font-size:48px; margin-bottom:10px;">${it.i}</div>
           <div style="font-weight:800; font-size:18px; color:#1e293b;">${it.n} 뱃지</div>
           <div style="color:#2563eb; font-weight:700; margin-bottom:20px; font-size:15px;">${it.p.toLocaleString()}P</div>
-          ${owned 
-            ? `<button class="btn-eq ${eq?'btn-active':''}" onclick="window.eq('${it.i}')">${eq?'장착 중':'장착하기'}</button>` 
+          ${owned
+            ? `<button class="btn-eq ${eq ? 'btn-active' : ''}" onclick="window.eq('${it.i}')">${eq ? '장착 중' : '장착하기'}</button>`
             : `<button class="btn-buy" onclick="window.buy('${it.i}',${it.p})">구매하기</button>`}
         `;
         g.appendChild(card);
       });
     }
 
-    window.buy = async (i, p) => { 
-      if(user.points < p) return alert("포인트가 부족합니다! 😢"); 
-      if(confirm(`${p}P를 사용하여 구매하시겠습니까?`)) {
-        await updateDoc(doc(db,"users",user.uid),{points:increment(-p), badges:arrayUnion(i)}); 
-        location.reload(); 
+    window.buy = async (i, p) => {
+      if (user.points < p) return alert("포인트가 부족합니다! 😢");
+      if (confirm(`${p}P를 사용하여 구매하시겠습니까?`)) {
+        await updateDoc(doc(db, "users", user.uid), { points: increment(-p), badges: arrayUnion(i) });
+        location.reload();
       }
     };
 
-    window.eq = async i => { 
-      await updateDoc(doc(db,"users",user.uid),{currentBadge:i}); 
-      location.reload(); 
+    window.eq = async i => {
+      await updateDoc(doc(db, "users", user.uid), { currentBadge: i });
+      location.reload();
     };
 
-    document.getElementById("logoutBtn").onclick = () => { 
-      if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); 
+    document.getElementById("logoutBtn").onclick = () => {
+      if (confirm("로그아웃 하시겠습니까?")) signOut(auth).then(() => location.href = "login.html");
     };
   </script>
 </body>
+
 </html>
