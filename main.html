@@ -1,285 +1,40 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8">
   <title>求援</title>
-
   <style>
-    /* 배경 움직이는 그라데이션 */
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe);
-      background-size: 400% 400%;
-      animation: gradientMove 20s ease infinite;
-      min-height: 100vh;
-    }
-
-    @keyframes gradientMove {
-      0% {
-        background-position: 0% 50%;
-      }
-
-      50% {
-        background-position: 100% 50%;
-      }
-
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-
-    /* 헤더 */
-    .header {
-      height: 70px;
-      padding: 0 40px;
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(12px);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .dot {
-      color: #2563eb;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      font-size: 14px;
-    }
-
-    .points {
-      color: #2563eb;
-      font-weight: 600;
-    }
-
-    .nickname {
-      color: #374151;
-    }
-
-    .logout {
-      cursor: pointer;
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.6);
-    }
-
-    .logout:hover {
-      background: rgba(255, 255, 255, 0.9);
-    }
-
-    /* 레이아웃 */
-    .layout {
-      display: flex;
-      min-height: calc(100vh-70px);
-    }
-
-    .sidebar {
-      width: 220px;
-      padding-top: 20px;
-      background: rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(12px);
-      border-right: 1px solid rgba(255, 255, 255, 0.4);
-    }
-
-    .menu-item {
-      padding: 15px 20px;
-      cursor: pointer;
-    }
-
-    .menu-item:hover {
-      background: rgba(255, 255, 255, 0.6);
-    }
-
-    .main {
-      flex: 1;
-      padding: 30px;
-    }
-
-    /* 카드 */
-    .card {
-      position: relative;
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-      transition: transform 0.5s ease, box-shadow 0.5s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
-    }
-
-    .card-title {
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    .card-meta {
-      font-size: 12px;
-      color: gray;
-    }
-
-    /* 질문 삭제 버튼 오른쪽 위 */
-    .question-delete {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 11px;
-      padding: 4px 8px;
-      cursor: pointer;
-    }
-
-    .question-delete:hover {
-      background: #dc2626;
-    }
-
-    /* 질문 채택 버튼 오른쪽 상단 */
-    .accept-btn {
-      position: absolute;
-      top: 10px;
-      right: 80px;
-      background: #22c55e;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 11px;
-      padding: 4px 8px;
-      cursor: pointer;
-    }
-
-    .accept-btn:hover {
-      background: #16a34a;
-    }
-
-    /* 답변 */
-    .answer-item {
-      position: relative;
-      margin-top: 8px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.4);
-      font-size: 13px;
-    }
-
-    .answer-delete {
-      position: absolute;
-      right: 8px;
-      top: 6px;
-      font-size: 11px;
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 2px 6px;
-      cursor: pointer;
-    }
-
-    .answer-delete:hover {
-      background: #dc2626;
-    }
-
-    .accepted-answer {
-      background: #d1fae5 !important;
-    }
-
-    /* 입력창 */
-    .input-box {
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      background: rgba(255, 255, 255, 0.5);
-      padding: 10px 12px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .input-box:focus {
-      border-color: #2563eb;
-      background: rgba(255, 255, 255, 0.8);
-    }
-
-    /* 버튼 */
-    .btn-primary {
-      padding: 10px 14px;
-      border: none;
-      border-radius: 12px;
-      background-color: #2563eb;
-      color: white;
-      cursor: pointer;
-    }
-
-    .btn-primary:hover {
-      background-color: #1d4ed8;
-    }
-
-    /* 배너, 공지 */
-    .banner {
-      background: rgba(37, 99, 235, 0.9);
-      color: white;
-      padding: 20px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-    }
-
-    .notice {
-      background: rgba(255, 255, 255, 0.6);
-      padding: 15px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-    }
-
-    /* 답변 입력줄 flex (버튼 왼쪽, 입력창 오른쪽) */
-    .answer-input-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .answer-input-row .input-box {
-      flex: 1;
-      order: 2;
-    }
-
-    .answer-input-row button {
-      order: 1;
-    }
-
-    /* 질문 입력창과 등록 버튼 flex */
-    .question-input-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-
-    .question-input-row #questionInput {
-      flex: 1;
-    }
-
-    .question-input-row #submitQuestion {
-      width: 120px;
-    }
+    /* 배경 및 레이아웃 (기존 스타일 유지) */
+    body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
+    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); }
+    .logo { font-size: 24px; font-weight: 700; color: #0f172a; }
+    .dot { color: #2563eb; }
+    .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
+    .points { color: #2563eb; font-weight: 600; }
+    .logout { cursor: pointer; padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); }
+    .layout { display: flex; min-height: calc(100vh - 70px); }
+    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
+    .menu-item { padding: 15px 20px; cursor: pointer; }
+    .main { flex: 1; padding: 30px; }
+    .card { position: relative; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 16px; padding: 20px; margin-bottom: 18px; transition: transform 0.5s ease; }
+    .card-title { font-weight: bold; margin-bottom: 8px; }
+    .card-meta { font-size: 12px; color: gray; }
+    .question-delete { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; }
+    .accept-btn { background: #22c55e; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; margin-left: 10px; }
+    .answer-item { position: relative; margin-top: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.4); font-size: 13px; }
+    .accepted-answer { background: #d1fae5 !important; border: 1px solid #10b981; }
+    .answer-delete { background: #ef4444; color: white; border: none; border-radius: 6px; padding: 2px 6px; font-size: 11px; cursor: pointer; float: right; }
+    .input-box { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.5); padding: 10px 12px; outline: none; }
+    .btn-primary { padding: 10px 14px; border: none; border-radius: 12px; background-color: #2563eb; color: white; cursor: pointer; }
+    .answer-input-row { display: flex; gap: 8px; margin-top: 15px; }
+    .answer-input-row .input-box { flex: 1; }
+    .banner { background: rgba(37, 99, 235, 0.9); color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; }
+    .notice { background: rgba(255, 255, 255, 0.6); padding: 15px; border-radius: 16px; margin-bottom: 20px; }
+    .question-input-row { display: flex; gap: 8px; margin-bottom: 18px; }
+    .question-input-row #questionInput { flex: 1; }
   </style>
 </head>
-
 <body>
   <header class="header">
     <div class="logo">求援<span class="dot">.</span></div>
@@ -296,44 +51,44 @@
       <div class="menu-item">👤 잡담</div>
       <div class="menu-item">💰 포인트 관리</div>
     </div>
-
     <div class="main">
       <div class="banner">📢 *올라온 공지가 없소*</div>
       <div class="notice"><b>공지</b><br>- 비속어 사용 금지<br>- 학번 공개 금지</div>
-
-      <!-- 질문 입력창 + 등록 버튼 -->
       <div class="card question-input-row">
         <input type="text" id="questionInput" placeholder="질문을 입력하세요" class="input-box">
         <button id="submitQuestion" class="btn-primary">등록</button>
       </div>
-
       <div id="questionList"></div>
     </div>
   </div>
 
   <script type="module">
+    // 위에서 최적화한 스크립트 내용
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const nicknameEl = document.querySelector(".nickname");
     const pointsEl = document.querySelector(".points");
-    const logoutBtn = document.querySelector(".logout");
     const questionList = document.getElementById("questionList");
     const input = document.getElementById("questionInput");
-    const submitBtn = document.getElementById("submitQuestion");
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "/sbh_qna/login.html";
       const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) { const data = snap.data(); nicknameEl.innerText = data.nickname; pointsEl.innerText = data.points + "P"; }
+      if (snap.exists()) {
+        nicknameEl.innerText = snap.data().nickname;
+        pointsEl.innerText = (snap.data().points || 0) + "P";
+      }
       loadQuestions();
     });
 
-    submitBtn.onclick = async () => {
+    document.getElementById("submitQuestion").onclick = async () => {
       const title = input.value.trim();
       if (!title) return alert("질문을 입력하세요");
-      await addDoc(collection(db, "questions"), { title, nickname: nicknameEl.innerText, uid: auth.currentUser.uid, answerCount: 0 });
+      await addDoc(collection(db, "questions"), {
+        title, nickname: nicknameEl.innerText, uid: auth.currentUser.uid, answerCount: 0, acceptedAnswerId: null
+      });
       input.value = "";
       loadQuestions();
     };
@@ -341,76 +96,73 @@
     async function loadQuestions() {
       const snapshot = await getDocs(collection(db, "questions"));
       questionList.innerHTML = "";
+      for (const qDoc of snapshot.docs) {
+        const qData = qDoc.data();
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          ${auth.currentUser.uid === qData.uid ? `<button class="question-delete">삭제</button>` : ''}
+          <div class="card-title">${qData.title}</div>
+          <div class="card-meta">작성자: ${qData.nickname} | 답변 ${qData.answerCount || 0}개</div>
+          <div class="answers-container"></div>
+          <div class="answer-input-row">
+            <input type="text" placeholder="답변을 입력하세요" class="input-box answer-input">
+            <button class="btn-primary add-answer-btn">답변</button>
+          </div>
+        `;
 
-      for (const questionDoc of snapshot.docs) {
-        const data = questionDoc.data();
-        const card = document.createElement("div"); card.className = "card";
-
-        // 삭제 버튼
-        if (auth.currentUser.uid === data.uid) {
-          const delBtn = document.createElement("button"); delBtn.innerText = "삭제"; delBtn.className = "question-delete";
-          delBtn.onclick = async () => { await deleteDoc(doc(db, "questions", questionDoc.id)); loadQuestions(); };
-          card.appendChild(delBtn);
-
-          // 채택 버튼
-          const acceptBtn = document.createElement("button"); acceptBtn.innerText = "채택"; acceptBtn.className = "accept-btn";
-          acceptBtn.onclick = async () => { await updateDoc(doc(db, "questions", questionDoc.id), { acceptedAnswerId: null }); loadQuestions(); };
-          card.appendChild(acceptBtn);
+        if (card.querySelector(".question-delete")) {
+          card.querySelector(".question-delete").onclick = async () => {
+            if(confirm("삭제하시겠습니까?")) { await deleteDoc(doc(db, "questions", qDoc.id)); loadQuestions(); }
+          };
         }
 
-        card.innerHTML += `<div class="card-title">${data.title}</div>
-      <div class="card-meta">작성자: ${data.nickname} | 답변 ${data.answerCount || 0}개</div>`;
+        const container = card.querySelector(".answers-container");
+        await loadAnswers(qDoc.id, qData, container);
 
-        const answerSnapshot = await getDocs(collection(db, "questions", questionDoc.id, "answers"));
-        for (const answerDoc of answerSnapshot.docs) {
-          const aData = answerDoc.data();
-          const item = document.createElement("div"); item.className = "answer-item";
-          item.innerText = "↳ " + aData.nickname + " : " + aData.content;
-
-          // 채택 강조
-          if (data.acceptedAnswerId === answerDoc.id) { item.classList.add("accepted-answer"); }
-
-          if (auth.currentUser.uid === data.uid && data.acceptedAnswerId !== answerDoc.id) {
-            const acceptBtn = document.createElement("button"); acceptBtn.innerText = "채택"; acceptBtn.className = "accept-btn";
-            acceptBtn.onclick = async () => {
-              await updateDoc(doc(db, "questions", questionDoc.id), { acceptedAnswerId: answerDoc.id });
-              loadQuestions();
-            };
-            item.appendChild(acceptBtn);
-          }
-
-          if (auth.currentUser.uid === aData.uid) {
-            const aDel = document.createElement("button"); aDel.innerText = "삭제"; aDel.className = "answer-delete";
-            aDel.onclick = async () => {
-              await deleteDoc(doc(db, "questions", questionDoc.id, "answers", answerDoc.id));
-              await updateDoc(doc(db, "questions", questionDoc.id), { answerCount: increment(-1) });
-              loadQuestions();
-            };
-            item.appendChild(aDel);
-          }
-
-          card.appendChild(item);
-        }
-
-        // 답변 입력 줄
-        const row = document.createElement("div"); row.className = "answer-input-row";
-        const answerInput = document.createElement("input"); answerInput.placeholder = "답변을 입력하세요"; answerInput.className = "input-box";
-        const answerBtn = document.createElement("button"); answerBtn.className = "btn-primary"; answerBtn.innerText = "답변";
-        answerBtn.onclick = async () => {
-          const content = answerInput.value.trim(); if (!content) return alert("답변을 입력하세요");
-          await addDoc(collection(db, "questions", questionDoc.id, "answers"), { content, nickname: nicknameEl.innerText, uid: auth.currentUser.uid });
-          await updateDoc(doc(db, "questions", questionDoc.id), { answerCount: increment(1) });
-          answerInput.value = ""; loadQuestions();
+        card.querySelector(".add-answer-btn").onclick = async () => {
+          const aInput = card.querySelector(".answer-input");
+          if (!aInput.value.trim()) return alert("내용을 입력하세요");
+          await addDoc(collection(db, "questions", qDoc.id, "answers"), {
+            content: aInput.value, nickname: nicknameEl.innerText, uid: auth.currentUser.uid
+          });
+          await updateDoc(doc(db, "questions", qDoc.id), { answerCount: increment(1) });
+          loadQuestions();
         };
-        row.appendChild(answerBtn); row.appendChild(answerInput);
-        card.appendChild(row);
-
         questionList.appendChild(card);
       }
     }
 
-    logoutBtn.onclick = async () => { await signOut(auth); window.location.href = "/sbh_qna/login.html"; };
+    async function loadAnswers(qId, qData, container) {
+      const snap = await getDocs(collection(db, "questions", qId, "answers"));
+      snap.forEach(aDoc => {
+        const aData = aDoc.data();
+        const isAccepted = qData.acceptedAnswerId === aDoc.id;
+        const item = document.createElement("div");
+        item.className = `answer-item ${isAccepted ? 'accepted-answer' : ''}`;
+        item.innerHTML = `
+          ↳ ${aData.nickname} : ${aData.content}
+          ${auth.currentUser.uid === qData.uid && !qData.acceptedAnswerId ? `<button class="accept-btn">채택</button>` : ''}
+          ${auth.currentUser.uid === aData.uid ? `<button class="answer-delete">삭제</button>` : ''}
+        `;
+        if (item.querySelector(".accept-btn")) {
+          item.querySelector(".accept-btn").onclick = async () => {
+            await updateDoc(doc(db, "questions", qId), { acceptedAnswerId: aDoc.id });
+            loadQuestions();
+          };
+        }
+        if (item.querySelector(".answer-delete")) {
+          item.querySelector(".answer-delete").onclick = async () => {
+            await deleteDoc(doc(db, "questions", qId, "answers", aDoc.id));
+            await updateDoc(doc(db, "questions", qId), { answerCount: increment(-1) });
+            loadQuestions();
+          };
+        }
+        container.appendChild(item);
+      });
+    }
+
+    document.querySelector(".logout").onclick = async () => { await signOut(auth); window.location.href = "/sbh_qna/login.html"; };
   </script>
 </body>
-
 </html>
