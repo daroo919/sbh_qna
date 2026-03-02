@@ -1,35 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>求援 - 로그인</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe);
+      background-size: 400% 400%;
+      animation: gradientMove 20s ease infinite;
+      
+      /* 수직 중앙 정렬 설정 */
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
 
-    .card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 350px; box-sizing: border-box; }
-    h2 { font-size: 24px; color: #0f172a; margin-bottom: 25px; text-align: center; }
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 28px;
+      padding: 40px 24px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+      
+      /* 반응형 너비 */
+      width: calc(100% - 40px);
+      max-width: 350px;
+      box-sizing: border-box;
+    }
+
+    h2 { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 25px; text-align: center; }
     
-    input { width: 100%; padding: 12px 15px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 12px; background: rgba(255, 255, 255, 0.7); outline: none; box-sizing: border-box; transition: 0.2s; }
-    input:focus { border-color: #2563eb; background: white; }
+    input {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.8);
+      outline: none;
+      box-sizing: border-box;
+      transition: 0.3s;
+      font-size: 16px; /* 모바일 자동 줌 방지용 크기 */
+    }
+    input:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
     
-    button { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #2563eb; color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-    button:hover { background: #1d4ed8; }
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 10px;
+    }
+    button:hover { background: #1d4ed8; transform: translateY(-2px); }
+    button:active { transform: scale(0.98); }
     
-    .error { color: #ef4444; font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 18px; }
-    .link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; text-decoration: none; }
+    .error { color: #ef4444; font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 18px; font-weight: 500; }
+    .link { display: block; text-align: center; margin-top: 25px; font-size: 14px; color: #64748b; text-decoration: none; font-weight: 500; }
     .link:hover { color: #2563eb; }
+
+    /* 화면 높이가 낮은 폰 대응 */
+    @media (max-height: 500px) {
+      .card { padding: 25px 20px; }
+      h2 { margin-bottom: 15px; }
+    }
   </style>
 </head>
 <body>
   <div class="card">
     <h2>로그인</h2>
-    <input id="email" placeholder="이메일 입력">
+    <input id="email" type="email" placeholder="이메일 입력">
     <input id="password" type="password" placeholder="비밀번호">
     <p class="error" id="errorLogin"></p>
     <button id="btnLogin">로그인</button>
     <a href="signup.html" class="link">아직 계정이 없으신가요? 회원가입</a>
   </div>
+
+  <script type="module">
+    // JS 코드를 HTML 하단에 직접 넣거나 js/login.js에 아래 내용을 추가하세요.
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('btnLogin');
+
+    // 엔터 키 이벤트 리스너 함수
+    const handleEnter = (e) => {
+      if (e.key === 'Enter') {
+        loginBtn.click(); // 버튼을 대신 클릭해줌
+      }
+    };
+
+    // 이메일과 비밀번호 입력창 둘 다에 엔터 감지 등록
+    emailInput.addEventListener('keypress', handleEnter);
+    passwordInput.addEventListener('keypress', handleEnter);
+  </script>
   <script type="module" src="js/login.js"></script>
 </body>
 </html>

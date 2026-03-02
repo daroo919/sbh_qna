@@ -1,28 +1,148 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
-  <title>求援 - 시작하기</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>求援</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    :root {
+      /* 최근 브라우저에서 상단 바를 제외한 실제 높이를 계산하는 단위 */
+      --screen-height: 100svh; 
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe);
+      background-size: 400% 400%;
+      animation: gradientMove 20s ease infinite;
+      
+      /* 핵심: dynamic viewport height를 사용하여 브라우저 바를 제외한 진짜 중앙 계산 */
+      height: 100vh; /* 기본 */
+      height: 100dvh; /* 최신 브라우저 대응 */
+      
+      display: flex;
+      flex-direction: column; /* 세로 방향 정렬 */
+      align-items: center;    /* 가로 중앙 */
+      justify-content: center; /* 세로 중앙 (이게 진짜 핵심) */
+      
+      overflow: hidden; /* 스크롤 절대 방지 */
+      box-sizing: border-box;
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 24px;
+      padding: 50px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      
+      /* 반응형 너비 설정 */
+      width: 100%;
+      max-width: 360px; /* 데스크톱 최대 너비 */
+      max-height: 85dvh; 
+      box-sizing: border-box;
+      transition: transform 0.3s ease;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      color: #2563eb;
+    }
+
+    .description {
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.6;
+      margin-bottom: 35px;
+      word-break: keep-all; /* 모바일에서 글자가 어색하게 깨지지 않게 설정 */
+    }
     
-    .card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 24px; padding: 50px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 320px; }
-    h1 { font-size: 40px; font-weight: 800; color: #0f172a; margin-bottom: 30px; }
-    .dot { color: #2563eb; }
-    
-    a { display: block; margin: 15px 0; text-decoration: none; color: white; font-size: 16px; font-weight: bold; padding: 14px; border-radius: 12px; transition: 0.3s; }
-    .btn-login { background: #2563eb; }
-    .btn-login:hover { background: #1d4ed8; transform: translateY(-2px); }
-    .btn-signup { background: #0f172a; }
-    .btn-signup:hover { background: #1e293b; transform: translateY(-2px); }
+    .description b {
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    a {
+      display: block;
+      margin: 15px 0;
+      text-decoration: none;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 14px;
+      border-radius: 12px;
+      transition: 0.3s;
+    }
+
+    .btn-login {
+      background: #2563eb;
+    }
+
+    .btn-login:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+    }
+
+    .btn-signup {
+      background: #0f172a;
+    }
+
+    .btn-signup:hover {
+      background: #1e293b;
+      transform: translateY(-2px);
+    }
+
+    /* 모바일 환경 최적화 */
+    @media (max-width: 480px) {
+      .card {
+        padding: 40px 20px;
+      }
+      h1 {
+        font-size: 36px;
+      }
+      .description {
+        font-size: 14px;
+      }
+    }
+
   </style>
 </head>
+
 <body>
   <div class="card">
     <h1>求援<span class="dot">.</span></h1>
+    <div class="description">
+      함께 답을 찾고 성장을 나누는<br>
+      우리들만의 <b>신백현 지식 커뮤니티</b>
+    </div>
     <a href="login.html" class="btn-login">로그인</a>
     <a href="signup.html" class="btn-signup">회원가입</a>
   </div>
 </body>
+
 </html>

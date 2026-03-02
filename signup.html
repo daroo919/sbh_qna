@@ -1,33 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>求援 - 회원가입</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
-    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe);
+      background-size: 400% 400%;
+      animation: gradientMove 20s ease infinite;
+      
+      /* 수직 중앙 정렬 */
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 20px;
+    }
 
-    .card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 400px; box-sizing: border-box; }
-    h2 { font-size: 24px; color: #0f172a; margin-bottom: 25px; text-align: center; }
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 28px;
+      padding: 35px 24px; /* 입력창이 많으므로 상하 패딩 소폭 축소 */
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+      
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      /* 모바일에서 내용이 길어질 경우 내부 스크롤 허용 */
+      max-height: 95dvh;
+      overflow-y: auto;
+    }
+
+    /* 스크롤바 숨기기 (선택 사항) */
+    .card::-webkit-scrollbar { display: none; }
+
+    h2 { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 20px; text-align: center; }
     
-    .input-wrap { position: relative; margin-bottom: 12px; }
-    input { width: 100%; padding: 12px 15px; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 12px; background: rgba(255, 255, 255, 0.7); outline: none; box-sizing: border-box; transition: 0.2s; }
-    input:focus { border-color: #2563eb; background: white; }
+    .input-wrap { position: relative; margin-bottom: 10px; }
     
-    .toggle { position: absolute; right: 15px; top: 12px; cursor: pointer; user-select: none; color: #94a3b8; }
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.8);
+      outline: none;
+      box-sizing: border-box;
+      transition: 0.3s;
+      font-size: 16px;
+    }
+    input:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
     
-    button { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #0f172a; color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
-    button:hover { background: #1e293b; }
+    .toggle { 
+      position: absolute; 
+      right: 15px; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      cursor: pointer; 
+      user-select: none; 
+      color: #94a3b8;
+      padding: 5px;
+    }
     
-    .error { color: #ef4444; font-size: 13px; text-align: center; margin-top: 10px; min-height: 18px; }
-    .link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; text-decoration: none; }
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: #0f172a; /* 회원가입은 어두운 톤 유지 */
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 10px;
+    }
+    button:hover { background: #1e293b; transform: translateY(-2px); }
+    button:active { transform: scale(0.98); }
+    
+    .error { color: #ef4444; font-size: 13px; text-align: center; margin-top: 8px; min-height: 18px; font-weight: 500; }
+    .link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; text-decoration: none; font-weight: 500; }
     .link:hover { color: #2563eb; }
+
+    /* 화면이 아주 작은 모바일 대응 */
+    @media (max-height: 660px) {
+      .card { padding: 25px 20px; }
+      h2 { margin-bottom: 15px; font-size: 20px; }
+      input { padding: 12px; margin-bottom: 8px; }
+    }
   </style>
 </head>
 <body>
   <div class="card">
     <h2>회원가입</h2>
-    <div class="input-wrap"><input id="email" placeholder="이메일 입력"></div>
+    <div class="input-wrap"><input id="email" type="email" placeholder="이메일 입력"></div>
     
     <div class="input-wrap">
       <input id="password" type="password" placeholder="비밀번호 (6자리 이상)">
@@ -48,6 +130,24 @@
     <a href="login.html" class="link">이미 계정이 있나요? 로그인</a>
   </div>
 
+  <script type="module">
+    const inputs = document.querySelectorAll('input');
+    const signupBtn = document.getElementById('btnSignup');
+
+    // 비밀번호 보이기/숨기기 토글 기능 (간단 로직 추가)
+    const setupToggle = (toggleId, inputId) => {
+      const toggle = document.getElementById(toggleId);
+      const input = document.getElementById(inputId);
+      toggle.addEventListener('click', () => {
+        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        input.setAttribute('type', type);
+        toggle.textContent = type === 'password' ? '👁' : '🔒';
+      });
+    };
+
+    setupToggle('togglePassword1', 'password');
+    setupToggle('togglePassword2', 'passwordConfirm');
+  </script>
   <script type="module" src="/sbh_qna/js/signup.js"></script>
 </body>
 </html>
