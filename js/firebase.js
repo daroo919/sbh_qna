@@ -1,5 +1,4 @@
-<script type="module">
-  import { auth, db } from "./firebase.js";
+import { auth, db } from "./firebase.js";
   import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
   import { doc, setDoc, query, getDocs, collection, where } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
@@ -72,4 +71,3 @@
       btnSignup.innerText = "회원가입";
     }
   });
-</script>
