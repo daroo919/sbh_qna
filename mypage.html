@@ -1,28 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>求援 - 마이페이지</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); min-height: 100vh; }
-    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
-    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; }
+    /* 기본 레이아웃 및 배경 */
+    body { margin: 0; font-family: 'Pretendard', sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; padding-bottom: 80px; }
+    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    
+    /* 헤더 */
+    .header { height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
+    .logo { font-size: 22px; font-weight: 800; color: #0f172a; cursor: pointer; }
     .dot { color: #2563eb; }
-    .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
-    .points { color: #2563eb; font-weight: 600; }
-    .logout { cursor: pointer; padding: 6px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); font-weight: bold; transition: 0.2s; }
-    .logout:hover { background: #fee2e2; color: #ef4444; }
-    .layout { display: flex; min-height: calc(100vh - 70px); }
-    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
-    .menu-item { padding: 15px 20px; cursor: pointer; color: #374151; }
-    .main { flex: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; }
-    .profile-card { width: 100%; max-width: 500px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border: 1px solid white; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.4s; }
-    .profile-card:hover { transform: translateY(-10px); }
-    .field { margin-bottom: 25px; }
-    .label { font-size: 13px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
-    .input-box { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); outline: none; box-sizing: border-box; }
-    .save-btn { width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
-    .save-btn:hover { background: #2563eb; }
+    .header-right { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+    .points { color: #2563eb; font-weight: 700; background: rgba(37, 99, 235, 0.1); padding: 4px 10px; border-radius: 20px; }
+    
+    .logout { cursor: pointer; padding: 6px 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold; font-size: 12px; transition: 0.3s; border: none; }
+    .logout:hover { background: #ef4444; color: white; }
+
+    .layout { display: flex; }
+
+    /* 사이드바 (데스크톱) */
+    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); min-height: calc(100vh - 70px); }
+    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; font-weight: 500; }
+    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
+
+    /* 하단 탭 바 (모바일) */
+    .bottom-tab { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
+    .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #64748b; cursor: pointer; flex: 1; gap: 4px; }
+    .tab-item.active { color: #2563eb; font-weight: bold; }
+    .tab-icon { font-size: 20px; }
+
+    /* 메인 콘텐츠 */
+    .main { flex: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
+    
+    .profile-card { 
+      width: 100%; 
+      max-width: 500px; 
+      background: rgba(255, 255, 255, 0.75); 
+      backdrop-filter: blur(15px); 
+      border: 1px solid white; 
+      border-radius: 30px; 
+      padding: 40px; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05); 
+      transition: 0.4s; 
+      box-sizing: border-box;
+    }
+    .profile-card:hover { transform: translateY(-5px); }
+    
+    .field { margin-bottom: 30px; }
+    .label { font-size: 13px; color: #64748b; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-text { font-size: 16px; color: #1e293b; font-weight: 500; padding: 5px 0; }
+    
+    .input-box { 
+      width: 100%; 
+      padding: 16px; 
+      border-radius: 16px; 
+      border: 1px solid rgba(0,0,0,0.05); 
+      background: white; 
+      outline: none; 
+      box-sizing: border-box; 
+      font-size: 15px;
+      transition: 0.3s;
+    }
+    .input-box:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+    
+    .save-btn { 
+      width: 100%; 
+      padding: 18px; 
+      background: #0f172a; 
+      color: white; 
+      border: none; 
+      border-radius: 16px; 
+      cursor: pointer; 
+      font-weight: 800; 
+      font-size: 16px;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+    .save-btn:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2); }
+    .save-btn:active { transform: scale(0.98); }
+
+    .role-text { font-size: 11px; font-weight: bold; margin-right: 5px; }
+    .role-admin { color: #ef4444; } .role-student { color: #64748b; }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .bottom-tab { display: flex; }
+      .header { padding: 0 15px; }
+      .main { padding: 30px 15px; }
+      .profile-card { padding: 30px 25px; border-radius: 24px; }
+    }
   </style>
 </head>
 <body>
@@ -30,26 +100,57 @@
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
     <div class="header-right">
       <div class="points" id="hPoints">0P</div>
-      <div class="nickname" id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩...</div>
-      <div class="logout" id="logoutBtn">로그아웃</div>
+      <div class="nickname" id="hNick" onclick="location.href='mypage.html'">로딩...</div>
+      <button class="logout" id="logoutBtn">로그아웃</button>
     </div>
   </header>
+
   <div class="layout">
-    <div class="sidebar">
+    <aside class="sidebar">
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
       <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
       <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
       <div class="menu-item" onclick="location.href='mypage.html'">⚙️ 마이페이지</div>
-    </div>
-    <div class="main">
+    </aside>
+
+    <main class="main">
       <div class="profile-card">
-        <h2 style="margin-bottom: 30px;">내 프로필 관리</h2>
-        <div class="field"><div class="label">계정 정보</div><div id="emailDisp">불러오는 중...</div></div>
-        <div class="field"><div class="label">닉네임 변경</div><input type="text" id="nickInput" class="input-box"></div>
-        <button id="saveBtn" class="save-btn">프로필 저장하기</button>
+        <h2 style="margin: 0 0 35px 0; font-size: 24px; color: #0f172a;">내 프로필 관리</h2>
+        
+        <div class="field">
+          <div class="label">계정 이메일</div>
+          <div id="emailDisp" class="info-text">불러오는 중...</div>
+        </div>
+        
+        <div class="field">
+          <div class="label">닉네임 변경</div>
+          <input type="text" id="nickInput" class="input-box" placeholder="변경할 닉네임을 입력하세요">
+        </div>
+        
+        <button id="saveBtn" class="save-btn">변경사항 저장하기</button>
       </div>
-    </div>
+    </main>
   </div>
+
+  <nav class="bottom-tab">
+    <div class="tab-item" onclick="location.href='qna.html'">
+      <span class="tab-icon">📄</span>
+      <span>문답</span>
+    </div>
+    <div class="tab-item" onclick="location.href='talk.html'">
+      <span class="tab-icon">👤</span>
+      <span>잡담</span>
+    </div>
+    <div class="tab-item" onclick="location.href='point.html'">
+      <span class="tab-icon">💰</span>
+      <span>포인트</span>
+    </div>
+    <div class="tab-item active" onclick="location.href='mypage.html'">
+      <span class="tab-icon">⚙️</span>
+      <span>마이</span>
+    </div>
+  </nav>
+
   <script type="module">
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
@@ -60,7 +161,9 @@
       const s = await getDoc(doc(db, "users", u.uid));
       if(s.exists()){
         const d = s.data();
-        document.getElementById("hNick").innerText = d.nickname;
+        const rName = d.role === "admin" ? "관리자" : (d.role === "teacher" ? "선생님" : "학생");
+        
+        document.getElementById("hNick").innerHTML = `<span class="role-text role-${d.role}">[${rName}]</span> ${d.currentBadge || ''} ${d.nickname}`;
         document.getElementById("hPoints").innerText = (d.points||0) + "P";
         document.getElementById("emailDisp").innerText = u.email;
         document.getElementById("nickInput").value = d.nickname;
@@ -69,9 +172,20 @@
 
     document.getElementById("saveBtn").onclick = async () => {
       const n = document.getElementById("nickInput").value.trim();
-      if(n) { await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: n }); alert("변경됨"); location.href="main.html"; }
+      if(!n) return alert("닉네임을 입력해주세요!");
+      
+      try {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: n });
+        alert("성공적으로 변경되었습니다! ✨");
+        location.href="main.html";
+      } catch (e) {
+        alert("오류가 발생했습니다. 다시 시도해 주세요.");
+      }
     };
-    document.getElementById("logoutBtn").onclick = () => { if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); };
+
+    document.getElementById("logoutBtn").onclick = () => { 
+      if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); 
+    };
   </script>
 </body>
 </html>
