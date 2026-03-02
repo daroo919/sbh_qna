@@ -10,20 +10,26 @@
     .dot { color: #2563eb; }
     .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
     .points { color: #2563eb; font-weight: 600; }
-    .logout { cursor: pointer; padding: 6px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); font-weight: bold; transition: 0.2s; }
-    .logout:hover { background: #fee2e2; color: #ef4444; }
+
+    /* 로그아웃 버튼 빨간색 수정 */
+    .logout { cursor: pointer; padding: 8px 15px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; font-weight: bold; transition: 0.3s; }
+    .logout:hover { background: #ef4444; color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); }
+
     .layout { display: flex; min-height: calc(100vh - 70px); }
     .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
     .menu-item { padding: 15px 20px; cursor: pointer; color: #374151; transition: 0.3s; }
     .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
+    
     .input-row { width: 100%; max-width: 600px; display: flex; gap: 10px; margin-bottom: 25px; align-items: stretch; }
     .input-box { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: white; outline: none; transition: 0.3s; }
     .btn-send { width: 80px; background: #2563eb; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; }
     .btn-send:hover { transform: translateY(-3px); box-shadow: 0 5px 10px rgba(37, 99, 235, 0.3); }
+
     .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(10px); border-radius: 16px; padding: 20px; margin-bottom: 15px; position: relative; border: 1px solid white; transition: 0.3s; }
     .talk-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
     .talk-user { font-size: 13px; font-weight: bold; color: #2563eb; margin-bottom: 8px; }
     .talk-delete { position: absolute; top: 15px; right: 15px; color: #ef4444; cursor: pointer; font-size: 12px; font-weight: bold; }
+    
     .comment-input-row { display: flex; gap: 8px; margin-top: 10px; }
     .comment-input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
     .btn-comment { padding: 5px 15px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
@@ -73,6 +79,7 @@
       loadTalks();
     });
 
+    // 게시 및 로드 로직 동일 ...
     document.getElementById("talkBtn").onclick = async () => {
       const v = document.getElementById("talkInput").value.trim();
       if(!v) return;
@@ -113,7 +120,11 @@
     };
     window.delTalk = async id => { if(confirm("삭제?")) await deleteDoc(doc(db, "talks", id)); };
     window.delComm = async (tid, cid) => { if(confirm("댓글 삭제?")) await deleteDoc(doc(db, "talks", tid, "comments", cid)); };
-    document.getElementById("logoutBtn").onclick = () => { if(confirm("로그아웃?")) signOut(auth).then(()=>location.href="login.html"); };
+    
+    // 로그아웃 버튼 이벤트
+    document.getElementById("logoutBtn").onclick = () => { 
+      if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); 
+    };
   </script>
 </body>
 </html>
