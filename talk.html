@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <title>求援 - 잡담</title>
   <style>
-    /* 공통 스타일 유지 */
     body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
     @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top: 0; z-index: 100; }
-    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; }
+    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; user-select: none; }
     .dot { color: #2563eb; }
     .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
     .points { color: #2563eb; font-weight: 600; }
@@ -20,21 +19,30 @@
     .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
     .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
 
-    /* 잡담 전용 스타일 (엔트리 이야기 느낌) */
+    /* 글쓰기 카드 */
     .write-card { width: 100%; max-width: 600px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
-    .talk-input { width: 100%; border: none; resize: none; outline: none; font-size: 16px; min-height: 80px; margin-bottom: 10px; }
-    .post-btn { float: right; padding: 8px 20px; border: none; border-radius: 25px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
+    .talk-input { width: 100%; border: none; resize: none; outline: none; font-family: inherit; font-size: 16px; min-height: 80px; margin-bottom: 10px; color: #334155; }
+    .talk-input::placeholder { color: #94a3b8; }
+    .post-btn { float: right; padding: 8px 20px; border: none; border-radius: 25px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .post-btn:hover { background: #1d4ed8; }
 
-    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.4); position: relative; }
-    .talk-user { font-weight: bold; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .talk-content { font-size: 15px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 15px; }
-    .talk-footer { font-size: 12px; color: #64748b; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; display: flex; justify-content: space-between; }
-    .talk-delete { color: #ef4444; cursor: pointer; }
+    /* 게시글 카드 */
+    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.4); position: relative; box-sizing: border-box; }
+    .talk-user { font-weight: bold; font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: #1e293b; }
+    .talk-content { font-size: 15px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 15px; color: #334155; }
+    .talk-footer { font-size: 12px; color: #64748b; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .talk-delete { color: #ef4444; cursor: pointer; font-weight: bold; }
 
-    /* 댓글창 스타일 */
-    .comment-section { margin-top: 10px; background: rgba(0,0,0,0.02); border-radius: 8px; padding: 10px; }
-    .comment-item { font-size: 13px; margin-bottom: 5px; }
-    .comment-user { font-weight: bold; margin-right: 5px; }
+    /* 댓글 구역 */
+    .comment-section { margin-top: 15px; background: rgba(0,0,0,0.03); border-radius: 12px; padding: 12px; }
+    .comment-item { font-size: 13px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .comment-text { color: #334155; line-height: 1.4; }
+    .comment-user { font-weight: bold; color: #1e293b; margin-right: 6px; }
+    .comment-del-btn { color: #ef4444; cursor: pointer; font-size: 10px; margin-left: 8px; flex-shrink: 0; }
+    
+    .comment-input-row { display: flex; gap: 8px; margin-top: 10px; }
+    .comment-input { flex: 1; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 12px; font-size: 13px; outline: none; font-family: inherit; }
+    .comment-btn { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 0 12px; font-size: 12px; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -60,7 +68,6 @@
         <textarea id="talkInput" class="talk-input" placeholder="무슨 생각을 하고 계신가요?"></textarea>
         <button id="postBtn" class="post-btn">공유하기</button>
       </div>
-
       <div id="talkList" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
     </div>
   </div>
@@ -68,43 +75,46 @@
   <script type="module">
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { collection, addDoc, getDocs, query, orderBy, doc, getDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { collection, addDoc, doc, getDoc, deleteDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const nicknameEl = document.querySelector(".nickname");
     const pointsEl = document.querySelector(".points");
     const talkInput = document.getElementById("talkInput");
     const talkList = document.getElementById("talkList");
 
+    let currentNickname = "";
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) {
-        nicknameEl.innerText = snap.data().nickname;
+        currentNickname = snap.data().nickname;
+        nicknameEl.innerText = currentNickname;
         pointsEl.innerText = (snap.data().points || 0) + "P";
       }
       loadTalks();
     });
 
-    // 글 올리기
+    // 게시글 작성
     document.getElementById("postBtn").onclick = async () => {
       const content = talkInput.value.trim();
       if (!content) return;
-
       await addDoc(collection(db, "talks"), {
         content: content,
-        nickname: nicknameEl.innerText,
+        nickname: currentNickname,
         uid: auth.currentUser.uid,
         createdAt: Date.now()
       });
       talkInput.value = "";
     };
 
-    // 실시간 글 목록 불러오기 (onSnapshot 사용)
+    // 실시간 게시글 및 댓글 로드
     function loadTalks() {
       const q = query(collection(db, "talks"), orderBy("createdAt", "desc"));
       onSnapshot(q, (snapshot) => {
         talkList.innerHTML = "";
         snapshot.forEach((docSnap) => {
+          const talkId = docSnap.id;
           const data = docSnap.data();
           const card = document.createElement("div");
           card.className = "talk-card";
@@ -113,22 +123,66 @@
             <div class="talk-content">${data.content}</div>
             <div class="talk-footer">
               <span>${new Date(data.createdAt).toLocaleString()}</span>
-              ${auth.currentUser.uid === data.uid ? `<span class="talk-delete" onclick="deleteTalk('${docSnap.id}')">삭제</span>` : ''}
+              ${auth.currentUser.uid === data.uid ? `<span class="talk-delete" onclick="deleteTalk('${talkId}')">삭제</span>` : ''}
+            </div>
+            <div class="comment-section">
+              <div id="comments-${talkId}"></div>
+              <div class="comment-input-row">
+                <input type="text" class="comment-input" placeholder="댓글을 입력하세요..." id="commentInput-${talkId}">
+                <button class="comment-btn" onclick="addComment('${talkId}')">등록</button>
+              </div>
             </div>
           `;
           talkList.appendChild(card);
+          loadComments(talkId);
         });
       });
     }
 
-    // 삭제 함수 연결
-    window.deleteTalk = async (id) => {
-      if(confirm("글을 삭제할까요?")) {
-        await deleteDoc(doc(db, "talks", id));
-      }
+    // 댓글 실시간 로드
+    function loadComments(talkId) {
+      const commQ = query(collection(db, "talks", talkId, "comments"), orderBy("createdAt", "asc"));
+      const commentDiv = document.getElementById(`comments-${talkId}`);
+      onSnapshot(commQ, (snap) => {
+        commentDiv.innerHTML = "";
+        snap.forEach((cDoc) => {
+          const cData = cDoc.data();
+          const item = document.createElement("div");
+          item.className = "comment-item";
+          item.innerHTML = `
+            <div class="comment-text"><span class="comment-user">${cData.nickname}</span>${cData.content}</div>
+            ${auth.currentUser.uid === cData.uid ? `<span class="comment-del-btn" onclick="deleteComment('${talkId}', '${cDoc.id}')">✕</span>` : ''}
+          `;
+          commentDiv.appendChild(item);
+        });
+      });
+    }
+
+    // 댓글 등록 함수
+    window.addComment = async (talkId) => {
+      const input = document.getElementById(`commentInput-${talkId}`);
+      const text = input.value.trim();
+      if (!text) return;
+      await addDoc(collection(db, "talks", talkId, "comments"), {
+        content: text,
+        nickname: currentNickname,
+        uid: auth.currentUser.uid,
+        createdAt: Date.now()
+      });
+      input.value = "";
     };
 
-    document.querySelector(".logout").onclick = () => { signOut(auth); };
+    // 게시글 삭제
+    window.deleteTalk = async (id) => {
+      if(confirm("이 글을 삭제할까요?")) await deleteDoc(doc(db, "talks", id));
+    };
+
+    // 댓글 삭제
+    window.deleteComment = async (talkId, commentId) => {
+      if(confirm("댓글을 삭제할까요?")) await deleteDoc(doc(db, "talks", talkId, "comments", commentId));
+    };
+
+    document.querySelector(".logout").onclick = () => signOut(auth);
   </script>
 </body>
 </html>
