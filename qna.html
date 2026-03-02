@@ -19,19 +19,29 @@
     .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
     .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
 
-    .q-card { width: 100%; max-width: 800px; background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; transition: 0.3s; }
-    .q-card:hover { transform: translateY(-5px); }
-    .q-header { font-size: 14px; color: #64748b; margin-bottom: 10px; }
-    .q-title { font-size: 20px; font-weight: bold; color: #1e293b; margin-bottom: 15px; }
-    .answer-section { margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
-    .answer-item { font-size: 14px; padding: 10px; border-radius: 8px; background: #f8fafc; margin-bottom: 8px; }
-    .accepted { border: 2px solid #2563eb; background: #eff6ff; }
+    .q-card { width: 100%; max-width: 800px; background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; transition: 0.3s; box-sizing: border-box; }
+    .q-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .q-header { font-size: 13px; color: #64748b; margin-bottom: 10px; }
+    .q-title { font-size: 18px; font-weight: bold; color: #1e293b; margin-bottom: 10px; }
+    .q-content { font-size: 15px; color: #334155; margin-bottom: 20px; white-space: pre-wrap; }
+    
+    .answer-section { margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+    .answer-item { font-size: 14px; padding: 12px; border-radius: 10px; background: #f8fafc; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .answer-user { font-weight: bold; color: #2563eb; font-size: 13px; }
+    .answer-text { color: #334155; }
+    
+    .ask-btn { padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 30px; transition: 0.2s; }
+    .ask-btn:hover { background: #1d4ed8; }
   </style>
 </head>
 <body>
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
-    <div class="header-right"><div class="points">0P</div><div class="nickname">불러오는 중...</div><div class="logout">로그아웃</div></div>
+    <div class="header-right">
+      <div class="points">0P</div>
+      <div class="nickname">불러오는 중...</div>
+      <div class="logout">로그아웃</div>
+    </div>
   </header>
 
   <div class="layout">
@@ -41,7 +51,7 @@
       <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
     </div>
     <div class="main">
-      <button onclick="location.href='ask.html'" style="padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-bottom:30px;">질문하기</button>
+      <button class="ask-btn" onclick="location.href='ask.html'">질문하기</button>
       <div id="qList" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
     </div>
   </div>
@@ -78,23 +88,37 @@
           card.innerHTML = `
             <div class="q-header">${badge} ${qData.nickname} · ${new Date(qData.createdAt).toLocaleDateString()}</div>
             <div class="q-title">${qData.title} <span style="color:#2563eb; font-size:14px;">[${qData.reward}P]</span></div>
-            <div class="answer-section"><div id="ans-${docSnap.id}"></div></div>`;
+            <div class="q-content">${qData.content}</div>
+            <div class="answer-section">
+                <div style="font-size:13px; font-weight:bold; margin-bottom:10px; color:#64748b;">답변 목록</div>
+                <div id="ans-${docSnap.id}"></div>
+                <button onclick="location.href='answer.html?id=${docSnap.id}'" style="margin-top:10px; padding:5px 10px; border:1px solid #2563eb; color:#2563eb; background:none; border-radius:5px; cursor:pointer; font-size:12px;">답변 달기</button>
+            </div>`;
           qList.appendChild(card);
-          loadAnswers(docSnap.id, qData);
+          loadAnswers(docSnap.id);
         }
       });
     }
 
-    async (qId, qData) => {
+    async function loadAnswers(qId) {
       const ansSnap = await getDocs(collection(db, "questions", qId, "answers"));
       const container = document.getElementById(`ans-${qId}`);
+      if(ansSnap.empty) {
+          container.innerHTML = '<div style="font-size:12px; color:#94a3b8;">아직 답변이 없습니다.</div>';
+          return;
+      }
+      container.innerHTML = "";
       for (const aDoc of ansSnap.docs) {
         const aData = aDoc.data();
         const aUserSnap = await getDoc(doc(db, "users", aData.uid));
         const aBadge = (aUserSnap.exists() && aUserSnap.data().currentBadge) ? aUserSnap.data().currentBadge : "";
+        
         const item = document.createElement("div");
         item.className = "answer-item";
-        item.innerHTML = `<b>${aBadge} ${aData.nickname}</b>: ${aData.content}`;
+        item.innerHTML = `
+            <span class="answer-user">${aBadge} ${aData.nickname}</span>
+            <span class="answer-text">${aData.content}</span>
+        `;
         container.appendChild(item);
       }
     }
