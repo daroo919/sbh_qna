@@ -24,16 +24,19 @@
     .talk-input { width: 100%; border: none; resize: none; outline: none; font-family: inherit; font-size: 16px; min-height: 80px; margin-bottom: 10px; color: #334155; }
     .talk-input::placeholder { color: #94a3b8; }
     .post-btn { float: right; padding: 8px 20px; border: none; border-radius: 25px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .post-btn:hover { background: #1d4ed8; }
 
     /* 게시글 카드 및 플로트 효과 */
     .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.4); position: relative; box-sizing: border-box; transition: transform 0.3s ease, box-shadow 0.3s ease; }
     .talk-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     
-    /* 삭제 버튼 왼쪽 위 배치 */
-    .talk-delete { position: absolute; top: 12px; left: 15px; color: #ef4444; cursor: pointer; font-size: 11px; font-weight: bold; opacity: 0.5; transition: 0.2s; }
+    /* 닉네임 왼쪽 위 배치 */
+    .talk-user { font-weight: bold; font-size: 14px; color: #1e293b; margin-bottom: 15px; display: block; text-align: left; }
+    
+    /* 삭제 버튼 오른쪽 위 배치 */
+    .talk-delete { position: absolute; top: 20px; right: 20px; color: #ef4444; cursor: pointer; font-size: 11px; font-weight: bold; opacity: 0.5; transition: 0.2s; }
     .talk-delete:hover { opacity: 1; text-decoration: underline; }
 
-    .talk-user { font-weight: bold; font-size: 14px; margin-bottom: 12px; display: block; color: #1e293b; text-align: center; }
     .talk-content { font-size: 15px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 15px; color: #334155; }
     .talk-footer { font-size: 11px; color: #94a3b8; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; text-align: right; }
 
@@ -43,7 +46,6 @@
     .comment-text { color: #334155; line-height: 1.4; }
     .comment-user { font-weight: bold; color: #1e293b; margin-right: 6px; }
     .comment-del-btn { color: #ef4444; cursor: pointer; font-size: 10px; margin-left: 8px; opacity: 0.6; }
-    .comment-del-btn:hover { opacity: 1; }
     
     .comment-input-row { display: flex; gap: 8px; margin-top: 10px; }
     .comment-input { flex: 1; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 12px; font-size: 13px; outline: none; font-family: inherit; }
@@ -82,11 +84,7 @@
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { collection, addDoc, doc, getDoc, deleteDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    const nicknameEl = document.querySelector(".nickname");
-    const pointsEl = document.querySelector(".points");
-    const talkInput = document.getElementById("talkInput");
-    const talkList = document.getElementById("talkList");
-
+    const nicknameEl = document.querySelector(".nickname"), pointsEl = document.querySelector(".points"), talkInput = document.getElementById("talkInput"), talkList = document.getElementById("talkList");
     let currentNickname = "";
 
     onAuthStateChanged(auth, async (user) => {
@@ -103,12 +101,7 @@
     document.getElementById("postBtn").onclick = async () => {
       const content = talkInput.value.trim();
       if (!content) return;
-      await addDoc(collection(db, "talks"), {
-        content: content,
-        nickname: currentNickname,
-        uid: auth.currentUser.uid,
-        createdAt: Date.now()
-      });
+      await addDoc(collection(db, "talks"), { content, nickname: currentNickname, uid: auth.currentUser.uid, createdAt: Date.now() });
       talkInput.value = "";
     };
 
@@ -117,17 +110,14 @@
       onSnapshot(q, (snapshot) => {
         talkList.innerHTML = "";
         snapshot.forEach((docSnap) => {
-          const talkId = docSnap.id;
-          const data = docSnap.data();
+          const talkId = docSnap.id, data = docSnap.data();
           const card = document.createElement("div");
           card.className = "talk-card";
           card.innerHTML = `
-            ${auth.currentUser.uid === data.uid ? `<div class="talk-delete" onclick="deleteTalk('${talkId}')">삭제</div>` : ''}
             <div class="talk-user">${data.nickname}</div>
+            ${auth.currentUser.uid === data.uid ? `<div class="talk-delete" onclick="deleteTalk('${talkId}')">삭제</div>` : ''}
             <div class="talk-content">${data.content}</div>
-            <div class="talk-footer">
-              <span>${new Date(data.createdAt).toLocaleString()}</span>
-            </div>
+            <div class="talk-footer"><span>${new Date(data.createdAt).toLocaleString()}</span></div>
             <div class="comment-section">
               <div id="comments-${talkId}"></div>
               <div class="comment-input-row">
@@ -161,8 +151,7 @@
     }
 
     window.addComment = async (talkId) => {
-      const input = document.getElementById(`commentInput-${talkId}`);
-      const text = input.value.trim();
+      const input = document.getElementById(`commentInput-${talkId}`), text = input.value.trim();
       if (!text) return;
       await addDoc(collection(db, "talks", talkId, "comments"), { content: text, nickname: currentNickname, uid: auth.currentUser.uid, createdAt: Date.now() });
       input.value = "";
