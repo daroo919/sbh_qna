@@ -2,27 +2,34 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>로그인</title>
+  <title>求援 - 로그인</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 30px; }
-    input { width: 100%; padding: 10px; margin-bottom: 10px; }
-    button { padding: 10px 20px; cursor: pointer; }
-    .error { color: red; }
+    body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+    .card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 350px; box-sizing: border-box; }
+    h2 { font-size: 24px; color: #0f172a; margin-bottom: 25px; text-align: center; }
+    
+    input { width: 100%; padding: 12px 15px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 12px; background: rgba(255, 255, 255, 0.7); outline: none; box-sizing: border-box; transition: 0.2s; }
+    input:focus { border-color: #2563eb; background: white; }
+    
+    button { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #2563eb; color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+    button:hover { background: #1d4ed8; }
+    
+    .error { color: #ef4444; font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 18px; }
+    .link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; text-decoration: none; }
+    .link:hover { color: #2563eb; }
   </style>
 </head>
 <body>
-
-<h2>로그인</h2>
-
-<input id="email" placeholder="이메일 입력">
-<input id="password" type="password" placeholder="비밀번호">
-
-<p class="error" id="errorLogin"></p>
-
-<button id="btnLogin">로그인</button>
-<p><a href="signup.html">회원가입으로 가기</a></p>
-
-<script type="module" src="js/login.js"></script>
-
+  <div class="card">
+    <h2>로그인</h2>
+    <input id="email" placeholder="이메일 입력">
+    <input id="password" type="password" placeholder="비밀번호">
+    <p class="error" id="errorLogin"></p>
+    <button id="btnLogin">로그인</button>
+    <a href="signup.html" class="link">아직 계정이 없으신가요? 회원가입</a>
+  </div>
+  <script type="module" src="js/login.js"></script>
 </body>
 </html>
