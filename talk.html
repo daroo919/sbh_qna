@@ -4,21 +4,31 @@
   <meta charset="UTF-8">
   <title>求援 - 잡담</title>
   <style>
-    /* 공통 디자인 유지 */
     body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
     @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    
+    /* 헤더 UI 교정 */
     .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
-    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; }
+    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; user-select: none; }
+    .dot { color: #2563eb; }
+    .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
+    .points { color: #2563eb; font-weight: 600; }
+    .logout { cursor: pointer; padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); transition: 0.2s; }
+
     .layout { display: flex; min-height: calc(100vh - 70px); }
     .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
     .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; }
+    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
+
     .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
-    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.7); border-radius: 16px; padding: 20px; margin-bottom: 15px; position: relative; border: 1px solid white; }
-    .talk-user { font-size: 13px; font-weight: bold; color: #2563eb; margin-bottom: 8px; }
-    .talk-delete { position: absolute; top: 15px; right: 15px; color: #ef4444; cursor: pointer; font-size: 12px; }
     .input-row { width: 100%; max-width: 600px; display: flex; gap: 10px; margin-bottom: 25px; }
     .input-box { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: white; outline: none; }
-    .btn-send { padding: 0 20px; background: #2563eb; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+    .btn-send { padding: 0 25px; background: #2563eb; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+
+    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.7); border-radius: 16px; padding: 20px; margin-bottom: 15px; position: relative; border: 1px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+    .talk-user { font-size: 13px; font-weight: bold; color: #2563eb; margin-bottom: 8px; }
+    .talk-delete { position: absolute; top: 15px; right: 15px; color: #ef4444; cursor: pointer; font-size: 12px; font-weight: bold; }
+    
     .role-text { font-size: 11px; font-weight: bold; margin-right: 5px; }
     .role-admin { color: #ef4444; } .role-teacher { color: #f59e0b; } .role-student { color: #64748b; }
   </style>
@@ -28,10 +38,11 @@
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
     <div class="header-right">
       <div class="points" id="hPoints">0P</div>
-      <div class="nickname" id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩...</div>
-      <div class="logout" onclick="signOut(auth)">로그아웃</div>
+      <div class="nickname" id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩 중...</div>
+      <div class="logout" onclick="handleLogout()">로그아웃</div>
     </div>
   </header>
+
   <div class="layout">
     <div class="sidebar">
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
@@ -41,12 +52,13 @@
     </div>
     <div class="main">
       <div class="input-row">
-        <input type="text" id="talkInput" class="input-box" placeholder="무슨 생각을 하고 계신가요?">
+        <input type="text" id="talkInput" class="input-box" placeholder="자유롭게 이야기를 나눠보세요.">
         <button id="talkBtn" class="btn-send">게시</button>
       </div>
       <div id="talkList" style="width: 100%; max-width: 600px;"></div>
     </div>
   </div>
+
   <script type="module">
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
@@ -56,10 +68,9 @@
     onAuthStateChanged(auth, async user => {
       if(!user) return location.href="login.html";
       const s = await getDoc(doc(db, "users", user.uid));
-      myInfo = s.data();
-      myInfo.uid = user.uid;
-      const roleName = myInfo.role === "admin" ? "관리자" : (myInfo.role === "teacher" ? "선생님" : "학생");
-      document.getElementById("hNick").innerHTML = `<span class="role-text role-${myInfo.role}">[${roleName}]</span> ${myInfo.currentBadge||''} ${myInfo.nickname}`;
+      myInfo = s.data(); myInfo.uid = user.uid;
+      const rName = myInfo.role === "admin" ? "관리자" : (myInfo.role === "teacher" ? "선생님" : "학생");
+      document.getElementById("hNick").innerHTML = `<span class="role-text role-${myInfo.role}">[${rName}]</span> ${myInfo.currentBadge||''} ${myInfo.nickname}`;
       document.getElementById("hPoints").innerText = (myInfo.points||0)+"P";
       loadTalks();
     });
@@ -74,8 +85,7 @@
     function loadTalks() {
       const q = query(collection(db, "talks"), orderBy("createdAt", "desc"));
       onSnapshot(q, snap => {
-        const list = document.getElementById("talkList");
-        list.innerHTML = "";
+        const list = document.getElementById("talkList"); list.innerHTML = "";
         snap.forEach(d => {
           const data = d.data();
           const canDelete = (myInfo.uid === data.uid || myInfo.role === "admin" || myInfo.role === "teacher");
@@ -83,12 +93,13 @@
             <div class="talk-card">
               <div class="talk-user">${data.badge} ${data.nickname}</div>
               ${canDelete ? `<div class="talk-delete" onclick="window.delTalk('${d.id}')">삭제</div>` : ""}
-              <div>${data.content}</div>
+              <div style="color: #334155;">${data.content}</div>
             </div>`;
         });
       });
     }
     window.delTalk = async id => { if(confirm("삭제하시겠습니까?")) await deleteDoc(doc(db, "talks", id)); };
+    window.handleLogout = () => { if(confirm("로그아웃 하시겠습니까?")) signOut(auth); };
   </script>
 </body>
 </html>
