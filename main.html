@@ -2,42 +2,72 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>求援</title>
+  <title>求援 - 메인</title>
   <style>
-    /* 배경 및 레이아웃 (기존 스타일 유지) */
-    body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
+    /* 1. 기본 스타일 및 애니메이션 */
+    body { 
+      margin: 0; 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); 
+      background-size: 400% 400%; 
+      animation: gradientMove 20s ease infinite; 
+      min-height: 100vh; 
+    }
     @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); }
-    .logo { font-size: 24px; font-weight: 700; color: #0f172a; }
+    
+    /* 2. 헤더 */
+    .header { 
+      height: 70px; padding: 0 40px; 
+      background: rgba(255, 255, 255, 0.6); 
+      backdrop-filter: blur(12px); 
+      display: flex; justify-content: space-between; align-items: center; 
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4); 
+    }
+    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; }
     .dot { color: #2563eb; }
     .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
     .points { color: #2563eb; font-weight: 600; }
-    .logout { cursor: pointer; padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); }
+    .logout { cursor: pointer; padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); transition: 0.2s; }
+    .logout:hover { background: rgba(255, 255, 255, 0.9); }
+
+    /* 3. 레이아웃 & 사이드바 */
     .layout { display: flex; min-height: calc(100vh - 70px); }
-    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
-    .menu-item { padding: 15px 20px; cursor: pointer; }
+    .sidebar { 
+      width: 220px; padding-top: 20px; 
+      background: rgba(255, 255, 255, 0.5); 
+      backdrop-filter: blur(12px); 
+      border-right: 1px solid rgba(255, 255, 255, 0.4); 
+    }
+    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; }
+    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
+
+    /* 4. 메인 콘텐츠 */
     .main { flex: 1; padding: 30px; }
-    .card { position: relative; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 16px; padding: 20px; margin-bottom: 18px; transition: transform 0.5s ease; }
-    .card-title { font-weight: bold; margin-bottom: 8px; }
-    .card-meta { font-size: 12px; color: gray; }
-    .question-delete { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; }
-    .accept-btn { background: #22c55e; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; margin-left: 10px; }
-    .answer-item { position: relative; margin-top: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.4); font-size: 13px; }
-    .accepted-answer { background: #d1fae5 !important; border: 1px solid #10b981; }
-    .answer-delete { background: #ef4444; color: white; border: none; border-radius: 6px; padding: 2px 6px; font-size: 11px; cursor: pointer; float: right; }
-    .input-box { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.5); padding: 10px 12px; outline: none; }
-    .btn-primary { padding: 10px 14px; border: none; border-radius: 12px; background-color: #2563eb; color: white; cursor: pointer; }
-    .answer-input-row { display: flex; gap: 8px; margin-top: 15px; }
-    .answer-input-row .input-box { flex: 1; }
-    .banner { background: rgba(37, 99, 235, 0.9); color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; }
-    .notice { background: rgba(255, 255, 255, 0.6); padding: 15px; border-radius: 16px; margin-bottom: 20px; }
-    .question-input-row { display: flex; gap: 8px; margin-bottom: 18px; }
-    .question-input-row #questionInput { flex: 1; }
+    .banner { 
+      background: rgba(37, 99, 235, 0.9); color: white; 
+      padding: 20px; border-radius: 16px; margin-bottom: 20px; 
+    }
+    .notice { 
+      background: rgba(255, 255, 255, 0.6); padding: 15px; 
+      border-radius: 16px; margin-bottom: 20px; 
+      border: 1px solid rgba(255, 255, 255, 0.4); 
+    }
+    .card { 
+      background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); 
+      border: 1px solid rgba(255, 255, 255, 0.4); 
+      border-radius: 16px; padding: 25px; 
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); 
+    }
+    .card-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    
+    .update-list p { margin: 12px 0; padding-bottom: 10px; border-bottom: 1px dashed rgba(0,0,0,0.05); }
+    .update-list b { color: #2563eb; margin-right: 10px; font-size: 0.9em; }
   </style>
 </head>
 <body>
+
   <header class="header">
-    <div class="logo">求援<span class="dot">.</span></div>
+    <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
     <div class="header-right">
       <div class="points">0P</div>
       <div class="nickname">불러오는 중...</div>
@@ -47,122 +77,66 @@
 
   <div class="layout">
     <div class="sidebar">
-      <div class="menu-item">📄 문답</div>
+      <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
       <div class="menu-item">👤 잡담</div>
       <div class="menu-item">💰 포인트 관리</div>
     </div>
+
     <div class="main">
-      <div class="banner">📢 *올라온 공지가 없소*</div>
-      <div class="notice"><b>공지</b><br>- 비속어 사용 금지<br>- 학번 공개 금지</div>
-      <div class="card question-input-row">
-        <input type="text" id="questionInput" placeholder="질문을 입력하세요" class="input-box">
-        <button id="submitQuestion" class="btn-primary">등록</button>
+      <div class="banner">📢 환영합니다! 구원(求援)의 최신 소식을 확인하세요.</div>
+      
+      <div class="notice">
+        <b>공지</b><br>
+        - 비속어 사용 금지<br>
+        - 학번 공개 금지
       </div>
-      <div id="questionList"></div>
+
+      <div class="card">
+        <div class="card-title">🚀 업데이트 내역</div>
+        <hr style="border: 0; height: 1px; background: rgba(0,0,0,0.1); margin: 15px 0;">
+        
+        <div class="update-list" style="line-height: 1.8;">
+          <p><b>[2024.05.22]</b> 질문 답변(Q&A) 페이지 분리 및 메뉴 최적화</p>
+          <p><b>[2024.05.20]</b> 답변 채택 기능 및 포인트 시스템 연동 테스트</p>
+          <p><b>[2024.05.15]</b> 실시간 로그인 상태 유지 기능 추가</p>
+          <p><b>[2024.05.10]</b> 베타 서비스 런칭</p>
+        </div>
+      </div>
     </div>
   </div>
 
   <script type="module">
-    // 위에서 최적화한 스크립트 내용
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const nicknameEl = document.querySelector(".nickname");
     const pointsEl = document.querySelector(".points");
-    const questionList = document.getElementById("questionList");
-    const input = document.getElementById("questionInput");
+    const logoutBtn = document.querySelector(".logout");
 
+    // 1. 유저 상태 확인
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "/sbh_qna/login.html";
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) {
-        nicknameEl.innerText = snap.data().nickname;
-        pointsEl.innerText = (snap.data().points || 0) + "P";
+      if (!user) {
+        // 로그인 안 되어 있으면 로그인 페이지로
+        window.location.href = "/sbh_qna/login.html";
+      } else {
+        // 유저 정보 가져와서 상단 헤더 업데이트
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          nicknameEl.innerText = data.nickname;
+          pointsEl.innerText = (data.points || 0) + "P";
+        }
       }
-      loadQuestions();
     });
 
-    document.getElementById("submitQuestion").onclick = async () => {
-      const title = input.value.trim();
-      if (!title) return alert("질문을 입력하세요");
-      await addDoc(collection(db, "questions"), {
-        title, nickname: nicknameEl.innerText, uid: auth.currentUser.uid, answerCount: 0, acceptedAnswerId: null
-      });
-      input.value = "";
-      loadQuestions();
-    };
-
-    async function loadQuestions() {
-      const snapshot = await getDocs(collection(db, "questions"));
-      questionList.innerHTML = "";
-      for (const qDoc of snapshot.docs) {
-        const qData = qDoc.data();
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          ${auth.currentUser.uid === qData.uid ? `<button class="question-delete">삭제</button>` : ''}
-          <div class="card-title">${qData.title}</div>
-          <div class="card-meta">작성자: ${qData.nickname} | 답변 ${qData.answerCount || 0}개</div>
-          <div class="answers-container"></div>
-          <div class="answer-input-row">
-            <input type="text" placeholder="답변을 입력하세요" class="input-box answer-input">
-            <button class="btn-primary add-answer-btn">답변</button>
-          </div>
-        `;
-
-        if (card.querySelector(".question-delete")) {
-          card.querySelector(".question-delete").onclick = async () => {
-            if(confirm("삭제하시겠습니까?")) { await deleteDoc(doc(db, "questions", qDoc.id)); loadQuestions(); }
-          };
-        }
-
-        const container = card.querySelector(".answers-container");
-        await loadAnswers(qDoc.id, qData, container);
-
-        card.querySelector(".add-answer-btn").onclick = async () => {
-          const aInput = card.querySelector(".answer-input");
-          if (!aInput.value.trim()) return alert("내용을 입력하세요");
-          await addDoc(collection(db, "questions", qDoc.id, "answers"), {
-            content: aInput.value, nickname: nicknameEl.innerText, uid: auth.currentUser.uid
-          });
-          await updateDoc(doc(db, "questions", qDoc.id), { answerCount: increment(1) });
-          loadQuestions();
-        };
-        questionList.appendChild(card);
+    // 2. 로그아웃 버튼
+    logoutBtn.onclick = async () => {
+      if(confirm("로그아웃 하시겠습니까?")) {
+        await signOut(auth);
+        window.location.href = "/sbh_qna/login.html";
       }
-    }
-
-    async function loadAnswers(qId, qData, container) {
-      const snap = await getDocs(collection(db, "questions", qId, "answers"));
-      snap.forEach(aDoc => {
-        const aData = aDoc.data();
-        const isAccepted = qData.acceptedAnswerId === aDoc.id;
-        const item = document.createElement("div");
-        item.className = `answer-item ${isAccepted ? 'accepted-answer' : ''}`;
-        item.innerHTML = `
-          ↳ ${aData.nickname} : ${aData.content}
-          ${auth.currentUser.uid === qData.uid && !qData.acceptedAnswerId ? `<button class="accept-btn">채택</button>` : ''}
-          ${auth.currentUser.uid === aData.uid ? `<button class="answer-delete">삭제</button>` : ''}
-        `;
-        if (item.querySelector(".accept-btn")) {
-          item.querySelector(".accept-btn").onclick = async () => {
-            await updateDoc(doc(db, "questions", qId), { acceptedAnswerId: aDoc.id });
-            loadQuestions();
-          };
-        }
-        if (item.querySelector(".answer-delete")) {
-          item.querySelector(".answer-delete").onclick = async () => {
-            await deleteDoc(doc(db, "questions", qId, "answers", aDoc.id));
-            await updateDoc(doc(db, "questions", qId), { answerCount: increment(-1) });
-            loadQuestions();
-          };
-        }
-        container.appendChild(item);
-      });
-    }
-
-    document.querySelector(".logout").onclick = async () => { await signOut(auth); window.location.href = "/sbh_qna/login.html"; };
+    };
   </script>
 </body>
 </html>
