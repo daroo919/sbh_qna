@@ -19,57 +19,37 @@
     .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
     .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
 
-    /* 글쓰기 카드 */
     .write-card { width: 100%; max-width: 600px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; box-sizing: border-box; }
     .talk-input { width: 100%; border: none; resize: none; outline: none; font-family: inherit; font-size: 16px; min-height: 80px; margin-bottom: 10px; color: #334155; }
-    .talk-input::placeholder { color: #94a3b8; }
-    .post-btn { float: right; padding: 8px 20px; border: none; border-radius: 25px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    .post-btn:hover { background: #1d4ed8; }
+    .post-btn { float: right; padding: 8px 20px; border: none; border-radius: 25px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
 
-    /* 게시글 카드 및 플로트 효과 */
-    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.4); position: relative; box-sizing: border-box; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.4); position: relative; box-sizing: border-box; transition: 0.3s; }
     .talk-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-    
-    /* 닉네임 왼쪽 위 배치 */
     .talk-user { font-weight: bold; font-size: 14px; color: #1e293b; margin-bottom: 15px; display: block; text-align: left; }
-    
-    /* 삭제 버튼 오른쪽 위 배치 */
-    .talk-delete { position: absolute; top: 20px; right: 20px; color: #ef4444; cursor: pointer; font-size: 11px; font-weight: bold; opacity: 0.5; transition: 0.2s; }
-    .talk-delete:hover { opacity: 1; text-decoration: underline; }
-
+    .talk-delete { position: absolute; top: 20px; right: 20px; color: #ef4444; cursor: pointer; font-size: 11px; font-weight: bold; opacity: 0.5; }
     .talk-content { font-size: 15px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 15px; color: #334155; }
     .talk-footer { font-size: 11px; color: #94a3b8; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; text-align: right; }
 
-    /* 댓글 구역 */
     .comment-section { margin-top: 15px; background: rgba(0,0,0,0.03); border-radius: 12px; padding: 12px; }
-    .comment-item { font-size: 13px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; }
-    .comment-text { color: #334155; line-height: 1.4; }
+    .comment-item { font-size: 13px; margin-bottom: 8px; display: flex; justify-content: space-between; }
     .comment-user { font-weight: bold; color: #1e293b; margin-right: 6px; }
-    .comment-del-btn { color: #ef4444; cursor: pointer; font-size: 10px; margin-left: 8px; opacity: 0.6; }
-    
     .comment-input-row { display: flex; gap: 8px; margin-top: 10px; }
     .comment-input { flex: 1; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 12px; font-size: 13px; outline: none; font-family: inherit; }
     .comment-btn { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 0 12px; font-size: 12px; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
-
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
-    <div class="header-right">
-      <div class="points">0P</div>
-      <div class="nickname">불러오는 중...</div>
-      <div class="logout">로그아웃</div>
-    </div>
+    <div class="header-right"><div class="points">0P</div><div class="nickname">불러오는 중...</div><div class="logout">로그아웃</div></div>
   </header>
 
   <div class="layout">
     <div class="sidebar">
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
       <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
-      <div class="menu-item">💰 포인트 관리</div>
+      <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
     </div>
-
     <div class="main">
       <div class="write-card">
         <textarea id="talkInput" class="talk-input" placeholder="무슨 생각을 하고 계신가요?"></textarea>
@@ -91,9 +71,10 @@
       if (!user) return window.location.href = "login.html";
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) {
-        currentNickname = snap.data().nickname;
-        nicknameEl.innerText = currentNickname;
-        pointsEl.innerText = (snap.data().points || 0) + "P";
+        const data = snap.data();
+        currentNickname = data.nickname;
+        nicknameEl.innerText = ((data.currentBadge || "") + " " + currentNickname).trim();
+        pointsEl.innerText = (data.points || 0) + "P";
       }
       loadTalks();
     });
@@ -107,46 +88,47 @@
 
     function loadTalks() {
       const q = query(collection(db, "talks"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snapshot) => {
+      onSnapshot(q, async (snapshot) => {
         talkList.innerHTML = "";
-        snapshot.forEach((docSnap) => {
+        for (const docSnap of snapshot.docs) {
           const talkId = docSnap.id, data = docSnap.data();
+          const userSnap = await getDoc(doc(db, "users", data.uid));
+          const badge = (userSnap.exists() && userSnap.data().currentBadge) ? userSnap.data().currentBadge : "";
+          
           const card = document.createElement("div");
           card.className = "talk-card";
           card.innerHTML = `
-            <div class="talk-user">${data.nickname}</div>
+            <div class="talk-user">${badge} ${data.nickname}</div>
             ${auth.currentUser.uid === data.uid ? `<div class="talk-delete" onclick="deleteTalk('${talkId}')">삭제</div>` : ''}
             <div class="talk-content">${data.content}</div>
             <div class="talk-footer"><span>${new Date(data.createdAt).toLocaleString()}</span></div>
-            <div class="comment-section">
-              <div id="comments-${talkId}"></div>
+            <div class="comment-section"><div id="comments-${talkId}"></div>
               <div class="comment-input-row">
-                <input type="text" class="comment-input" placeholder="댓글을 입력하세요..." id="commentInput-${talkId}">
+                <input type="text" class="comment-input" placeholder="댓글..." id="commentInput-${talkId}">
                 <button class="comment-btn" onclick="addComment('${talkId}')">등록</button>
               </div>
-            </div>
-          `;
+            </div>`;
           talkList.appendChild(card);
           loadComments(talkId);
-        });
+        }
       });
     }
 
     function loadComments(talkId) {
       const commQ = query(collection(db, "talks", talkId, "comments"), orderBy("createdAt", "asc"));
       const commentDiv = document.getElementById(`comments-${talkId}`);
-      onSnapshot(commQ, (snap) => {
+      onSnapshot(commQ, async (snap) => {
         commentDiv.innerHTML = "";
-        snap.forEach((cDoc) => {
+        for (const cDoc of snap.docs) {
           const cData = cDoc.data();
+          const cUserSnap = await getDoc(doc(db, "users", cData.uid));
+          const cBadge = (cUserSnap.exists() && cUserSnap.data().currentBadge) ? cUserSnap.data().currentBadge : "";
           const item = document.createElement("div");
           item.className = "comment-item";
-          item.innerHTML = `
-            <div class="comment-text"><span class="comment-user">${cData.nickname}</span>${cData.content}</div>
-            ${auth.currentUser.uid === cData.uid ? `<span class="comment-del-btn" onclick="deleteComment('${talkId}', '${cDoc.id}')">✕</span>` : ''}
-          `;
+          item.innerHTML = `<div><span class="comment-user">${cBadge} ${cData.nickname}</span>${cData.content}</div>
+            ${auth.currentUser.uid === cData.uid ? `<span style="color:#ef4444;cursor:pointer;font-size:10px;" onclick="deleteComment('${talkId}', '${cDoc.id}')">✕</span>` : ''}`;
           commentDiv.appendChild(item);
-        });
+        }
       });
     }
 
@@ -157,8 +139,8 @@
       input.value = "";
     };
 
-    window.deleteTalk = async (id) => { if(confirm("이 글을 삭제할까요?")) await deleteDoc(doc(db, "talks", id)); };
-    window.deleteComment = async (talkId, commentId) => { if(confirm("댓글을 삭제할까요?")) await deleteDoc(doc(db, "talks", talkId, "comments", commentId)); };
+    window.deleteTalk = async (id) => { if(confirm("삭제할까요?")) await deleteDoc(doc(db, "talks", id)); };
+    window.deleteComment = async (tId, cId) => { if(confirm("삭제할까요?")) await deleteDoc(doc(db, "talks", tId, "comments", cId)); };
     document.querySelector(".logout").onclick = () => signOut(auth);
   </script>
 </body>
