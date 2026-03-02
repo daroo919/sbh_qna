@@ -6,8 +6,7 @@
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
     @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); }
-    /* 로고 클릭 스타일 */
+    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
     .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; user-select: none; }
     .dot { color: #2563eb; }
     .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
@@ -39,7 +38,7 @@
   <div class="layout">
     <div class="sidebar">
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
-      <div class="menu-item">👤 잡담</div>
+      <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
       <div class="menu-item">💰 포인트 관리</div>
     </div>
     <div class="main">
@@ -49,10 +48,9 @@
         <div class="card-title">🚀 업데이트 내역</div>
         <hr style="border: 0; height: 1px; background: rgba(0,0,0,0.1); margin: 15px 0;">
         <div class="update-list">
-          <p><b>[2024.05.22]</b> 질문 답변(Q&A) 페이지 분리 및 메뉴 최적화</p>
-          <p><b>[2024.05.20]</b> 답변 채택 기능 및 포인트 시스템 연동 테스트</p>
-          <p><b>[2024.05.15]</b> 실시간 로그인 상태 유지 기능 추가</p>
-          <p><b>[2024.05.10]</b> 베타 서비스 런칭</p>
+          <p><b>[2026.03.02]</b> 잡담(talk.html) 기능 및 채택 포인트 시스템 추가</p>
+          <p><b>[2026.02.28]</b> 문답 페이지 분리 및 UI 디자인 고도화</p>
+          <p><b>[2026.02.15]</b> 베타 서비스 런칭</p>
         </div>
       </div>
     </div>
@@ -63,14 +61,14 @@
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
     const nicknameEl = document.querySelector(".nickname"), pointsEl = document.querySelector(".points"), logoutBtn = document.querySelector(".logout");
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "/sbh_qna/login.html";
+      if (!user) return window.location.href = "login.html";
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) {
         nicknameEl.innerText = snap.data().nickname;
         pointsEl.innerText = (snap.data().points || 0) + "P";
       }
     });
-    logoutBtn.onclick = async () => { if(confirm("로그아웃 하시겠습니까?")) { await signOut(auth); window.location.href = "/sbh_qna/login.html"; } };
+    logoutBtn.onclick = async () => { if(confirm("로그아웃 하시겠습니까?")) { await signOut(auth); window.location.href = "login.html"; } };
   </script>
 </body>
 </html>
