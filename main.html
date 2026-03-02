@@ -11,8 +11,11 @@
     .dot { color: #2563eb; }
     .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
     .points { color: #2563eb; font-weight: 600; }
-    .logout { cursor: pointer; padding: 6px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); transition: 0.2s; font-weight: bold; }
-    .logout:hover { background: #fee2e2; color: #ef4444; }
+    
+    /* 로그아웃 버튼 빨간색 수정 */
+    .logout { cursor: pointer; padding: 8px 15px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; font-weight: bold; transition: 0.3s; }
+    .logout:hover { background: #ef4444; color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); }
+
     .layout { display: flex; min-height: calc(100vh - 70px); }
     .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
     .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; }
@@ -34,7 +37,7 @@
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
     <div class="header-right">
       <div class="points" id="hPoints">0P</div>
-      <div class="nickname" id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩...</div>
+      <div class="nickname" id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩 중...</div>
       <div class="logout" id="logoutBtn">로그아웃</div>
     </div>
   </header>
@@ -50,8 +53,8 @@
       <div class="notice"><b>📌 필독 공지사항</b><br><span style="font-size: 14px; color: #475569;">- 비속어 사용 금지 / 학번 공개 금지</span></div>
       <div class="card">
         <h3>🚀 최근 업데이트</h3>
-        <p><b class="date-blue">[2026.03.02]</b> 계급 권한 시스템 도입</p>
-        <p><b class="date-blue">[2026.03.02]</b> 전 페이지 플로트 효과 및 유리 효과 적용</p>
+        <p><b class="date-blue">[2026.03.02]</b> 전 페이지 로그아웃 버튼 시각화 개선</p>
+        <p><b class="date-blue">[2026.03.02]</b> 공지 및 카드 플로트 효과 최적화</p>
       </div>
     </div>
   </div>
@@ -70,7 +73,9 @@
         document.getElementById("hPoints").innerText = (d.points || 0) + "P";
       }
     });
-    document.getElementById("logoutBtn").onclick = () => { if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); };
+    document.getElementById("logoutBtn").onclick = () => { 
+      if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); 
+    };
   </script>
 </body>
 </html>
