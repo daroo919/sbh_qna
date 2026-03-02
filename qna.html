@@ -27,7 +27,6 @@
     .answer-item { position: relative; margin-top: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.4); font-size: 13px; }
     .accepted-answer { background: #d1fae5 !important; border: 1px solid #10b981; }
     .input-box { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.5); padding: 10px 12px; outline: none; }
-    .input-box:disabled { cursor: not-allowed; opacity: 0.6; }
     .btn-primary { padding: 10px 14px; border: none; border-radius: 12px; background-color: #2563eb; color: white; cursor: pointer; }
     .answer-input-row { display: flex; gap: 8px; margin-top: 15px; }
     .answer-input-row .input-box { flex: 1; }
@@ -44,7 +43,7 @@
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
     <div class="header-right">
       <div class="points">0P</div>
-      <div class="nickname" style="cursor:pointer" onclick="location.href='mypage.html'">불러오는 중...</div>
+      <div class="nickname" style="cursor:pointer" onclick="location.href='mypage.html'">로딩 중...</div>
       <div class="logout">로그아웃</div>
     </div>
   </header>
@@ -70,20 +69,19 @@
     import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const nicknameEl = document.querySelector(".nickname"), pointsEl = document.querySelector(".points"), questionList = document.getElementById("questionList"), input = document.getElementById("questionInput");
-    let myNickname = "";
+    let myNickname = "", userRole = "student";
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) { 
         const data = snap.data();
-        const role = data.role || "student";
+        userRole = data.role || "student";
         const badge = data.currentBadge || "";
         myNickname = data.nickname;
 
-        let roleName = "학생", roleClass = "role-student";
-        if(role === "admin") { roleName = "관리자"; roleClass = "role-admin"; }
-        if(role === "teacher") { roleName = "선생님"; roleClass = "role-teacher"; }
+        let roleName = userRole === "admin" ? "관리자" : (userRole === "teacher" ? "선생님" : "학생");
+        let roleClass = `role-${userRole}`;
 
         nicknameEl.innerHTML = `<span class="role-text ${roleClass}">[${roleName}]</span> ${badge} ${myNickname}`; 
         pointsEl.innerText = (data.points || 0) + "P"; 
@@ -94,14 +92,7 @@
     document.getElementById("submitQuestion").onclick = async () => {
       const title = input.value.trim();
       if (!title) return alert("질문을 입력하세요");
-      await addDoc(collection(db, "questions"), { 
-        title, 
-        nickname: myNickname, 
-        uid: auth.currentUser.uid, 
-        answerCount: 0, 
-        acceptedAnswerId: null,
-        createdAt: Date.now()
-      });
+      await addDoc(collection(db, "questions"), { title, nickname: myNickname, uid: auth.currentUser.uid, answerCount: 0, acceptedAnswerId: null, createdAt: Date.now() });
       input.value = "";
     };
 
@@ -111,16 +102,15 @@
         questionList.innerHTML = "";
         for (const qDoc of snapshot.docs) {
           const qData = qDoc.data(), qId = qDoc.id, isMyQ = auth.currentUser.uid === qData.uid, isDone = qData.acceptedAnswerId !== null;
-          const userSnap = await getDoc(doc(db, "users", qData.uid));
-          const qBadge = (userSnap.exists() && userSnap.data().currentBadge) ? userSnap.data().currentBadge : "";
+          const canManage = (userRole === "admin" || userRole === "teacher");
 
           const card = document.createElement("div");
           card.className = `card ${isDone ? 'completed' : ''}`;
           card.innerHTML = `
-            ${isMyQ ? `<button class="question-delete">삭제</button>` : ''}
+            ${(isMyQ || canManage) ? `<button class="question-delete">삭제</button>` : ''}
             ${isDone ? `<span class="badge">해결됨</span>` : ''}
             <div class="card-title">${qData.title}</div>
-            <div class="card-meta">작성자: ${qBadge} ${qData.nickname} | 답변 ${qData.answerCount || 0}개</div>
+            <div class="card-meta">작성자: ${qData.nickname} | 답변 ${qData.answerCount || 0}개</div>
             <div class="answers-container"></div>
             <div class="answer-input-row">
               <input type="text" placeholder="${isDone ? '채택 완료됨' : (isMyQ ? '내 질문 답변 불가' : '답변 입력')}" class="input-box answer-input" ${isDone || isMyQ ? 'disabled' : ''}>
@@ -128,7 +118,10 @@
             </div>
           `;
           
-          if (isMyQ) card.querySelector(".question-delete").onclick = async () => { if(confirm("삭제?")) await deleteDoc(doc(db, "questions", qId)); };
+          if (card.querySelector(".question-delete")) {
+            card.querySelector(".question-delete").onclick = async () => { if(confirm("정말 삭제하시겠습니까?")) await deleteDoc(doc(db, "questions", qId)); };
+          }
+          
           const container = card.querySelector(".answers-container");
           await loadAnswers(qId, qData, container);
 
@@ -136,12 +129,7 @@
             card.querySelector(".add-answer-btn").onclick = async () => {
               const aInput = card.querySelector(".answer-input");
               if (!aInput.value.trim()) return;
-              await addDoc(collection(db, "questions", qId, "answers"), { 
-                content: aInput.value, 
-                nickname: myNickname, 
-                uid: auth.currentUser.uid,
-                createdAt: Date.now()
-              });
+              await addDoc(collection(db, "questions", qId, "answers"), { content: aInput.value, nickname: myNickname, uid: auth.currentUser.uid, createdAt: Date.now() });
               await updateDoc(doc(db, "questions", qId), { answerCount: increment(1) });
               aInput.value = "";
             };
@@ -156,30 +144,24 @@
       container.innerHTML = "";
       for (const aDoc of snap.docs) {
         const aData = aDoc.data(), aId = aDoc.id, isAcc = qData.acceptedAnswerId === aId;
-        const userSnap = await getDoc(doc(db, "users", aData.uid));
-        const aBadge = (userSnap.exists() && userSnap.data().currentBadge) ? userSnap.data().currentBadge : "";
         const isMyAnswer = auth.currentUser.uid === aData.uid;
+        const canManageA = (userRole === "admin" || userRole === "teacher");
 
         const item = document.createElement("div");
         item.className = `answer-item ${isAcc ? 'accepted-answer' : ''}`;
         item.innerHTML = `
-          ↳ ${aBadge} ${aData.nickname}: ${aData.content} 
+          ↳ ${aData.nickname}: ${aData.content} 
           ${auth.currentUser.uid === qData.uid && !qData.acceptedAnswerId ? `<button class="accept-btn">채택</button>` : ''}
-          ${isMyAnswer && !isAcc ? `<button class="ans-del" style="float:right; background:#ef4444; color:white; border:none; border-radius:6px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button>` : ''}
+          ${(isMyAnswer || canManageA) && !isAcc ? `<button class="ans-del" style="float:right; background:#ef4444; color:white; border:none; border-radius:6px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button>` : ''}
         `;
+        if (item.querySelector(".ans-del")) {
+          item.querySelector(".ans-del").onclick = async () => { if(confirm("삭제?")) { await deleteDoc(doc(db, "questions", qId, "answers", aId)); await updateDoc(doc(db, "questions", qId), { answerCount: increment(-1) }); } };
+        }
         if (item.querySelector(".accept-btn")) {
           item.querySelector(".accept-btn").onclick = async () => {
             if(confirm("채택 시 10P가 지급됩니다.")) {
               await updateDoc(doc(db, "questions", qId), { acceptedAnswerId: aId });
               await updateDoc(doc(db, "users", aData.uid), { points: increment(10) });
-            }
-          };
-        }
-        if (item.querySelector(".ans-del")) {
-          item.querySelector(".ans-del").onclick = async () => {
-            if(confirm("삭제?")) {
-              await deleteDoc(doc(db, "questions", qId, "answers", aId));
-              await updateDoc(doc(db, "questions", qId), { answerCount: increment(-1) });
             }
           };
         }
