@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>求援 - 문답</title>
   <style>
+    /* 기본 배경 및 레이아웃 */
     body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
     @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
@@ -21,18 +22,35 @@
     .card.completed { background: rgba(209, 250, 229, 0.6); }
     .card-title { font-weight: bold; margin-bottom: 8px; }
     .card-meta { font-size: 12px; color: gray; }
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 5px; background: #10b981; color: white; }
+    .badge-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 5px; background: #10b981; color: white; }
     .question-delete { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; }
     .accept-btn { background: #22c55e; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; margin-left: 10px; }
     .answer-item { position: relative; margin-top: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.4); font-size: 13px; }
     .accepted-answer { background: #d1fae5 !important; border: 1px solid #10b981; }
     .input-box { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.5); padding: 10px 12px; outline: none; }
-    .input-box:disabled { cursor: not-allowed; opacity: 0.6; }
     .btn-primary { padding: 10px 14px; border: none; border-radius: 12px; background-color: #2563eb; color: white; cursor: pointer; }
-    .answer-input-row { display: flex; gap: 8px; margin-top: 15px; }
-    .answer-input-row .input-box { flex: 1; }
-    .question-input-row { display: flex; gap: 8px; margin-bottom: 18px; }
-    .question-input-row #questionInput { flex: 1; }
+
+    /* ------------------------------------------- */
+    /* 뱃지별 닉네임 특별 스타일 */
+    /* ------------------------------------------- */
+    .user-nickname { display: inline-block; font-weight: bold; }
+
+    /* [지존] 뱃지: 닉네임 양옆에 반짝이는 별 */
+    .nick-지존::before, .nick-지존::after { content: "⭐"; font-size: 10px; margin: 0 4px; animation: twinkle 1s infinite alternate; }
+    @keyframes twinkle { from { opacity: 0.4; } to { opacity: 1; } }
+
+    /* [星] 뱃지: 흑백 그라데이션 효과 */
+    .nick-星 {
+      background: linear-gradient(to right, #000000, #64748b, #000000);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 1px rgba(255,255,255,0.5);
+    }
+
+    /* 추가 예시: [火] 뱃지 (붉은 불꽃 느낌) */
+    .nick-火 { color: #ef4444; text-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
+    /* ------------------------------------------- */
+
   </style>
 </head>
 <body>
@@ -44,6 +62,7 @@
       <div class="logout">로그아웃</div>
     </div>
   </header>
+
   <div class="layout">
     <div class="sidebar">
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
@@ -51,8 +70,8 @@
       <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
     </div>
     <div class="main">
-      <div class="card question-input-row">
-        <input type="text" id="questionInput" placeholder="질문을 입력하세요" class="input-box">
+      <div class="card" style="display:flex; gap:8px;">
+        <input type="text" id="questionInput" placeholder="질문을 입력하세요" class="input-box" style="flex:1">
         <button id="submitQuestion" class="btn-primary">등록</button>
       </div>
       <div id="questionList"></div>
@@ -65,15 +84,16 @@
     import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const nicknameEl = document.querySelector(".nickname"), pointsEl = document.querySelector(".points"), questionList = document.getElementById("questionList"), input = document.getElementById("questionInput");
-    let myBadge = ""; 
+    let myCurrentBadge = ""; 
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
       const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) { 
-        myBadge = snap.data().currentBadge || "";
-        nicknameEl.innerText = (myBadge + " " + snap.data().nickname).trim(); 
-        pointsEl.innerText = (snap.data().points || 0) + "P"; 
+      if (snap.exists()) {
+        const data = snap.data();
+        myCurrentBadge = data.currentBadge || "";
+        nicknameEl.innerText = (myCurrentBadge + " " + data.nickname).trim(); 
+        pointsEl.innerText = (data.points || 0) + "P"; 
       }
       loadQuestions();
     });
@@ -81,13 +101,9 @@
     document.getElementById("submitQuestion").onclick = async () => {
       const title = input.value.trim();
       if (!title) return alert("질문을 입력하세요");
+      const pureNick = nicknameEl.innerText.replace(myCurrentBadge, "").trim();
       await addDoc(collection(db, "questions"), { 
-        title, 
-        nickname: nicknameEl.innerText.replace(myBadge, "").trim(), 
-        uid: auth.currentUser.uid, 
-        answerCount: 0, 
-        acceptedAnswerId: null,
-        createdAt: Date.now()
+        title, nickname: pureNick, uid: auth.currentUser.uid, answerCount: 0, acceptedAnswerId: null, createdAt: Date.now() 
       });
       input.value = "";
     };
@@ -98,38 +114,40 @@
         questionList.innerHTML = "";
         for (const qDoc of snapshot.docs) {
           const qData = qDoc.data(), qId = qDoc.id, isMyQ = auth.currentUser.uid === qData.uid, isDone = qData.acceptedAnswerId !== null;
-          
           const userSnap = await getDoc(doc(db, "users", qData.uid));
           const qBadge = (userSnap.exists() && userSnap.data().currentBadge) ? userSnap.data().currentBadge : "";
+          const qClass = qBadge ? `nick-${qBadge}` : "";
 
           const card = document.createElement("div");
           card.className = `card ${isDone ? 'completed' : ''}`;
           card.innerHTML = `
             ${isMyQ ? `<button class="question-delete">삭제</button>` : ''}
-            ${isDone ? `<span class="badge">해결됨</span>` : ''}
+            ${isDone ? `<span class="badge-tag">해결됨</span>` : ''}
             <div class="card-title">${qData.title}</div>
-            <div class="card-meta">작성자: ${qBadge} ${qData.nickname} | 답변 ${qData.answerCount || 0}개</div>
-            <div class="answers-container"></div>
-            <div class="answer-input-row">
-              <input type="text" placeholder="${isDone ? '채택 완료됨' : (isMyQ ? '내 질문 답변 불가' : '답변 입력')}" class="input-box answer-input" ${isDone || isMyQ ? 'disabled' : ''}>
-              <button class="btn-primary add-answer-btn" ${isDone || isMyQ ? 'style="display:none"' : ''}>답변</button>
+            <div class="card-meta">
+              작성자: <span style="color:#2563eb; font-weight:bold;">${qBadge}</span> 
+              <span class="user-nickname ${qClass}">${qData.nickname}</span> 
+              | 답변 ${qData.answerCount || 0}개
             </div>
-          `;
-          
+            <div class="answers-container" id="ans-cont-${qId}"></div>
+            <div style="display:flex; gap:8px; margin-top:15px;">
+              <input type="text" placeholder="${isDone ? '채택 완료됨' : (isMyQ ? '내 질문 답변 불가' : '답변 입력')}" class="input-box a-input" style="flex:1" ${isDone || isMyQ ? 'disabled' : ''}>
+              <button class="btn-primary a-btn" ${isDone || isMyQ ? 'style="display:none"' : ''}>답변</button>
+            </div>`;
+
           if (isMyQ) card.querySelector(".question-delete").onclick = async () => { if(confirm("삭제?")) await deleteDoc(doc(db, "questions", qId)); };
           
           const container = card.querySelector(".answers-container");
           await loadAnswers(qId, qData, container);
 
-          if (!isDone && !isMyQ) {
-            card.querySelector(".add-answer-btn").onclick = async () => {
-              const aInput = card.querySelector(".answer-input");
+          const aBtn = card.querySelector(".a-btn");
+          if (aBtn) {
+            aBtn.onclick = async () => {
+              const aInput = card.querySelector(".a-input");
               if (!aInput.value.trim()) return;
+              const pureNick = nicknameEl.innerText.replace(myCurrentBadge, "").trim();
               await addDoc(collection(db, "questions", qId, "answers"), { 
-                content: aInput.value, 
-                nickname: nicknameEl.innerText.replace(myBadge, "").trim(), 
-                uid: auth.currentUser.uid,
-                createdAt: Date.now()
+                content: aInput.value, nickname: pureNick, uid: auth.currentUser.uid, createdAt: Date.now() 
               });
               await updateDoc(doc(db, "questions", qId), { answerCount: increment(1) });
               aInput.value = "";
@@ -145,16 +163,17 @@
       container.innerHTML = "";
       for (const aDoc of snap.docs) {
         const aData = aDoc.data(), aId = aDoc.id, isAcc = qData.acceptedAnswerId === aId;
-        const userSnap = await getDoc(doc(db, "users", aData.uid));
-        const aBadge = (userSnap.exists() && userSnap.data().currentBadge) ? userSnap.data().currentBadge : "";
-        const isMyAnswer = auth.currentUser.uid === aData.uid;
+        const uSnap = await getDoc(doc(db, "users", aData.uid));
+        const aBadge = (uSnap.exists() && uSnap.data().currentBadge) ? uSnap.data().currentBadge : "";
+        const aClass = aBadge ? `nick-${aBadge}` : "";
 
         const item = document.createElement("div");
         item.className = `answer-item ${isAcc ? 'accepted-answer' : ''}`;
         item.innerHTML = `
-          ↳ ${aBadge} ${aData.nickname}: ${aData.content} 
+          ↳ <span style="color:#2563eb; font-weight:bold;">${aBadge}</span> 
+          <span class="user-nickname ${aClass}">${aData.nickname}</span>: ${aData.content} 
           ${auth.currentUser.uid === qData.uid && !qData.acceptedAnswerId ? `<button class="accept-btn">채택</button>` : ''}
-          ${isMyAnswer && !isAcc ? `<button class="ans-del" style="float:right; background:#ef4444; color:white; border:none; border-radius:6px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button>` : ''}
+          ${auth.currentUser.uid === aData.uid && !isAcc ? `<button class="ans-del" style="float:right; background:#ef4444; color:white; border:none; border-radius:6px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button>` : ''}
         `;
         
         if (item.querySelector(".accept-btn")) {
@@ -165,7 +184,6 @@
             }
           };
         }
-
         if (item.querySelector(".ans-del")) {
           item.querySelector(".ans-del").onclick = async () => {
             if(confirm("삭제?")) {
