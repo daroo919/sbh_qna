@@ -26,6 +26,7 @@
     .accepted-answer { background: #d1fae5 !important; border: 1px solid #10b981; }
     .answer-delete { background: #ef4444; color: white; border: none; border-radius: 6px; padding: 2px 6px; font-size: 11px; cursor: pointer; float: right; }
     .input-box { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.5); padding: 10px 12px; outline: none; }
+    .input-box:disabled { background: rgba(200, 200, 200, 0.2); cursor: not-allowed; }
     .btn-primary { padding: 10px 14px; border: none; border-radius: 12px; background-color: #2563eb; color: white; cursor: pointer; }
     .answer-input-row { display: flex; gap: 8px; margin-top: 15px; }
     .answer-input-row .input-box { flex: 1; }
@@ -56,61 +57,88 @@
       <div id="questionList"></div>
     </div>
   </div>
+
   <script type="module">
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-    const nicknameEl = document.querySelector(".nickname"), pointsEl = document.querySelector(".points"), questionList = document.getElementById("questionList"), input = document.getElementById("questionInput");
-    
+
+    const nicknameEl = document.querySelector(".nickname"), 
+          pointsEl = document.querySelector(".points"), 
+          questionList = document.getElementById("questionList"), 
+          input = document.getElementById("questionInput");
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "/sbh_qna/login.html";
       const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) { nicknameEl.innerText = snap.data().nickname; pointsEl.innerText = (snap.data().points || 0) + "P"; }
+      if (snap.exists()) { 
+        nicknameEl.innerText = snap.data().nickname; 
+        pointsEl.innerText = (snap.data().points || 0) + "P"; 
+      }
       loadQuestions();
     });
 
     document.getElementById("submitQuestion").onclick = async () => {
       const title = input.value.trim();
       if (!title) return alert("질문을 입력하세요");
-      await addDoc(collection(db, "questions"), { title, nickname: nicknameEl.innerText, uid: auth.currentUser.uid, answerCount: 0, acceptedAnswerId: null });
-      input.value = ""; loadQuestions();
+      try {
+        await addDoc(collection(db, "questions"), { 
+          title, 
+          nickname: nicknameEl.innerText, 
+          uid: auth.currentUser.uid, 
+          answerCount: 0, 
+          acceptedAnswerId: null 
+        });
+        input.value = ""; 
+        loadQuestions();
+      } catch(e) { console.error(e); alert("등록 실패!"); }
     };
 
     async function loadQuestions() {
       const snapshot = await getDocs(collection(db, "questions"));
       questionList.innerHTML = "";
+      
       for (const qDoc of snapshot.docs) {
         const qData = qDoc.data();
+        const qId = qDoc.id; // 질문 ID 저장
+        const isMyQuestion = auth.currentUser.uid === qData.uid;
+
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
-          ${auth.currentUser.uid === qData.uid ? `<button class="question-delete">삭제</button>` : ''}
+          ${isMyQuestion ? `<button class="question-delete">삭제</button>` : ''}
           <div class="card-title">${qData.title}</div>
           <div class="card-meta">작성자: ${qData.nickname} | 답변 ${qData.answerCount || 0}개</div>
           <div class="answers-container"></div>
           <div class="answer-input-row">
-            <input type="text" placeholder="${auth.currentUser.uid === qData.uid ? '자신의 질문에는 답변할 수 없습니다' : '답변을 입력하세요'}" 
-                   class="input-box answer-input" ${auth.currentUser.uid === qData.uid ? 'disabled' : ''}>
-            <button class="btn-primary add-answer-btn" ${auth.currentUser.uid === qData.uid ? 'style="display:none;"' : ''}>답변</button>
+            <input type="text" 
+                   placeholder="${isMyQuestion ? '자신의 질문에는 답변할 수 없습니다' : '답변을 입력하세요'}" 
+                   class="input-box answer-input" 
+                   ${isMyQuestion ? 'disabled' : ''}>
+            <button class="btn-primary add-answer-btn" ${isMyQuestion ? 'style="display:none;"' : ''}>답변</button>
           </div>
         `;
 
-        if (card.querySelector(".question-delete")) {
-          card.querySelector(".question-delete").onclick = async () => { if(confirm("삭제하시겠습니까?")) { await deleteDoc(doc(db, "questions", qDoc.id)); loadQuestions(); } };
+        if (isMyQuestion) {
+          card.querySelector(".question-delete").onclick = async () => { 
+            if(confirm("삭제하시겠습니까?")) { await deleteDoc(doc(db, "questions", qId)); loadQuestions(); } 
+          };
+        } else {
+          card.querySelector(".add-answer-btn").onclick = async () => {
+            const aInput = card.querySelector(".answer-input");
+            if (!aInput.value.trim()) return alert("내용을 입력하세요");
+            await addDoc(collection(db, "questions", qId, "answers"), { 
+              content: aInput.value, 
+              nickname: nicknameEl.innerText, 
+              uid: auth.currentUser.uid 
+            });
+            await updateDoc(doc(db, "questions", qId), { answerCount: increment(1) });
+            loadQuestions();
+          };
         }
 
         const container = card.querySelector(".answers-container");
         await loadAnswers(qId, qData, container);
-
-        // 답변 등록 시 다시 한 번 체크
-        card.querySelector(".add-answer-btn").onclick = async () => {
-          if (auth.currentUser.uid === qData.uid) return alert("자신의 질문에는 답변할 수 없습니다.");
-          const aInput = card.querySelector(".answer-input");
-          if (!aInput.value.trim()) return alert("내용을 입력하세요");
-          await addDoc(collection(db, "questions", qDoc.id, "answers"), { content: aInput.value, nickname: nicknameEl.innerText, uid: auth.currentUser.uid });
-          await updateDoc(doc(db, "questions", qDoc.id), { answerCount: increment(1) });
-          loadQuestions();
-        };
         questionList.appendChild(card);
       }
     }
@@ -118,18 +146,38 @@
     async function loadAnswers(qId, qData, container) {
       const snap = await getDocs(collection(db, "questions", qId, "answers"));
       snap.forEach(aDoc => {
-        const aData = aDoc.data(), isAccepted = qData.acceptedAnswerId === aDoc.id;
+        const aData = aDoc.data(), 
+              isAccepted = qData.acceptedAnswerId === aDoc.id;
         const item = document.createElement("div");
         item.className = `answer-item ${isAccepted ? 'accepted-answer' : ''}`;
-        item.innerHTML = `↳ ${aData.nickname} : ${aData.content} ${auth.currentUser.uid === qData.uid && !qData.acceptedAnswerId ? `<button class="accept-btn">채택</button>` : ''} ${auth.currentUser.uid === aData.uid ? `<button class="answer-delete">삭제</button>` : ''}`;
         
-        if (item.querySelector(".accept-btn")) item.querySelector(".accept-btn").onclick = async () => { await updateDoc(doc(db, "questions", qId), { acceptedAnswerId: aDoc.id }); loadQuestions(); };
-        if (item.querySelector(".answer-delete")) item.querySelector(".answer-delete").onclick = async () => { await deleteDoc(doc(db, "questions", qId, "answers", aDoc.id)); await updateDoc(doc(db, "questions", qId), { answerCount: increment(-1) }); loadQuestions(); };
+        item.innerHTML = `
+          ↳ ${aData.nickname} : ${aData.content} 
+          ${auth.currentUser.uid === qData.uid && !qData.acceptedAnswerId ? `<button class="accept-btn">채택</button>` : ''} 
+          ${auth.currentUser.uid === aData.uid ? `<button class="answer-delete">삭제</button>` : ''}
+        `;
+        
+        if (item.querySelector(".accept-btn")) {
+          item.querySelector(".accept-btn").onclick = async () => { 
+            await updateDoc(doc(db, "questions", qId), { acceptedAnswerId: aDoc.id }); 
+            loadQuestions(); 
+          };
+        }
+        if (item.querySelector(".answer-delete")) {
+          item.querySelector(".answer-delete").onclick = async () => { 
+            await deleteDoc(doc(db, "questions", qId, "answers", aDoc.id)); 
+            await updateDoc(doc(db, "questions", qId), { answerCount: increment(-1) }); 
+            loadQuestions(); 
+          };
+        }
         container.appendChild(item);
       });
     }
 
-    document.querySelector(".logout").onclick = async () => { await signOut(auth); window.location.href = "/sbh_qna/login.html"; };
+    document.querySelector(".logout").onclick = async () => { 
+      await signOut(auth); 
+      window.location.href = "/sbh_qna/login.html"; 
+    };
   </script>
 </body>
 </html>
