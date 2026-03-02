@@ -23,7 +23,7 @@
     .point-val { font-size: 48px; font-weight: 800; color: #2563eb; margin: 10px 0; }
     
     .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; width: 100%; max-width: 700px; }
-    .shop-item { background: white; border-radius: 20px; padding: 20px; text-align: center; transition: 0.3s; border: 1px solid #f1f5f9; position: relative;}
+    .shop-item { background: white; border-radius: 20px; padding: 20px; text-align: center; transition: 0.3s; border: 1px solid #f1f5f9; }
     .shop-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
     .badge-icon { font-size: 50px; margin-bottom: 10px; display: block; }
     .item-name { font-weight: bold; font-size: 16px; color: #1e293b; margin-bottom: 5px; }
@@ -37,7 +37,11 @@
 <body>
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
-    <div class="header-right"><div class="points">0P</div><div class="nickname">불러오는 중...</div><div class="logout">로그아웃</div></div>
+    <div class="header-right">
+      <div class="points">0P</div>
+      <div class="nickname">불러오는 중...</div>
+      <div class="logout">로그아웃</div>
+    </div>
   </header>
 
   <div class="layout">
@@ -50,7 +54,7 @@
       <div class="point-card">
         <div style="color: #64748b;">나의 보유 포인트</div>
         <div id="myPointDisplay" class="point-val">0P</div>
-        <div id="myBadges" style="margin-top:10px; font-size: 14px; color: #475569;"></div>
+        <div id="myBadges" style="margin-top:10px; font-size: 14px; color: #475569;">현재 장착: 없음</div>
       </div>
       <h3 style="color: #1e293b; width: 100%; max-width: 700px; margin-bottom: 20px;">한정판 뱃지 상점</h3>
       <div class="shop-grid" id="shopGrid"></div>
