@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>求援 - 문답</title>
   <style>
-    /* 기본 배경 및 레이아웃 */
     body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
     @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
@@ -20,37 +19,22 @@
     .main { flex: 1; padding: 30px; }
     .card { position: relative; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 16px; padding: 20px; margin-bottom: 18px; transition: 0.3s; }
     .card.completed { background: rgba(209, 250, 229, 0.6); }
-    .card-title { font-weight: bold; margin-bottom: 8px; }
-    .card-meta { font-size: 12px; color: gray; }
+    .card-title { font-weight: bold; margin-bottom: 8px; font-size: 18px; }
+    .card-meta { font-size: 12px; color: #64748b; margin-bottom: 10px; }
     .badge-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 5px; background: #10b981; color: white; }
-    .question-delete { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; }
+    .question-delete { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; }
     .accept-btn { background: #22c55e; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; margin-left: 10px; }
-    .answer-item { position: relative; margin-top: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.4); font-size: 13px; }
+    .answer-item { position: relative; margin-top: 8px; padding: 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.4); font-size: 13px; border: 1px solid rgba(255, 255, 255, 0.2); }
     .accepted-answer { background: #d1fae5 !important; border: 1px solid #10b981; }
-    .input-box { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.5); padding: 10px 12px; outline: none; }
-    .btn-primary { padding: 10px 14px; border: none; border-radius: 12px; background-color: #2563eb; color: white; cursor: pointer; }
+    .input-box { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.5); padding: 12px; outline: none; }
+    .btn-primary { padding: 10px 16px; border: none; border-radius: 12px; background-color: #2563eb; color: white; cursor: pointer; font-weight: bold; }
 
-    /* ------------------------------------------- */
-    /* 뱃지별 닉네임 특별 스타일 */
-    /* ------------------------------------------- */
+    /* 뱃지별 닉네임 효과 */
     .user-nickname { display: inline-block; font-weight: bold; }
-
-    /* [지존] 뱃지: 닉네임 양옆에 반짝이는 별 */
     .nick-지존::before, .nick-지존::after { content: "⭐"; font-size: 10px; margin: 0 4px; animation: twinkle 1s infinite alternate; }
     @keyframes twinkle { from { opacity: 0.4; } to { opacity: 1; } }
-
-    /* [星] 뱃지: 흑백 그라데이션 효과 */
-    .nick-星 {
-      background: linear-gradient(to right, #000000, #64748b, #000000);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 1px rgba(255,255,255,0.5);
-    }
-
-    /* 추가 예시: [火] 뱃지 (붉은 불꽃 느낌) */
+    .nick-星 { background: linear-gradient(to right, #000, #64748b, #000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 1px rgba(255,255,255,0.3); }
     .nick-火 { color: #ef4444; text-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
-    /* ------------------------------------------- */
-
   </style>
 </head>
 <body>
@@ -62,7 +46,6 @@
       <div class="logout">로그아웃</div>
     </div>
   </header>
-
   <div class="layout">
     <div class="sidebar">
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
@@ -70,7 +53,7 @@
       <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
     </div>
     <div class="main">
-      <div class="card" style="display:flex; gap:8px;">
+      <div class="card" style="display:flex; gap:10px;">
         <input type="text" id="questionInput" placeholder="질문을 입력하세요" class="input-box" style="flex:1">
         <button id="submitQuestion" class="btn-primary">등록</button>
       </div>
@@ -129,7 +112,7 @@
               <span class="user-nickname ${qClass}">${qData.nickname}</span> 
               | 답변 ${qData.answerCount || 0}개
             </div>
-            <div class="answers-container" id="ans-cont-${qId}"></div>
+            <div class="answers-container"></div>
             <div style="display:flex; gap:8px; margin-top:15px;">
               <input type="text" placeholder="${isDone ? '채택 완료됨' : (isMyQ ? '내 질문 답변 불가' : '답변 입력')}" class="input-box a-input" style="flex:1" ${isDone || isMyQ ? 'disabled' : ''}>
               <button class="btn-primary a-btn" ${isDone || isMyQ ? 'style="display:none"' : ''}>답변</button>
@@ -195,7 +178,6 @@
         container.appendChild(item);
       }
     }
-
     document.querySelector(".logout").onclick = () => signOut(auth);
   </script>
 </body>
