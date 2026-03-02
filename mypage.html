@@ -5,22 +5,34 @@
   <title>求援 - 마이페이지</title>
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); min-height: 100vh; }
-    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; }
+    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
+    .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; }
+    .dot { color: #2563eb; }
+    .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
+    .points { color: #2563eb; font-weight: 600; }
+    .logout { cursor: pointer; padding: 6px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); font-weight: bold; transition: 0.2s; }
+    .logout:hover { background: #fee2e2; color: #ef4444; }
     .layout { display: flex; min-height: calc(100vh - 70px); }
-    .sidebar { width: 220px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); padding-top: 20px; }
+    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
     .menu-item { padding: 15px 20px; cursor: pointer; color: #374151; }
-    .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
-    .profile-card { width: 100%; max-width: 500px; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-    .field { margin-bottom: 20px; }
-    .label { font-size: 13px; color: #64748b; margin-bottom: 8px; }
-    .input-box { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
-    .save-btn { width: 100%; padding: 12px; background: #0f172a; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    .main { flex: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+    .profile-card { width: 100%; max-width: 500px; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border: 1px solid white; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.4s; }
+    .profile-card:hover { transform: translateY(-10px); }
+    .field { margin-bottom: 25px; }
+    .label { font-size: 13px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
+    .input-box { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); outline: none; box-sizing: border-box; }
+    .save-btn { width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+    .save-btn:hover { background: #2563eb; }
   </style>
 </head>
 <body>
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
-    <div style="font-size:14px; color:#2563eb; font-weight:600" id="hPoints">0P</div>
+    <div class="header-right">
+      <div class="points" id="hPoints">0P</div>
+      <div class="nickname" id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩...</div>
+      <div class="logout" id="logoutBtn">로그아웃</div>
+    </div>
   </header>
   <div class="layout">
     <div class="sidebar">
@@ -31,47 +43,35 @@
     </div>
     <div class="main">
       <div class="profile-card">
-        <h2 style="margin-top:0">내 프로필 설정</h2>
-        <div class="field">
-          <div class="label">이메일 계정</div>
-          <div id="emailDisp" style="color:#94a3b8">불러오는 중...</div>
-        </div>
-        <div class="field">
-          <div class="label">신분</div>
-          <div id="roleDisp" style="font-weight:bold">로딩 중...</div>
-        </div>
-        <div class="field">
-          <div class="label">닉네임 변경</div>
-          <input type="text" id="nickInput" class="input-box">
-        </div>
-        <button id="saveBtn" class="save-btn">저장하기</button>
+        <h2 style="margin-bottom: 30px;">내 프로필 관리</h2>
+        <div class="field"><div class="label">계정 정보</div><div id="emailDisp">불러오는 중...</div></div>
+        <div class="field"><div class="label">닉네임 변경</div><input type="text" id="nickInput" class="input-box"></div>
+        <button id="saveBtn" class="save-btn">프로필 저장하기</button>
       </div>
     </div>
   </div>
   <script type="module">
     import { auth, db } from "./firebase.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    onAuthStateChanged(auth, async user => {
-      if(!user) return location.href="login.html";
-      const s = await getDoc(doc(db, "users", user.uid));
+    onAuthStateChanged(auth, async u => {
+      if(!u) return location.href="login.html";
+      const s = await getDoc(doc(db, "users", u.uid));
       if(s.exists()){
         const d = s.data();
-        document.getElementById("emailDisp").innerText = user.email;
-        document.getElementById("roleDisp").innerText = d.role === "admin" ? "관리자" : (d.role === "teacher" ? "선생님" : "학생");
+        document.getElementById("hNick").innerText = d.nickname;
+        document.getElementById("hPoints").innerText = (d.points||0) + "P";
+        document.getElementById("emailDisp").innerText = u.email;
         document.getElementById("nickInput").value = d.nickname;
-        document.getElementById("hPoints").innerText = (d.points||0)+"P";
       }
     });
 
     document.getElementById("saveBtn").onclick = async () => {
-      const newNick = document.getElementById("nickInput").value.trim();
-      if(!newNick) return alert("닉네임 입력!");
-      await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: newNick });
-      alert("변경되었습니다!");
-      location.href = "main.html";
+      const n = document.getElementById("nickInput").value.trim();
+      if(n) { await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: n }); alert("변경됨"); location.href="main.html"; }
     };
+    document.getElementById("logoutBtn").onclick = () => { if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); };
   </script>
 </body>
 </html>
