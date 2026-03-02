@@ -20,25 +20,30 @@
     .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
 
     /* 글쓰기 카드 */
-    .write-card { width: 100%; max-width: 600px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
+    .write-card { width: 100%; max-width: 600px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; box-sizing: border-box; }
     .talk-input { width: 100%; border: none; resize: none; outline: none; font-family: inherit; font-size: 16px; min-height: 80px; margin-bottom: 10px; color: #334155; }
     .talk-input::placeholder { color: #94a3b8; }
     .post-btn { float: right; padding: 8px 20px; border: none; border-radius: 25px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    .post-btn:hover { background: #1d4ed8; }
 
-    /* 게시글 카드 */
-    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.4); position: relative; box-sizing: border-box; }
-    .talk-user { font-weight: bold; font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: #1e293b; }
+    /* 게시글 카드 및 플로트 효과 */
+    .talk-card { width: 100%; max-width: 600px; background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.4); position: relative; box-sizing: border-box; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .talk-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    
+    /* 삭제 버튼 왼쪽 위 배치 */
+    .talk-delete { position: absolute; top: 12px; left: 15px; color: #ef4444; cursor: pointer; font-size: 11px; font-weight: bold; opacity: 0.5; transition: 0.2s; }
+    .talk-delete:hover { opacity: 1; text-decoration: underline; }
+
+    .talk-user { font-weight: bold; font-size: 14px; margin-bottom: 12px; display: block; color: #1e293b; text-align: center; }
     .talk-content { font-size: 15px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 15px; color: #334155; }
-    .talk-footer { font-size: 12px; color: #64748b; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; }
-    .talk-delete { color: #ef4444; cursor: pointer; font-weight: bold; }
+    .talk-footer { font-size: 11px; color: #94a3b8; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; text-align: right; }
 
     /* 댓글 구역 */
     .comment-section { margin-top: 15px; background: rgba(0,0,0,0.03); border-radius: 12px; padding: 12px; }
     .comment-item { font-size: 13px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; }
     .comment-text { color: #334155; line-height: 1.4; }
     .comment-user { font-weight: bold; color: #1e293b; margin-right: 6px; }
-    .comment-del-btn { color: #ef4444; cursor: pointer; font-size: 10px; margin-left: 8px; flex-shrink: 0; }
+    .comment-del-btn { color: #ef4444; cursor: pointer; font-size: 10px; margin-left: 8px; opacity: 0.6; }
+    .comment-del-btn:hover { opacity: 1; }
     
     .comment-input-row { display: flex; gap: 8px; margin-top: 10px; }
     .comment-input { flex: 1; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 6px 12px; font-size: 13px; outline: none; font-family: inherit; }
@@ -95,7 +100,6 @@
       loadTalks();
     });
 
-    // 게시글 작성
     document.getElementById("postBtn").onclick = async () => {
       const content = talkInput.value.trim();
       if (!content) return;
@@ -108,7 +112,6 @@
       talkInput.value = "";
     };
 
-    // 실시간 게시글 및 댓글 로드
     function loadTalks() {
       const q = query(collection(db, "talks"), orderBy("createdAt", "desc"));
       onSnapshot(q, (snapshot) => {
@@ -119,11 +122,11 @@
           const card = document.createElement("div");
           card.className = "talk-card";
           card.innerHTML = `
-            <div class="talk-user">👤 ${data.nickname}</div>
+            ${auth.currentUser.uid === data.uid ? `<div class="talk-delete" onclick="deleteTalk('${talkId}')">삭제</div>` : ''}
+            <div class="talk-user">${data.nickname}</div>
             <div class="talk-content">${data.content}</div>
             <div class="talk-footer">
               <span>${new Date(data.createdAt).toLocaleString()}</span>
-              ${auth.currentUser.uid === data.uid ? `<span class="talk-delete" onclick="deleteTalk('${talkId}')">삭제</span>` : ''}
             </div>
             <div class="comment-section">
               <div id="comments-${talkId}"></div>
@@ -139,7 +142,6 @@
       });
     }
 
-    // 댓글 실시간 로드
     function loadComments(talkId) {
       const commQ = query(collection(db, "talks", talkId, "comments"), orderBy("createdAt", "asc"));
       const commentDiv = document.getElementById(`comments-${talkId}`);
@@ -158,30 +160,16 @@
       });
     }
 
-    // 댓글 등록 함수
     window.addComment = async (talkId) => {
       const input = document.getElementById(`commentInput-${talkId}`);
       const text = input.value.trim();
       if (!text) return;
-      await addDoc(collection(db, "talks", talkId, "comments"), {
-        content: text,
-        nickname: currentNickname,
-        uid: auth.currentUser.uid,
-        createdAt: Date.now()
-      });
+      await addDoc(collection(db, "talks", talkId, "comments"), { content: text, nickname: currentNickname, uid: auth.currentUser.uid, createdAt: Date.now() });
       input.value = "";
     };
 
-    // 게시글 삭제
-    window.deleteTalk = async (id) => {
-      if(confirm("이 글을 삭제할까요?")) await deleteDoc(doc(db, "talks", id));
-    };
-
-    // 댓글 삭제
-    window.deleteComment = async (talkId, commentId) => {
-      if(confirm("댓글을 삭제할까요?")) await deleteDoc(doc(db, "talks", talkId, "comments", commentId));
-    };
-
+    window.deleteTalk = async (id) => { if(confirm("이 글을 삭제할까요?")) await deleteDoc(doc(db, "talks", id)); };
+    window.deleteComment = async (talkId, commentId) => { if(confirm("댓글을 삭제할까요?")) await deleteDoc(doc(db, "talks", talkId, "comments", commentId)); };
     document.querySelector(".logout").onclick = () => signOut(auth);
   </script>
 </body>
