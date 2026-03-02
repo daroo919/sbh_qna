@@ -19,32 +19,25 @@
     .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
     .main { flex: 1; padding: 30px; display: flex; flex-direction: column; align-items: center; }
 
-    /* 포인트 정보 카드 */
     .point-card { width: 100%; max-width: 700px; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 30px; text-align: center; }
     .point-val { font-size: 48px; font-weight: 800; color: #2563eb; margin: 10px 0; }
     
-    /* 상점 아이템 그리드 */
     .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; width: 100%; max-width: 700px; }
-    .shop-item { background: white; border-radius: 20px; padding: 20px; text-align: center; transition: 0.3s; border: 1px solid #f1f5f9; }
+    .shop-item { background: white; border-radius: 20px; padding: 20px; text-align: center; transition: 0.3s; border: 1px solid #f1f5f9; position: relative;}
     .shop-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
     .badge-icon { font-size: 50px; margin-bottom: 10px; display: block; }
     .item-name { font-weight: bold; font-size: 16px; color: #1e293b; margin-bottom: 5px; }
     .item-price { color: #2563eb; font-weight: 600; font-size: 14px; margin-bottom: 15px; }
     
-    .buy-btn { width: 100%; padding: 10px; border: none; border-radius: 12px; background: #f1f5f9; color: #475569; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
-    .buy-btn.active { background: #2563eb; color: white; }
-    .buy-btn:disabled { cursor: not-allowed; background: #e2e8f0; color: #94a3b8; }
+    .buy-btn { width: 100%; padding: 10px; border: none; border-radius: 12px; background: #2563eb; color: white; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .equip-btn { width: 100%; padding: 10px; border: 1px solid #2563eb; border-radius: 12px; background: white; color: #2563eb; cursor: pointer; font-size: 13px; font-weight: bold; margin-top: 5px;}
+    .equip-btn.active { background: #0f172a; color: white; border: none;}
   </style>
 </head>
 <body>
-
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
-    <div class="header-right">
-      <div class="points">0P</div>
-      <div class="nickname">불러오는 중...</div>
-      <div class="logout">로그아웃</div>
-    </div>
+    <div class="header-right"><div class="points">0P</div><div class="nickname">불러오는 중...</div><div class="logout">로그아웃</div></div>
   </header>
 
   <div class="layout">
@@ -53,41 +46,14 @@
       <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
       <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
     </div>
-
     <div class="main">
       <div class="point-card">
         <div style="color: #64748b;">나의 보유 포인트</div>
         <div id="myPointDisplay" class="point-val">0P</div>
-        <div id="myBadges" style="margin-top:10px; font-size: 14px; color: #475569;">보유 뱃지: 로딩 중...</div>
+        <div id="myBadges" style="margin-top:10px; font-size: 14px; color: #475569;"></div>
       </div>
-
       <h3 style="color: #1e293b; width: 100%; max-width: 700px; margin-bottom: 20px;">한정판 뱃지 상점</h3>
-      <div class="shop-grid">
-        <div class="shop-item">
-          <span class="badge-icon">α</span>
-          <div class="item-name">알파 버전 생존자</div>
-          <div class="item-price"> 0 P</div>
-          <button class="buy-btn active" onclick="buyBadge('α', 0)">구매</button>
-        </div>
-        <div class="shop-item">
-          <span class="badge-icon">💎</span>
-          <div class="item-name">보석</div>
-          <div class="item-price">500 P</div>
-          <button class="buy-btn active" onclick="buyBadge('💎', 500)">구매</button>
-        </div>
-        <div class="shop-item">
-          <span class="badge-icon">👑</span>
-          <div class="item-name">知尊지존</div>
-          <div class="item-price">1,000 P</div>
-          <button class="buy-btn active" onclick="buyBadge('👑', 1000)">구매</button>
-        </div>
-        <div class="shop-item">
-          <span class="badge-icon">𓇻</span>
-          <div class="item-name">星별</div>
-          <div class="item-price">2,000 P</div>
-          <button class="buy-btn active" onclick="buyBadge('𓇻', 2000)">구매</button>
-        </div>
-      </div>
+      <div class="shop-grid" id="shopGrid"></div>
     </div>
   </div>
 
@@ -96,61 +62,64 @@
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { doc, getDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    const nicknameEl = document.querySelector(".nickname"),
-          pointsEl = document.querySelector(".points"),
-          myPointDisplay = document.getElementById("myPointDisplay"),
-          myBadgesEl = document.getElementById("myBadges");
+    const shopItems = [
+      {id:'alpha', name:'알파 생존자', price:0, icon:'α'},
+      {id:'gem', name:'보석', price:500, icon:'💎'},
+      {id:'king', name:'知尊지존', price:1000, icon:'👑'},
+      {id:'star', name:'星별', price:2000, icon:'𓇻'}
+    ];
 
-    let userPoints = 0;
-    let ownedBadges = [];
+    let userPoints = 0, ownedBadges = [], currentBadge = "";
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
-      
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
-      
+      const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) {
         const data = snap.data();
         userPoints = data.points || 0;
         ownedBadges = data.badges || [];
-        
-        nicknameEl.innerText = data.nickname;
-        pointsEl.innerText = userPoints + "P";
-        myPointDisplay.innerText = userPoints + "P";
-        myBadgesEl.innerText = ownedBadges.length > 0 ? "보유 뱃지: " + ownedBadges.join(" ") : "보유 뱃지가 없습니다.";
+        currentBadge = data.currentBadge || "";
+        renderShop();
+        document.querySelector(".nickname").innerText = (currentBadge + " " + data.nickname).trim();
+        document.querySelector(".points").innerText = userPoints + "P";
+        document.getElementById("myPointDisplay").innerText = userPoints + "P";
+        document.getElementById("myBadges").innerText = "현재 장착 뱃지: " + (currentBadge || "없음");
       }
     });
 
-    window.buyBadge = async (emoji, price) => {
-      if (ownedBadges.includes(emoji)) {
-        alert("이미 보유한 뱃지입니다!");
-        return;
-      }
-      if (userPoints < price) {
-        alert("포인트가 부족합니다!");
-        return;
-      }
+    function renderShop() {
+      const grid = document.getElementById("shopGrid");
+      grid.innerHTML = "";
+      shopItems.forEach(item => {
+        const isOwned = ownedBadges.includes(item.icon);
+        const isEquipped = currentBadge === item.icon;
+        grid.innerHTML += `
+          <div class="shop-item">
+            <span class="badge-icon">${item.icon}</span>
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${item.price} P</div>
+            ${isOwned ? 
+              `<button class="equip-btn ${isEquipped ? 'active' : ''}" onclick="equipBadge('${item.icon}')">${isEquipped ? '장착됨' : '장착하기'}</button>` : 
+              `<button class="buy-btn" onclick="buyBadge('${item.icon}', ${item.price})">구매</button>`}
+          </div>`;
+      });
+    }
 
-      if (confirm(`${emoji} 뱃지를 ${price}P에 구매하시겠습니까?`)) {
-        try {
-          const userRef = doc(db, "users", auth.currentUser.uid);
-          await updateDoc(userRef, {
-            points: increment(-price),
-            badges: arrayUnion(emoji) // 배열에 뱃지 추가
-          });
-          alert("구매 성공! 뱃지가 추가되었습니다.");
-          location.reload();
-        } catch (e) {
-          console.error(e);
-          alert("구매 중 오류가 발생했습니다.");
-        }
+    window.buyBadge = async (emoji, price) => {
+      if (userPoints < price) return alert("포인트 부족!");
+      if (confirm("구매하시겠습니까?")) {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), { points: increment(-price), badges: arrayUnion(emoji) });
+        location.reload();
       }
+    };
+
+    window.equipBadge = async (emoji) => {
+      await updateDoc(doc(db, "users", auth.currentUser.uid), { currentBadge: emoji });
+      alert("뱃지가 장착되었습니다!");
+      location.reload();
     };
 
     document.querySelector(".logout").onclick = () => signOut(auth);
   </script>
 </body>
-
 </html>
-
