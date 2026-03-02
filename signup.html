@@ -1,72 +1,53 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8">
-  <title>회원가입</title>
+  <title>求援 - 회원가입</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 30px;
-    }
+    body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-
-    button {
-      padding: 10px 20px;
-      cursor: pointer;
-    }
-
-    .error {
-      color: red;
-    }
-
-    .input-wrap {
-      position: relative;
-    }
-
-    .toggle {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      cursor: pointer;
-      user-select: none;
-    }
+    .card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 400px; box-sizing: border-box; }
+    h2 { font-size: 24px; color: #0f172a; margin-bottom: 25px; text-align: center; }
+    
+    .input-wrap { position: relative; margin-bottom: 12px; }
+    input { width: 100%; padding: 12px 15px; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 12px; background: rgba(255, 255, 255, 0.7); outline: none; box-sizing: border-box; transition: 0.2s; }
+    input:focus { border-color: #2563eb; background: white; }
+    
+    .toggle { position: absolute; right: 15px; top: 12px; cursor: pointer; user-select: none; color: #94a3b8; }
+    
+    button { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #0f172a; color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+    button:hover { background: #1e293b; }
+    
+    .error { color: #ef4444; font-size: 13px; text-align: center; margin-top: 10px; min-height: 18px; }
+    .link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; text-decoration: none; }
+    .link:hover { color: #2563eb; }
   </style>
 </head>
-
 <body>
+  <div class="card">
+    <h2>회원가입</h2>
+    <div class="input-wrap"><input id="email" placeholder="이메일 입력"></div>
+    
+    <div class="input-wrap">
+      <input id="password" type="password" placeholder="비밀번호 (6자리 이상)">
+      <span id="togglePassword1" class="toggle">👁</span>
+    </div>
+    
+    <div class="input-wrap">
+      <input id="passwordConfirm" type="password" placeholder="비밀번호 확인">
+      <span id="togglePassword2" class="toggle">👁</span>
+    </div>
 
-  <h2>회원가입</h2>
+    <div class="input-wrap"><input id="nickname" placeholder="닉네임"></div>
+    <div class="input-wrap"><input id="realname" placeholder="본명"></div>
+    <div class="input-wrap"><input id="studentid" placeholder="학번"></div>
 
-  <input id="email" placeholder="이메일 입력">
-
-  <div class="input-wrap">
-    <input id="password" type="password" placeholder="비밀번호 (6자리 이상)">
-    <span id="togglePassword1" class="toggle">👁</span>
+    <p class="error" id="errorMsg"></p>
+    <button id="btnSignup">회원가입 완료</button>
+    <a href="login.html" class="link">이미 계정이 있나요? 로그인</a>
   </div>
-
-  <div class="input-wrap">
-    <input id="passwordConfirm" type="password" placeholder="비밀번호 확인">
-    <span id="togglePassword2" class="toggle">👁</span>
-  </div>
-
-  <input id="nickname" placeholder="닉네임">
-  <input id="realname" placeholder="본명">
-  <input id="studentid" placeholder="학번">
-
-  <p class="error" id="errorMsg"></p>
-
-  <button id="btnSignup">회원가입</button>
-
-  <p><a href="login.html">로그인으로 이동</a></p>
 
   <script type="module" src="/sbh_qna/js/signup.js"></script>
-
 </body>
-
 </html>
