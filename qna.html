@@ -4,10 +4,9 @@
   <meta charset="UTF-8">
   <title>求援 - 문답</title>
   <style>
-    /* 기본 디자인 유지 */
     body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe); background-size: 400% 400%; animation: gradientMove 20s ease infinite; min-height: 100vh; }
     @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); }
+    .header { height: 70px; padding: 0 40px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top:0; z-index:100; }
     .logo { font-size: 24px; font-weight: 700; color: #0f172a; cursor: pointer; user-select: none; }
     .dot { color: #2563eb; }
     .header-right { display: flex; align-items: center; gap: 20px; font-size: 14px; }
@@ -18,31 +17,23 @@
     .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; }
     .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
     .main { flex: 1; padding: 30px; }
-
-    /* 질문 카드 기본 & 채택 시 연한 초록색 배경 */
     .card { position: relative; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 16px; padding: 20px; margin-bottom: 18px; transition: 0.3s; }
-    .card.completed { background: rgba(209, 250, 229, 0.6); border-color: rgba(16, 185, 129, 0.3); } /* 연한 초록 배경 */
-    
+    .card.completed { background: rgba(209, 250, 229, 0.6); }
     .card-title { font-weight: bold; margin-bottom: 8px; }
     .card-meta { font-size: 12px; color: gray; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 5px; background: #10b981; color: white; }
     .question-delete { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; }
     .accept-btn { background: #22c55e; color: white; border: none; border-radius: 8px; font-size: 11px; padding: 4px 8px; cursor: pointer; margin-left: 10px; }
-    
     .answer-item { position: relative; margin-top: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.4); font-size: 13px; }
-    .accepted-answer { background: #d1fae5 !important; border: 1px solid #10b981; font-weight: 500; }
+    .accepted-answer { background: #d1fae5 !important; border: 1px solid #10b981; }
     .answer-delete { background: #ef4444; color: white; border: none; border-radius: 6px; padding: 2px 6px; font-size: 11px; cursor: pointer; float: right; }
-    
     .input-box { border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.5); padding: 10px 12px; outline: none; }
-    .input-box:disabled { background: rgba(0, 0, 0, 0.05); cursor: not-allowed; color: #6b7280; }
-    
+    .input-box:disabled { cursor: not-allowed; opacity: 0.6; }
     .btn-primary { padding: 10px 14px; border: none; border-radius: 12px; background-color: #2563eb; color: white; cursor: pointer; }
     .answer-input-row { display: flex; gap: 8px; margin-top: 15px; }
     .answer-input-row .input-box { flex: 1; }
     .question-input-row { display: flex; gap: 8px; margin-bottom: 18px; }
     .question-input-row #questionInput { flex: 1; }
-    
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 5px; }
-    .badge-done { background: #10b981; color: white; }
   </style>
 </head>
 <body>
@@ -57,7 +48,7 @@
   <div class="layout">
     <div class="sidebar">
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
-      <div class="menu-item">👤 잡담</div>
+      <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
       <div class="menu-item">💰 포인트 관리</div>
     </div>
     <div class="main">
@@ -68,92 +59,57 @@
       <div id="questionList"></div>
     </div>
   </div>
-
   <script type="module">
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    const nicknameEl = document.querySelector(".nickname"), 
-          pointsEl = document.querySelector(".points"), 
-          questionList = document.getElementById("questionList"), 
-          input = document.getElementById("questionInput");
-
+    const nicknameEl = document.querySelector(".nickname"), pointsEl = document.querySelector(".points"), questionList = document.getElementById("questionList"), input = document.getElementById("questionInput");
+    
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "/sbh_qna/login.html";
+      if (!user) return window.location.href = "login.html";
       const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) { 
-        nicknameEl.innerText = snap.data().nickname; 
-        pointsEl.innerText = (snap.data().points || 0) + "P"; 
-      }
+      if (snap.exists()) { nicknameEl.innerText = snap.data().nickname; pointsEl.innerText = (snap.data().points || 0) + "P"; }
       loadQuestions();
     });
 
     document.getElementById("submitQuestion").onclick = async () => {
       const title = input.value.trim();
       if (!title) return alert("질문을 입력하세요");
-      try {
-        await addDoc(collection(db, "questions"), { 
-          title, 
-          nickname: nicknameEl.innerText, 
-          uid: auth.currentUser.uid, 
-          answerCount: 0, 
-          acceptedAnswerId: null,
-          createdAt: Date.now()
-        });
-        input.value = ""; 
-        loadQuestions();
-      } catch(e) { console.error(e); alert("등록 실패!"); }
+      await addDoc(collection(db, "questions"), { title, nickname: nicknameEl.innerText, uid: auth.currentUser.uid, answerCount: 0, acceptedAnswerId: null });
+      input.value = ""; loadQuestions();
     };
 
     async function loadQuestions() {
       const snapshot = await getDocs(collection(db, "questions"));
       questionList.innerHTML = "";
-      
       for (const qDoc of snapshot.docs) {
-        const qData = qDoc.data();
-        const qId = qDoc.id;
-        const isMyQuestion = auth.currentUser.uid === qData.uid;
-        const isCompleted = qData.acceptedAnswerId !== null; // 채택 완료 여부
-
+        const qData = qDoc.data(), qId = qDoc.id, isMyQ = auth.currentUser.uid === qData.uid, isDone = qData.acceptedAnswerId !== null;
         const card = document.createElement("div");
-        card.className = `card ${isCompleted ? 'completed' : ''}`; // 채택 시 completed 클래스 추가
-        
+        card.className = `card ${isDone ? 'completed' : ''}`;
         card.innerHTML = `
-          ${isMyQuestion ? `<button class="question-delete">삭제</button>` : ''}
-          ${isCompleted ? `<span class="badge badge-done">해결됨</span>` : ''}
+          ${isMyQ ? `<button class="question-delete">삭제</button>` : ''}
+          ${isDone ? `<span class="badge">해결됨</span>` : ''}
           <div class="card-title">${qData.title}</div>
           <div class="card-meta">작성자: ${qData.nickname} | 답변 ${qData.answerCount || 0}개</div>
           <div class="answers-container"></div>
           <div class="answer-input-row">
-            <input type="text" 
-                   placeholder="${isCompleted ? '채택이 완료된 질문입니다.' : (isMyQuestion ? '자신의 질문에는 답변할 수 없습니다' : '답변을 입력하세요')}" 
-                   class="input-box answer-input" 
-                   ${isCompleted || isMyQuestion ? 'disabled' : ''}>
-            <button class="btn-primary add-answer-btn" ${(isCompleted || isMyQuestion) ? 'style="display:none;"' : ''}>답변</button>
+            <input type="text" placeholder="${isDone ? '채택 완료됨' : (isMyQ ? '자신 질문 답변 불가' : '답변 입력')}" class="input-box answer-input" ${isDone || isMyQ ? 'disabled' : ''}>
+            <button class="btn-primary add-answer-btn" ${isDone || isMyQ ? 'style="display:none"' : ''}>답변</button>
           </div>
         `;
-
-        if (isMyQuestion) {
-          card.querySelector(".question-delete").onclick = async () => { 
-            if(confirm("삭제하시겠습니까?")) { await deleteDoc(doc(db, "questions", qId)); loadQuestions(); } 
-          };
-        } else if (!isCompleted) {
+        if (isMyQ) card.querySelector(".question-delete").onclick = async () => { if(confirm("삭제?")) { await deleteDoc(doc(db, "questions", qId)); loadQuestions(); } };
+        const container = card.querySelector(".answers-container");
+        await loadAnswers(qId, qData, container);
+        if (!isDone && !isMyQ) {
           card.querySelector(".add-answer-btn").onclick = async () => {
             const aInput = card.querySelector(".answer-input");
-            if (!aInput.value.trim()) return alert("내용을 입력하세요");
-            await addDoc(collection(db, "questions", qId, "answers"), { 
-              content: aInput.value, 
-              nickname: nicknameEl.innerText, 
-              uid: auth.currentUser.uid 
-            });
+            if (!aInput.value.trim()) return;
+            await addDoc(collection(db, "questions", qId, "answers"), { content: aInput.value, nickname: nicknameEl.innerText, uid: auth.currentUser.uid });
             await updateDoc(doc(db, "questions", qId), { answerCount: increment(1) });
             loadQuestions();
           };
         }
-
-        const container = card.querySelector(".answers-container");
-        await loadAnswers(qId, qData, container);
         questionList.appendChild(card);
       }
     }
@@ -161,43 +117,24 @@
     async function loadAnswers(qId, qData, container) {
       const snap = await getDocs(collection(db, "questions", qId, "answers"));
       snap.forEach(aDoc => {
-        const aData = aDoc.data(), 
-              isAccepted = qData.acceptedAnswerId === aDoc.id;
+        const aData = aDoc.data(), isAcc = qData.acceptedAnswerId === aDoc.id;
         const item = document.createElement("div");
-        item.className = `answer-item ${isAccepted ? 'accepted-answer' : ''}`;
-        
-        item.innerHTML = `
-          ↳ ${aData.nickname} : ${aData.content} 
-          ${auth.currentUser.uid === qData.uid && !qData.acceptedAnswerId ? `<button class="accept-btn">채택</button>` : ''} 
-          ${auth.currentUser.uid === aData.uid ? `<button class="answer-delete">삭제</button>` : ''}
-        `;
-        
+        item.className = `answer-item ${isAcc ? 'accepted-answer' : ''}`;
+        item.innerHTML = `↳ ${aData.nickname}: ${aData.content} ${auth.currentUser.uid === qData.uid && !qData.acceptedAnswerId ? `<button class="accept-btn">채택</button>` : ''}`;
         if (item.querySelector(".accept-btn")) {
-          item.querySelector(".accept-btn").onclick = async () => { 
-            if(confirm("이 답변을 채택하시겠습니까? 작성자에게 10P가 지급됩니다.")) {
-              await updateDoc(doc(db, "questions", qId), { acceptedAnswerId: aDoc.id }); 
-              const userRef = doc(db, "users", aData.uid);
-              await updateDoc(userRef, { points: increment(10) });
-              alert("채택 완료!");
-              loadQuestions(); 
+          item.querySelector(".accept-btn").onclick = async () => {
+            if(confirm("채택 시 10P가 지급됩니다.")) {
+              await updateDoc(doc(db, "questions", qId), { acceptedAnswerId: aDoc.id });
+              await updateDoc(doc(db, "users", aData.uid), { points: increment(10) });
+              loadQuestions();
             }
-          };
-        }
-        if (item.querySelector(".answer-delete")) {
-          item.querySelector(".answer-delete").onclick = async () => { 
-            await deleteDoc(doc(db, "questions", qId, "answers", aDoc.id)); 
-            await updateDoc(doc(db, "questions", qId), { answerCount: increment(-1) }); 
-            loadQuestions(); 
           };
         }
         container.appendChild(item);
       });
     }
 
-    document.querySelector(".logout").onclick = async () => { 
-      await signOut(auth); 
-      window.location.href = "/sbh_qna/login.html"; 
-    };
+    document.querySelector(".logout").onclick = () => signOut(auth);
   </script>
 </body>
 </html>
