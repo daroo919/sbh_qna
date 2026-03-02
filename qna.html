@@ -14,7 +14,7 @@
     .logout { cursor: pointer; padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); }
     .layout { display: flex; min-height: calc(100vh - 70px); }
     .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
-    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; }
+    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; }
     .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
     .main { flex: 1; padding: 30px; }
     .card { position: relative; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 16px; padding: 20px; margin-bottom: 18px; transition: 0.3s; }
@@ -33,6 +33,10 @@
     .answer-input-row .input-box { flex: 1; }
     .question-input-row { display: flex; gap: 8px; margin-bottom: 18px; }
     .question-input-row #questionInput { flex: 1; }
+    .role-text { font-size: 11px; font-weight: bold; margin-right: 5px; }
+    .role-admin { color: #ef4444; }
+    .role-teacher { color: #f59e0b; }
+    .role-student { color: #64748b; }
   </style>
 </head>
 <body>
@@ -66,15 +70,23 @@
     import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     const nicknameEl = document.querySelector(".nickname"), pointsEl = document.querySelector(".points"), questionList = document.getElementById("questionList"), input = document.getElementById("questionInput");
-    let myBadge = ""; 
+    let myNickname = "";
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) { 
-        myBadge = snap.data().currentBadge || "";
-        nicknameEl.innerText = (myBadge + " " + snap.data().nickname).trim(); 
-        pointsEl.innerText = (snap.data().points || 0) + "P"; 
+        const data = snap.data();
+        const role = data.role || "student";
+        const badge = data.currentBadge || "";
+        myNickname = data.nickname;
+
+        let roleName = "학생", roleClass = "role-student";
+        if(role === "admin") { roleName = "관리자"; roleClass = "role-admin"; }
+        if(role === "teacher") { roleName = "선생님"; roleClass = "role-teacher"; }
+
+        nicknameEl.innerHTML = `<span class="role-text ${roleClass}">[${roleName}]</span> ${badge} ${myNickname}`; 
+        pointsEl.innerText = (data.points || 0) + "P"; 
       }
       loadQuestions();
     });
@@ -84,7 +96,7 @@
       if (!title) return alert("질문을 입력하세요");
       await addDoc(collection(db, "questions"), { 
         title, 
-        nickname: nicknameEl.innerText.replace(myBadge, "").trim(), 
+        nickname: myNickname, 
         uid: auth.currentUser.uid, 
         answerCount: 0, 
         acceptedAnswerId: null,
@@ -99,7 +111,6 @@
         questionList.innerHTML = "";
         for (const qDoc of snapshot.docs) {
           const qData = qDoc.data(), qId = qDoc.id, isMyQ = auth.currentUser.uid === qData.uid, isDone = qData.acceptedAnswerId !== null;
-          
           const userSnap = await getDoc(doc(db, "users", qData.uid));
           const qBadge = (userSnap.exists() && userSnap.data().currentBadge) ? userSnap.data().currentBadge : "";
 
@@ -118,7 +129,6 @@
           `;
           
           if (isMyQ) card.querySelector(".question-delete").onclick = async () => { if(confirm("삭제?")) await deleteDoc(doc(db, "questions", qId)); };
-          
           const container = card.querySelector(".answers-container");
           await loadAnswers(qId, qData, container);
 
@@ -128,7 +138,7 @@
               if (!aInput.value.trim()) return;
               await addDoc(collection(db, "questions", qId, "answers"), { 
                 content: aInput.value, 
-                nickname: nicknameEl.innerText.replace(myBadge, "").trim(), 
+                nickname: myNickname, 
                 uid: auth.currentUser.uid,
                 createdAt: Date.now()
               });
@@ -157,7 +167,6 @@
           ${auth.currentUser.uid === qData.uid && !qData.acceptedAnswerId ? `<button class="accept-btn">채택</button>` : ''}
           ${isMyAnswer && !isAcc ? `<button class="ans-del" style="float:right; background:#ef4444; color:white; border:none; border-radius:6px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button>` : ''}
         `;
-        
         if (item.querySelector(".accept-btn")) {
           item.querySelector(".accept-btn").onclick = async () => {
             if(confirm("채택 시 10P가 지급됩니다.")) {
@@ -166,7 +175,6 @@
             }
           };
         }
-
         if (item.querySelector(".ans-del")) {
           item.querySelector(".ans-del").onclick = async () => {
             if(confirm("삭제?")) {
