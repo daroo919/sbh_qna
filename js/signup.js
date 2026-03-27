@@ -72,7 +72,7 @@ btnSignup.addEventListener("click", async () => {
     });
 
     alert("회원가입 완료! 메인 화면으로 이동합니다.");
-    window.location.href = "/sbh_qna/main.html";
+    window.location.href = "main.html";
 
   } catch (err) {
     errorMsg.innerText = err.message;

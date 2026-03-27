@@ -21,8 +21,7 @@ btnLogin.addEventListener("click", async () => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
 
-    // 🔥 절대경로 사용
-    window.location.href = "/sbh_qna/main.html";
+    window.location.href = "main.html";
 
   } catch (err) {
     errorLogin.innerText = "로그인 실패! 이메일/비밀번호 확인.";
