@@ -471,10 +471,23 @@
     window.delTalk = async id => { if (confirm("이 게시글을 삭제할까요?")) await deleteDoc(doc(db, "talks", id)); };
     window.delComm = async (tid, cid) => { if (confirm("댓글을 삭제할까요?")) await deleteDoc(doc(db, "talks", tid, "comments", cid)); };
 
-    document.getElementById("logoutBtn").onclick = () => {
-      if (confirm("로그아웃 하시겠습니까?")) signOut(auth).then(() => location.href = "login.html");
-    };
+const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        if (confirm("로그아웃 하시겠습니까?")) {
+          signOut(auth)
+            .then(() => {
+              alert("로그아웃 되었습니다."); // 확인용 알림창 추가
+              location.href = "login.html";
+            })
+            .catch((err) => {
+              console.error("로그아웃 실패:", err);
+            });
+        }
+      });
+    }
   </script>
 </body>
+</html>
 
 </html>
