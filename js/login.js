@@ -1,31 +1,31 @@
-// js/login.js
-
-import { auth } from "./firebase.js"; 
-
-import { signInWithEmailAndPassword }
-  from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-  from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { auth } from "./firebase.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 const btnLogin = document.getElementById("btnLogin");
 
-btnLogin.addEventListener("click", async () => {
-  const errorLogin = document.getElementById("errorLogin");
-  errorLogin.innerText = "";
+if (btnLogin) { // 버튼이 존재하는지 확인 (에러 방지)
+  btnLogin.addEventListener("click", async () => {
+    const errorLogin = document.getElementById("errorLogin");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+    if (errorLogin) errorLogin.innerText = "";
 
-  if (!email || !password) {
-    errorLogin.innerText = "이메일과 비밀번호를 입력해주세요.";
-    return;
-  }
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
+    if (!email || !password) {
+      if (errorLogin) errorLogin.innerText = "이메일과 비밀번호를 입력해주세요.";
+      return;
+    }
 
-    window.location.href = "main.html";
-
-  } catch (err) {
-    errorLogin.innerText = "로그인 실패! 이메일/비밀번호 확인.";
-  }
-});
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // 로그인 성공 시 메인 페이지로 이동
+      window.location.href = "main.html";
+    } catch (err) {
+      console.error(err);
+      if (errorLogin) errorLogin.innerText = "로그인 실패! 이메일/비밀번호 확인.";
+    }
+  });
+}
