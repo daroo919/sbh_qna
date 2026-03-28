@@ -1,153 +1,17 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>求援 - 회원가입</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Pretendard', sans-serif;
-      background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe);
-      background-size: 400% 400%;
-      animation: gradientMove 20s ease infinite;
-      
-      /* 수직 중앙 정렬 */
-      height: 100vh;
-      height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      box-sizing: border-box;
-      padding: 20px;
-    }
+<script type="module">
+  import { signup } from "./firebase.js";
 
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+  window.signup = async function () {
 
-    .card {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 28px;
-      padding: 35px 24px; /* 입력창이 많으므로 상하 패딩 소폭 축소 */
-      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-      
-      width: 100%;
-      max-width: 400px;
-      box-sizing: border-box;
-      /* 모바일에서 내용이 길어질 경우 내부 스크롤 허용 */
-      max-height: 95dvh;
-      overflow-y: auto;
-    }
+    const email =
+      document.getElementById("email").value;
 
-    /* 스크롤바 숨기기 (선택 사항) */
-    .card::-webkit-scrollbar { display: none; }
+    const password =
+      document.getElementById("password").value;
 
-    h2 { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 20px; text-align: center; }
-    
-    .input-wrap { position: relative; margin-bottom: 10px; }
-    
-    input {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.8);
-      outline: none;
-      box-sizing: border-box;
-      transition: 0.3s;
-      font-size: 16px;
-    }
-    input:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-    
-    .toggle { 
-      position: absolute; 
-      right: 15px; 
-      top: 50%; 
-      transform: translateY(-50%); 
-      cursor: pointer; 
-      user-select: none; 
-      color: #94a3b8;
-      padding: 5px;
-    }
-    
-    button {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 14px;
-      background: #0f172a; /* 회원가입은 어두운 톤 유지 */
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-      margin-top: 10px;
-    }
-    button:hover { background: #1e293b; transform: translateY(-2px); }
-    button:active { transform: scale(0.98); }
-    
-    .error { color: #ef4444; font-size: 13px; text-align: center; margin-top: 8px; min-height: 18px; font-weight: 500; }
-    .link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; text-decoration: none; font-weight: 500; }
-    .link:hover { color: #2563eb; }
+    const nickname =
+      document.getElementById("nickname").value;
 
-    /* 화면이 아주 작은 모바일 대응 */
-    @media (max-height: 660px) {
-      .card { padding: 25px 20px; }
-      h2 { margin-bottom: 15px; font-size: 20px; }
-      input { padding: 12px; margin-bottom: 8px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h2>회원가입</h2>
-    <div class="input-wrap"><input id="email" type="email" placeholder="이메일 입력"></div>
-    
-    <div class="input-wrap">
-      <input id="password" type="password" placeholder="비밀번호 (6자리 이상)">
-      <span id="togglePassword1" class="toggle">👁</span>
-    </div>
-    
-    <div class="input-wrap">
-      <input id="passwordConfirm" type="password" placeholder="비밀번호 확인">
-      <span id="togglePassword2" class="toggle">👁</span>
-    </div>
-
-    <div class="input-wrap"><input id="nickname" placeholder="닉네임"></div>
-    <div class="input-wrap"><input id="realname" placeholder="본명"></div>
-    <div class="input-wrap"><input id="studentid" placeholder="학번"></div>
-
-    <p class="error" id="errorMsg"></p>
-    <button id="btnSignup">회원가입 완료</button>
-    <a href="login.html" class="link">이미 계정이 있나요? 로그인</a>
-  </div>
-
-  <script type="module">
-    const inputs = document.querySelectorAll('input');
-    const signupBtn = document.getElementById('btnSignup');
-
-    // 비밀번호 보이기/숨기기 토글 기능 (간단 로직 추가)
-    const setupToggle = (toggleId, inputId) => {
-      const toggle = document.getElementById(toggleId);
-      const input = document.getElementById(inputId);
-      toggle.addEventListener('click', () => {
-        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-        input.setAttribute('type', type);
-        toggle.textContent = type === 'password' ? '👁' : '🔒';
-      });
-    };
-
-    setupToggle('togglePassword1', 'password');
-    setupToggle('togglePassword2', 'passwordConfirm');
-  </script>
-  <script type="module" src="js/signup.js"></script>
-</body>
-</html>
+    await signup(email, password, nickname);
+  };
+</script>
