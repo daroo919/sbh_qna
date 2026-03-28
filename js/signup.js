@@ -10,7 +10,6 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-
 const form = document.getElementById("signupForm");
 
 form.addEventListener("submit", async (e) => {
@@ -19,16 +18,16 @@ form.addEventListener("submit", async (e) => {
   const email = document.getElementById("email").value.trim();
   const nickname = document.getElementById("nickname").value.trim();
   const password = document.getElementById("password").value;
+  const passwordConfirm = document.getElementById("passwordConfirm").value;
 
   try {
+    // ✅ 비밀번호 확인
+    if (password !== passwordConfirm) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
 
-    // ✅ Firebase Auth 계정 생성
-    const userCredential =
-      await createUserWithEmailAndPassword(auth, email, password);
-
-    const user = userCredential.user;
-
-    // ✅ 닉네임 중복 체크
+    // ✅ 닉네임 중복 체크 먼저
     const nicknameRef = doc(db, "nicknames", nickname);
     const nicknameSnap = await getDoc(nicknameRef);
 
@@ -37,12 +36,18 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
+    // ✅ Firebase Auth 계정 생성
+    const userCredential =
+      await createUserWithEmailAndPassword(auth, email, password);
+
+    const user = userCredential.user;
+
     // 닉네임 예약
     await setDoc(nicknameRef, {
       uid: user.uid
     });
 
-    // ✅ 유저 정보 저장 (본명/학번 없음)
+    // 유저 정보 저장
     await setDoc(doc(db, "users", user.uid), {
       email: email,
       nickname: nickname,
@@ -54,6 +59,12 @@ form.addEventListener("submit", async (e) => {
 
   } catch (error) {
     console.error(error);
-    alert("회원가입 실패: " + error.message);
+
+    // Firebase 에러 처리
+    if (error.code === "auth/email-already-in-use") {
+      alert("이미 사용 중인 이메일입니다.");
+    } else {
+      alert("회원가입 실패: " + error.message);
+    }
   }
 });
