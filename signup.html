@@ -1,17 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입</title>
+</head>
+
+<body>
+
+<h2>회원가입</h2>
+
+<input type="email" id="email" placeholder="이메일"><br><br>
+
+<input type="text" id="nickname" placeholder="닉네임"><br><br>
+
+<input type="password" id="password" placeholder="비밀번호"><br><br>
+
+<button onclick="signup()">회원가입</button>
+
 <script type="module">
   import { signup } from "./firebase.js";
 
   window.signup = async function () {
 
-    const email =
-      document.getElementById("email").value;
-
-    const password =
-      document.getElementById("password").value;
-
-    const nickname =
-      document.getElementById("nickname").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const nickname = document.getElementById("nickname").value;
 
     await signup(email, password, nickname);
   };
 </script>
+
+</body>
+</html>
