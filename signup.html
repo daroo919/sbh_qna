@@ -1,51 +1,54 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>회원가입</title>
 
-  <!-- ✅ CSS 반드시 상대경로 -->
-  <link rel="stylesheet" href="./style.css">
+  <!-- 기존 CSS 유지 (삭제 X) -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- 🔥 signup 전용 보호 스타일 -->
+  <style>
+    .signup-box {
+      max-width: 420px;
+      margin: 80px auto;
+      padding: 25px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    .signup-box input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      box-sizing: border-box;
+    }
+
+    .signup-box button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="signup-box">
   <h2>회원가입</h2>
 
-  <input id="email" type="email" placeholder="이메일">
-  <input id="nickname" type="text" placeholder="닉네임">
-  <input id="password" type="password" placeholder="비밀번호">
+  <input type="email" id="email" placeholder="이메일">
+  <input type="text" id="nickname" placeholder="닉네임">
+  <input type="password" id="password" placeholder="비밀번호">
 
-  <button id="signupBtn">회원가입</button>
+  <button onclick="signup()">회원가입</button>
+
+  <p id="msg"></p>
 </div>
 
-<script type="module">
-
-import { signupUser } from "./firebase.js";
-
-document.getElementById("signupBtn").addEventListener("click", async () => {
-
-  const email = document.getElementById("email").value.trim();
-  const nickname = document.getElementById("nickname").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if (!email || !nickname || !password) {
-    alert("전부 입력하세요");
-    return;
-  }
-
-  try {
-    await signupUser(email, password, nickname);
-    alert("회원가입 성공!");
-    location.href = "./login.html";
-  } catch (e) {
-    alert(e.message);
-  }
-
-});
-
-</script>
+<script type="module" src="./js/signup.js"></script>
 
 </body>
 </html>
