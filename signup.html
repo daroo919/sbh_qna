@@ -127,18 +127,28 @@
     <a href="login.html" class="link">이미 계정이 있나요? 로그인</a>
   </div>
 
-  <script type="module">
-    const inputs = document.querySelectorAll('input');
-    const signupBtn = document.getElementById('btnSignup');
+<!-- 비밀번호 토글 스크립트 (inline) -->
+<script type="module">
+  const inputs = document.querySelectorAll('input');
+  const signupBtn = document.getElementById('btnSignup');
 
-    // 비밀번호 보이기/숨기기 토글 기능 (간단 로직 추가)
-    const setupToggle = (toggleId, inputId) => {
-      const toggle = document.getElementById(toggleId);
-      const input = document.getElementById(inputId);
-      toggle.addEventListener('click', () => {
-        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-        input.setAttribute('type', type);
-        toggle.textContent = type === 'password' ? '👁' : '🔒';
+  const setupToggle = (toggleId, inputId) => {
+    const toggle = document.getElementById(toggleId);
+    const input = document.getElementById(inputId);
+    toggle.addEventListener("click", () => {
+      const type = input.getAttribute("type") === "password" ? "text" : "password";
+      input.setAttribute("type", type);
+      toggle.textContent = type === "password" ? "👁" : "🔒";
+    });
+  };
+
+  setupToggle('togglePassword1', 'password');
+  setupToggle('togglePassword2', 'passwordConfirm');
+</script>
+
+<!-- **수정된 스크립트 로딩 경로** -->
+<script type="module" src="./js/firebase.js"></script>
+<script type="module" src="./js/signup.js"></script>
       });
     };
 
