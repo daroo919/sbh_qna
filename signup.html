@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>求援 - 회원가입</title>
+  
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
   <style>
     body {
       margin: 0;
@@ -13,7 +16,6 @@
       background-size: 400% 400%;
       animation: gradientMove 20s ease infinite;
       
-      /* 수직 중앙 정렬 */
       height: 100vh;
       height: 100dvh;
       display: flex;
@@ -36,18 +38,16 @@
       -webkit-backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 28px;
-      padding: 35px 24px; /* 입력창이 많으므로 상하 패딩 소폭 축소 */
+      padding: 35px 24px;
       box-shadow: 0 15px 35px rgba(0,0,0,0.08);
       
       width: 100%;
       max-width: 400px;
       box-sizing: border-box;
-      /* 모바일에서 내용이 길어질 경우 내부 스크롤 허용 */
       max-height: 95dvh;
       overflow-y: auto;
     }
 
-    /* 스크롤바 숨기기 (선택 사항) */
     .card::-webkit-scrollbar { display: none; }
 
     h2 { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 20px; text-align: center; }
@@ -83,7 +83,7 @@
       padding: 16px;
       border: none;
       border-radius: 14px;
-      background: #0f172a; /* 회원가입은 어두운 톤 유지 */
+      background: #0f172a;
       color: white;
       font-size: 16px;
       font-weight: bold;
@@ -98,7 +98,6 @@
     .link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; text-decoration: none; font-weight: 500; }
     .link:hover { color: #2563eb; }
 
-    /* 화면이 아주 작은 모바일 대응 */
     @media (max-height: 660px) {
       .card { padding: 25px 20px; }
       h2 { margin-bottom: 15px; font-size: 20px; }
@@ -127,24 +126,22 @@
     <a href="login.html" class="link">이미 계정이 있나요? 로그인</a>
   </div>
 
-<!-- 비밀번호 토글 스크립트 (inline) -->
-<script type="module">
-  const inputs = document.querySelectorAll('input');
-  const signupBtn = document.getElementById('btnSignup');
+  <script type="module">
+    // 비밀번호 토글 로직
+    const setupToggle = (toggleId, inputId) => {
+      const toggle = document.getElementById(toggleId);
+      const input = document.getElementById(inputId);
+      toggle.addEventListener('click', () => {
+        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        input.setAttribute('type', type);
+        toggle.textContent = type === 'password' ? '👁' : '🔒';
+      });
+    };
 
-  const setupToggle = (toggleId, inputId) => {
-    const toggle = document.getElementById(toggleId);
-    const input = document.getElementById(inputId);
-    toggle.addEventListener("click", () => {
-      const type = input.getAttribute("type") === "password" ? "text" : "password";
-      input.setAttribute("type", type);
-      toggle.textContent = type === "password" ? "👁" : "🔒";
-    });
-  };
+    setupToggle('togglePassword1', 'password');
+    setupToggle('togglePassword2', 'passwordConfirm');
+  </script>
 
-  setupToggle('togglePassword1', 'password');
-  setupToggle('togglePassword2', 'passwordConfirm');
-</script>
-
-<script type="module" src="./js/firebase.js"></script>
-<script type="module" src="./js/signup.js"></script>
+  <script type="module" src="./js/signup.js"></script>
+</body>
+</html>
