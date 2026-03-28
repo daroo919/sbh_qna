@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>회원가입</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- ✅ CSS 반드시 상대경로 -->
+  <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
-<h2>회원가입</h2>
+<div class="container">
+  <h2>회원가입</h2>
 
-<input type="email" id="email" placeholder="이메일"><br><br>
-<input type="text" id="nickname" placeholder="닉네임"><br><br>
-<input type="password" id="password" placeholder="비밀번호"><br><br>
+  <input id="email" type="email" placeholder="이메일">
+  <input id="nickname" type="text" placeholder="닉네임">
+  <input id="password" type="password" placeholder="비밀번호">
 
-<button id="signupBtn">회원가입</button>
+  <button id="signupBtn">회원가입</button>
+</div>
 
 <script type="module">
 
@@ -27,17 +31,18 @@ document.getElementById("signupBtn").addEventListener("click", async () => {
   const password = document.getElementById("password").value.trim();
 
   if (!email || !nickname || !password) {
-    alert("전부 입력하세요.");
+    alert("전부 입력하세요");
     return;
   }
 
   try {
     await signupUser(email, password, nickname);
     alert("회원가입 성공!");
-    location.href = "login.html";
-  } catch (err) {
-    alert(err.message);
+    location.href = "./login.html";
+  } catch (e) {
+    alert(e.message);
   }
+
 });
 
 </script>
