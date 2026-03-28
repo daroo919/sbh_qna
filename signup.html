@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>회원가입</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -10,24 +11,35 @@
 <h2>회원가입</h2>
 
 <input type="email" id="email" placeholder="이메일"><br><br>
-
 <input type="text" id="nickname" placeholder="닉네임"><br><br>
-
 <input type="password" id="password" placeholder="비밀번호"><br><br>
 
-<button onclick="signup()">회원가입</button>
+<button id="signupBtn">회원가입</button>
 
 <script type="module">
-  import { signup } from "./firebase.js";
 
-  window.signup = async function () {
+import { signupUser } from "./firebase.js";
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const nickname = document.getElementById("nickname").value;
+document.getElementById("signupBtn").addEventListener("click", async () => {
 
-    await signup(email, password, nickname);
-  };
+  const email = document.getElementById("email").value.trim();
+  const nickname = document.getElementById("nickname").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!email || !nickname || !password) {
+    alert("전부 입력하세요.");
+    return;
+  }
+
+  try {
+    await signupUser(email, password, nickname);
+    alert("회원가입 성공!");
+    location.href = "login.html";
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
 </script>
 
 </body>
