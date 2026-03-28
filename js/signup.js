@@ -1,4 +1,4 @@
-import { auth, db } from "https://daroo919.github.io/sbh_qna/firebase.js";
+import { auth, db } from "/sbh_qna/firebase.js";
 
 import {
   createUserWithEmailAndPassword
