@@ -1,5 +1,6 @@
 // --- AI 설정 ---
-console.log("응답:", data);
+async function checkAndReplyWithAI(qId, qTitle) {
+    console.log("🔥 AI 함수 실행됨", qId);
 const AI_CONFIG = {
   API_KEY: "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", 
   MODEL: "google/gemini-flash-1.5",
