@@ -257,7 +257,7 @@
     </div>
   </nav>
 
-  <script type="module">
+ <script type="module">
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, increment, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
@@ -271,9 +271,10 @@
 
     // --- AI 설정 (OpenRouter) ---
     const AI_CONFIG = {
-        API_KEY: "여기에_오픈라우터_키를_넣으세요", 
+        // API 키를 여기에 그대로 넣었습니다.
+        API_KEY: "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", 
         MODEL: "google/gemini-flash-1.5",
-        BOT: { uid: "SYSTEM_AI_BOT", nickname: "🤖 AI 답변봇", role: "AI" }
+        BOT: { uid: "SYSTEM_AI_BOT", nickname: "시어尸魚(AI)", role: "AI" }
     };
 
     // 엔터키 처리
@@ -306,34 +307,49 @@
       });
       
       input.value = "";
-      // 1분 후 체크
+      // 1분 후 체크 (함수명 유지)
       setTimeout(() => checkAndReplyWithAI(docRef.id, title), 60000);
     };
 
-    // AI 답변 로직
+    // AI 답변 로직 (오류 수정됨)
     async function checkAndReplyWithAI(qId, qTitle) {
         const qSnap = await getDoc(doc(db, "questions", qId));
+        // 질문이 삭제되었거나 이미 누군가 답변을 달았다면 중단
         if (!qSnap.exists() || qSnap.data().answerCount > 0) return;
 
         try {
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${AI_CONFIG.API_KEY}`, "Content-Type": "application/json" },
+                headers: { 
+                  "Authorization": `Bearer ${AI_CONFIG.API_KEY}`, 
+                  "Content-Type": "application/json",
+                  "HTTP-Referer": window.location.origin // OpenRouter 필수 헤더 추가
+                },
                 body: JSON.stringify({
                     "model": AI_CONFIG.MODEL,
                     "messages": [
-                        { "role": "system", "content": "당신은 문답 서비스의 도우미 AI입니다. 한국어로 친절하게 3문장 이내로 답하세요." },
+                        { "role": "system", "content": "당신은 문답 서비스의 도우미 AI '시어'입니다. 한국어로 친절하게 3문장 이내로 답하세요." },
                         { "role": "user", "content": qTitle }
                     ]
                 })
             });
             const data = await response.json();
-            const aiText = data.choices[0].message.content;
+            
+            // API 응답 데이터 확인 로직 추가
+            if (data.choices && data.choices[0]) {
+                const aiText = data.choices[0].message.content;
 
-            await addDoc(collection(db, "questions", qId, "answers"), {
-                content: aiText, nickname: AI_CONFIG.BOT.nickname, uid: AI_CONFIG.BOT.uid, createdAt: Date.now(), isAI: true
-            });
-            await updateDoc(doc(db, "questions", qId), { answerCount: increment(1) });
+                // 답변 저장 (질문 문서 안의 answers 컬렉션에 추가)
+                await addDoc(collection(db, "questions", qId, "answers"), {
+                    content: aiText, 
+                    nickname: AI_CONFIG.BOT.nickname, 
+                    uid: AI_CONFIG.BOT.uid, 
+                    createdAt: Date.now(), 
+                    isAI: true 
+                });
+                // 질문의 답변 개수 업데이트
+                await updateDoc(doc(db, "questions", qId), { answerCount: increment(1) });
+            }
         } catch (e) { console.error("AI Error:", e); }
     }
 
