@@ -7,7 +7,7 @@ const AI_CONFIG = {
 
 const AI_BOT = {
   uid: "SYSTEM_AI_BOT",
-  nickname: "🤖 AI 답변봇",
+  nickname: "시어尸魚(AI)",
   role: "AI"
 };
 
@@ -17,7 +17,7 @@ const AI_BOT = {
  * @param {string} content - 질문 내용
  * @param {number} delay - 대기 시간 (예: 600000 = 10분)
  */
-function scheduleAIReply(docId, content, delay = 60000) {
+function scheduleAIReply(docId, content, delay = 1000) {
   console.log(`${delay / 1000}초 후 AI 답변이 예약되었습니다.`);
   
   setTimeout(async () => {
