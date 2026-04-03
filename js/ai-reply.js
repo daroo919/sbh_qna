@@ -1,42 +1,54 @@
-// 1. AI 및 고정 설정
+// --- AI 설정 ---
 const AI_CONFIG = {
   API_KEY: "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", 
   MODEL: "google/gemini-flash-1.5",
-  SITE_URL: window.location.origin
-};
-
-const AI_BOT = {
-  uid: "SYSTEM_AI_BOT",
-  nickname: "시어尸魚(AI)",
-  role: "AI"
+  BOT: { uid: "SYSTEM_AI_BOT", nickname: "시어尸魚(AI)", role: "AI" }
 };
 
 /**
- * 2. 특정 시간(ms) 후에 AI 답변을 실행하는 함수
- * @param {string} docId - 질문 문서 ID
- * @param {string} content - 질문 내용
- * @param {number} delay - 대기 시간 (예: 600000 = 10분)
+ * 1. AI 답변 예약 함수 (v9 호환)
  */
-function scheduleAIReply(docId, content, delay = 1000) {
+async function scheduleAIReply(docId, content, delay = 60000) {
   console.log(`${delay / 1000}초 후 AI 답변이 예약되었습니다.`);
   
   setTimeout(async () => {
-    // 답변이 이미 달렸는지 확인하는 로직 (선택 사항)
-    const snapshot = await db.collection('qna').doc(docId).collection('replies').get();
-    if (!snapshot.empty) {
-      console.log("이미 답변이 달려서 AI가 개입하지 않습니다.");
-      return;
-    }
+    try {
+      // 답변이 이미 달렸는지 확인 (v9 문법)
+      const answersRef = collection(db, "questions", docId, "answers");
+      const snapshot = await getDocs(answersRef);
+      
+      if (!snapshot.empty) {
+        console.log("이미 답변이 달려서 AI가 개입하지 않습니다.");
+        return;
+      }
 
-    console.log("AI 답변 생성 중...");
-    const aiContent = await fetchAIResponse(content);
-    if (aiContent) {
-      await saveAIResponse(docId, aiContent);
+      console.log("AI 답변 생성 중...");
+      const aiContent = await fetchAIResponse(content);
+      
+      if (aiContent) {
+        // AI 답변 저장 (v9 문법)
+        await addDoc(answersRef, {
+          content: aiContent,
+          uid: AI_CONFIG.BOT.uid,
+          nickname: AI_CONFIG.BOT.nickname,
+          role: AI_CONFIG.BOT.role,
+          createdAt: Date.now(), // 또는 serverTimestamp() 사용 가능
+          isAI: true
+        });
+
+        // 질문 상태 업데이트
+        await updateDoc(doc(db, "questions", docId), { answerCount: increment(1) });
+        console.log("AI 답변 저장 완료!");
+      }
+    } catch (error) {
+      console.error("AI 프로세스 중 오류:", error);
     }
   }, delay);
 }
 
-// OpenRouter 호출 함수
+/**
+ * 2. OpenRouter 호출 함수
+ */
 async function fetchAIResponse(prompt) {
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -56,19 +68,7 @@ async function fetchAIResponse(prompt) {
     const data = await response.json();
     return data.choices[0].message.content;
   } catch (e) {
-    console.error("AI 호출 실패:", e);
+    console.error("AI API 호출 실패:", e);
     return null;
   }
-}
-
-// Firestore 저장 함수
-async function saveAIResponse(docId, text) {
-  await db.collection('qna').doc(docId).collection('replies').add({
-    content: text,
-    authorUid: AI_BOT.uid,
-    authorName: AI_BOT.nickname,
-    role: AI_BOT.role,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  console.log("AI 답변 저장 완료!");
 }
