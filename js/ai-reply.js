@@ -1,6 +1,6 @@
 // 1. AI 및 고정 설정
 const AI_CONFIG = {
-  API_KEY: "여기에_오픈라우터_키를_넣으세요", 
+  API_KEY: "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", 
   MODEL: "google/gemini-flash-1.5",
   SITE_URL: window.location.origin
 };
