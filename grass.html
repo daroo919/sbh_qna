@@ -1,80 +1,121 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="icon" href="./favicon.ico">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>求援 - 힐링 정원</title>
-  <link rel="stylesheet" href="style.css">
   <style>
-    :root {
-      --glass-bg: rgba(255, 255, 255, 0.15);
-      --glass-border: rgba(255, 255, 255, 0.2);
-    }
-
-    body, html {
-      margin: 0; padding: 0; width: 100%; height: 100%;
-      overflow: hidden; font-family: 'Apple SD Gothic Neo', sans-serif;
-      background-color: #1a1a2e; /* 기본 배경색 */
+    /* --- [1. 원본 스타일 동기화] --- */
+    body {
+      margin: 0;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      background: #1a1a2e; /* 기본 밤하늘 색상 */
       background-size: cover;
+      background-attachment: fixed;
       background-position: center;
+      min-height: 100vh;
+      overflow: hidden; /* 정원 페이지는 스크롤 방지 */
     }
 
-    /* --- [헤더 & 사이드바: 유리 스타일] --- */
+    /* 헤더 (원본과 동일) */
     .header {
-      position: fixed; top: 0; width: 100%; z-index: 1000;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 25px; box-sizing: border-box;
-      background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      border-bottom: 1px solid var(--glass-border);
+      height: 70px;
+      padding: 0 20px;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
-    .logo { font-weight: 800; font-size: 22px; color: #fff; cursor: pointer; }
-    .logo .dot { color: #a7d08c; }
 
+    .logo { font-size: 22px; font-weight: 800; color: #0f172a; cursor: pointer; }
+    .dot { color: #2563eb; }
+    .header-right { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+    .points {
+      color: #2563eb; font-weight: 700;
+      background: rgba(37, 99, 235, 0.1);
+      padding: 4px 10px; border-radius: 20px;
+    }
+    .nickname { font-weight: 600; color: #334155; cursor: pointer; }
+
+    /* 레이아웃 & 사이드바 (원본과 동일) */
+    .layout { display: flex; }
     .sidebar {
-      position: fixed; left: 20px; top: 85px; width: 180px; z-index: 1000;
-      background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      border-radius: 20px; padding: 10px; border: 1px solid var(--glass-border);
+      width: 220px;
+      padding-top: 20px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(255, 255, 255, 0.4);
+      height: calc(100vh - 70px);
+      z-index: 900;
     }
     .menu-item {
-      padding: 12px 15px; margin-bottom: 5px; cursor: pointer; border-radius: 12px;
-      transition: 0.3s; color: rgba(255,255,255,0.8); font-size: 14px;
+      padding: 15px 20px; cursor: pointer; transition: 0.3s;
+      color: #374151; font-weight: 500;
     }
-    .menu-item:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateX(5px); }
+    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
 
-    /* --- [정원 레이아웃] --- */
-    #garden-container {
-      width: 100vw; height: 100vh; position: relative;
+    /* 하단 탭 바 (모바일용 원본 동기화) */
+    .bottom-tab {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
+      background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05); justify-content: space-around;
+      align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom);
+    }
+    .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #64748b; cursor: pointer; flex: 1; gap: 4px; }
+    .tab-item.active { color: #2563eb; font-weight: bold; }
+    .tab-icon { font-size: 20px; }
+
+    /* --- [2. 정원 전용 에셋 및 애니메이션] --- */
+    #garden-main {
+      flex: 1; position: relative; height: calc(100vh - 70px);
+      display: flex; justify-content: center; align-items: flex-end;
     }
 
-    /* 캐릭터 이미지 (seer.png) */
+    /* 캐릭터 (seer.png) */
     .character-bench {
-      position: absolute; right: 5%; bottom: 15%;
-      width: 400px; /* 스케치 느낌에 맞춰 크기 조절 */
-      z-index: 5;
-      pointer-events: none;
+      position: absolute; right: 10%; bottom: 15%;
+      width: 420px; z-index: 5; pointer-events: none;
+      filter: drop-shadow(0 0 15px rgba(0,0,0,0.3));
     }
 
-    /* 잔디 영역 (스케치하신 하단 지그재그 느낌) */
-    #grass-area {
-      position: absolute; bottom: 0; width: 100%; height: 150px;
-      z-index: 10; display: flex; align-items: flex-end; pointer-events: none;
+    /* 잔디 (진짜 풀 느낌) */
+    #grass-container {
+      width: 100%; height: 180px; z-index: 10;
+      display: flex; align-items: flex-end; padding: 0 5px;
     }
-
     .grass-blade {
-      flex: 1; background: #000; /* 실루엣 느낌 */
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%); /* 지그재그 삼각형 */
-      transform-origin: bottom; transition: 0.2s;
-      pointer-events: auto; /* 잔디는 만질 수 있게 */
+      flex: 1; background: #000;
+      clip-path: polygon(50% 0%, 42% 25%, 38% 100%, 62% 100%, 58% 25%);
+      transform-origin: bottom center;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
+      animation: wind 4s ease-in-out infinite;
     }
     .grass-blade:hover {
-      background: #4b367c;
-      transform: scaleY(1.2) skewX(5deg);
+      background: #4f46e5; /* 원본 테마색과 유사한 보라/블루 */
+      transform: scaleY(1.2) rotate(10deg);
     }
 
-    /* 상단 상태 표시 */
-    .garden-info {
-      position: absolute; top: 100px; right: 40px; color: #fff;
-      text-align: right; pointer-events: none; opacity: 0.7;
+    @keyframes wind { 0%, 100% { transform: rotate(-1deg); } 50% { transform: rotate(1.5deg); } }
+
+    /* HUD (정원 정보) */
+    .garden-hud {
+      position: absolute; top: 30px; right: 30px; text-align: right; color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5); pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .bottom-tab { display: flex; }
+      #garden-main { height: calc(100vh - 135px); }
+      .character-bench { width: 280px; right: 5%; }
     }
   </style>
 </head>
@@ -82,29 +123,38 @@
 
   <header class="header">
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
-    <div class="header-right" style="display:flex; gap:15px; align-items:center; color:#fff;">
-      <div id="hPoints">0P</div>
-      <div id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩 중...</div>
+    <div class="header-right">
+      <div class="points" id="hPoints">0P</div>
+      <div class="nickname" id="hNick" onclick="location.href='mypage.html'">로딩...</div>
     </div>
   </header>
 
-  <aside class="sidebar">
-    <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
-    <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
-    <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
-    <div class="menu-item" onclick="location.href='mypage.html'">⚙️ 마이페이지</div>
-  </aside>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
+      <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
+      <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
+      <div class="menu-item" onclick="location.href='mypage.html'">⚙️ 마이페이지</div>
+    </aside>
 
-  <div id="garden-container">
-    <div class="garden-info">
-      <h2 id="levelText">Level 1. 고요한 옥상</h2>
-      <p id="touchCount">보듬어준 횟수: 0</p>
-    </div>
+    <main id="garden-main">
+      <div class="garden-hud">
+        <div style="font-weight: 800; font-size: 20px;">고요한 옥상</div>
+        <div id="touchCount" style="font-size: 13px; opacity: 0.8;">보듬어준 횟수: 0</div>
+      </div>
 
-    <img src="seer.png" alt="Seer on bench" class="character-bench">
+      <img src="seer.png" alt="Seer" class="character-bench">
 
-    <div id="grass-area"></div>
+      <div id="grass-container"></div>
+    </main>
   </div>
+
+  <nav class="bottom-tab">
+    <div class="tab-item" onclick="location.href='qna.html'"><span class="tab-icon">📄</span><span>문답</span></div>
+    <div class="tab-item" onclick="location.href='talk.html'"><span class="tab-icon">👤</span><span>잡담</span></div>
+    <div class="tab-item" onclick="location.href='point.html'"><span class="tab-icon">💰</span><span>포인트</span></div>
+    <div class="tab-item active" onclick="location.href='mypage.html'"><span class="tab-icon">⚙️</span><span>마이</span></div>
+  </nav>
 
   <script type="module">
     import { auth, db } from "./firebase.js";
@@ -113,40 +163,40 @@
 
     let count = 0;
 
-    // 1. 배경 및 사용자 데이터 로드 (보내주신 마이페이지 로직 적용)
     onAuthStateChanged(auth, async u => {
       if (!u) return location.href = "login.html";
-
+      
       const s = await getDoc(doc(db, "users", u.uid));
       if (s.exists()) {
-        const d = s.data();
-        // 로컬 스토리지 배경 적용
+        const user = s.data();
+        // 헤더 동기화
+        const rName = user.role === "admin" ? "관리자" : (user.role === "teacher" ? "선생님" : "학생");
+        document.getElementById("hNick").innerText = `[${rName}] ${user.nickname}`;
+        document.getElementById("hPoints").innerText = (user.points || 0) + "P";
+
+        // 사용자 배경 이미지 로드 (투명도 조절로 정원 분위기 유지)
         const localBg = localStorage.getItem(`bg_${u.uid}`);
         if (localBg) {
-          document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${localBg}')`;
+          document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${localBg}')`;
         }
-        document.getElementById("hNick").innerText = d.nickname;
-        document.getElementById("hPoints").innerText = (d.points || 0) + "P";
       }
     });
 
-    // 2. 스케치 기반 잔디 생성
-    const grassArea = document.getElementById('grass-area');
-    const bladeCount = 40; // 지그재그 개수
+    // 잔디 생성 (원본 스케치 느낌 반영)
+    const container = document.getElementById('grass-container');
+    const bladeCount = 50;
 
     for (let i = 0; i < bladeCount; i++) {
-      const blade = document.createElement('div');
-      blade.className = 'grass-blade';
-      // 높이를 랜덤하게 주어 스케치 느낌 살림
-      blade.style.height = (Math.random() * 50 + 80) + 'px';
+      const b = document.createElement('div');
+      b.className = 'grass-blade';
+      b.style.height = (Math.random() * 60 + 100) + 'px';
+      b.style.animationDelay = (Math.random() * 2) + 's';
       
-      blade.addEventListener('mouseover', () => {
+      b.addEventListener('mouseenter', () => {
         count++;
         document.getElementById('touchCount').innerText = `보듬어준 횟수: ${count}`;
-        // 간단한 ASMR 효과음 코드를 여기에 추가할 수 있습니다.
       });
-      
-      grassArea.appendChild(blade);
+      container.appendChild(b);
     }
   </script>
 </body>
