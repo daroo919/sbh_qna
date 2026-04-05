@@ -1,245 +1,153 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>求援 - 힐링 정원 (ASMR)</title>
-    <style>
-        :root {
-            --sky-top: #87CEEB;
-            --sky-bottom: #f0f9ff;
-            --ground-light: #a7d08c;
-            --ground-dark: #8eb36d;
-            --wood-brown: #6d4c41;
-            --leaf-green: #4caf50;
-            --glass-bg: rgba(255, 255, 255, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.3);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>求援 - 힐링 정원</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.15);
+      --glass-border: rgba(255, 255, 255, 0.2);
+    }
 
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; font-family: 'Apple SD Gothic Neo', sans-serif;
-            background-color: var(--sky-bottom);
-        }
+    body, html {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      overflow: hidden; font-family: 'Apple SD Gothic Neo', sans-serif;
+      background-color: #1a1a2e; /* 기본 배경색 */
+      background-size: cover;
+      background-position: center;
+    }
 
-        /* --- [배경: 정원 레이아웃] --- */
-        #garden {
-            width: 100vw; height: 100vh;
-            background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bottom) 50%, var(--ground-light) 50%, var(--ground-dark) 100%);
-            position: relative; cursor: pointer;
-        }
+    /* --- [헤더 & 사이드바: 유리 스타일] --- */
+    .header {
+      position: fixed; top: 0; width: 100%; z-index: 1000;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 25px; box-sizing: border-box;
+      background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .logo { font-weight: 800; font-size: 22px; color: #fff; cursor: pointer; }
+    .logo .dot { color: #a7d08c; }
 
-        /* --- [상단 상호작용 패널] --- */
-        .interaction-panel {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 100; display: flex; flex-direction: column; align-items: center; gap: 10px;
-            background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            padding: 15px 25px; border-radius: 20px; border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-        }
-        .garden-title { font-weight: 800; font-size: 18px; color: #334155; margin: 0; }
-        .stats { font-size: 14px; color: #475569; display: flex; gap: 15px; }
-        .back-btn {
-            background: rgba(15, 23, 42, 0.8); color: white; border: none; padding: 8px 16px;
-            border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;
-            transition: 0.2s;
-        }
-        .back-btn:hover { background: #0f172a; transform: translateY(-1px); }
+    .sidebar {
+      position: fixed; left: 20px; top: 85px; width: 180px; z-index: 1000;
+      background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px; padding: 10px; border: 1px solid var(--glass-border);
+    }
+    .menu-item {
+      padding: 12px 15px; margin-bottom: 5px; cursor: pointer; border-radius: 12px;
+      transition: 0.3s; color: rgba(255,255,255,0.8); font-size: 14px;
+    }
+    .menu-item:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateX(5px); }
 
-        /* --- [ASMR 잔디 요소 (만지는 느낌)] --- */
-        .grass-blade {
-            position: absolute; bottom: 0; width: 10px; height: 60px;
-            background: linear-gradient(to top, var(--ground-dark), var(--ground-light));
-            border-radius: 5px 5px 0 0; transform-origin: bottom;
-            transition: transform 0.1s ease-out; z-index: 10;
-        }
-        /* 마우스가 지나갈 때 (만질 때) 옆으로 눕는 효과 */
-        .grass-blade:hover { transform: rotate(30deg) scaleY(0.8); }
+    /* --- [정원 레이아웃] --- */
+    #garden-container {
+      width: 100vw; height: 100vh; position: relative;
+    }
 
-        /* --- [나무 성장 시스템] --- */
-        #the-tree {
-            position: absolute; bottom: 50%; left: 50%; transform: translate(-50%, 0%);
-            z-index: 5; transition: all 1s ease-in-out;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        /* 나무 기둥 */
-        .trunk {
-            width: 20px; height: 0px; /* 초기 높이 0 */
-            background-color: var(--wood-brown);
-            border-radius: 5px 5px 0 0;
-            transition: height 1s ease-in-out;
-        }
-        /* 나뭇잎 (원형 에셋) */
-        .leaves-cluster {
-            position: absolute; top: 0; transform: translateY(-50%);
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;
-            opacity: 0; transition: opacity 1s ease-in-out;
-        }
-        .leaf {
-            width: 40px; height: 40px; background-color: var(--leaf-green);
-            border-radius: 50%; opacity: 0.8;
-            animation: rustle 4s ease-in-out infinite;
-        }
-        .leaf:nth-child(2) { animation-delay: 1s; }
-        .leaf:nth-child(3) { animation-delay: 2s; }
-        .leaf:nth-child(4) { animation-delay: 3s; }
+    /* 캐릭터 이미지 (seer.png) */
+    .character-bench {
+      position: absolute; right: 5%; bottom: 15%;
+      width: 400px; /* 스케치 느낌에 맞춰 크기 조절 */
+      z-index: 5;
+      pointer-events: none;
+    }
 
-        @keyframes rustle { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05) translate(2px, -2px); } }
+    /* 잔디 영역 (스케치하신 하단 지그재그 느낌) */
+    #grass-area {
+      position: absolute; bottom: 0; width: 100%; height: 150px;
+      z-index: 10; display: flex; align-items: flex-end; pointer-events: none;
+    }
 
-        /* --- [애니메이션 에셋 (꽃/새싹)] --- */
-        .plant { position: absolute; transform: translate(-50%, -100%); z-index: 12; pointer-events: none; }
-        .pop-effect { font-size: 32px; animation: pop-appear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes pop-appear { 0% { transform: translate(-50%, -100%) scale(0); opacity: 0; } 80% { transform: translate(-50%, -100%) scale(1.2); opacity: 1; } 100% { transform: translate(-50%, -100%) scale(1); } }
+    .grass-blade {
+      flex: 1; background: #000; /* 실루엣 느낌 */
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%); /* 지그재그 삼각형 */
+      transform-origin: bottom; transition: 0.2s;
+      pointer-events: auto; /* 잔디는 만질 수 있게 */
+    }
+    .grass-blade:hover {
+      background: #4b367c;
+      transform: scaleY(1.2) skewX(5deg);
+    }
 
-        /* --- [안내 메시지] --- */
-        #guide-msg {
-            position: fixed; bottom: 100px; width: 100%; text-align: center;
-            color: #555; font-size: 15px; z-index: 100; pointer-events: none;
-            text-shadow: 1px 1px 2px white; animation: fade-out 5s forwards; animation-delay: 3s;
-        }
-        @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
-    </style>
+    /* 상단 상태 표시 */
+    .garden-info {
+      position: absolute; top: 100px; right: 40px; color: #fff;
+      text-align: right; pointer-events: none; opacity: 0.7;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="garden">
-        <div class="interaction-panel" onclick="event.stopPropagation();">
-            <h1 class="garden-title">求援 힐링 정원</h1>
-            <div class="stats">
-                <span id="stat-touch">만짐: 0</span>
-                <span id="stat-level">나무 레벨: 1</span>
-            </div>
-            <button class="back-btn" onclick="location.href='mypage.html'">마이페이지로 돌아가기</button>
-        </div>
+  <header class="header">
+    <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
+    <div class="header-right" style="display:flex; gap:15px; align-items:center; color:#fff;">
+      <div id="hPoints">0P</div>
+      <div id="hNick" style="cursor:pointer" onclick="location.href='mypage.html'">로딩 중...</div>
+    </div>
+  </header>
 
-        <div id="the-tree">
-            <div class="leaves-cluster" id="tree-leaves">
-                <div class="leaf"></div>
-                <div class="leaf"></div>
-                <div class="leaf"></div>
-                <div class="leaf"></div>
-            </div>
-            <div class="trunk" id="tree-trunk"></div>
-        </div>
+  <aside class="sidebar">
+    <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
+    <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
+    <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
+    <div class="menu-item" onclick="location.href='mypage.html'">⚙️ 마이페이지</div>
+  </aside>
 
-        <div id="grass-area"></div>
-        
-        <p id="guide-msg">잔디를 마우스로 부드럽게 문질러보세요 (ASMR).<br>많이 만질수록 중앙의 나무가 자라납니다.</p>
+  <div id="garden-container">
+    <div class="garden-info">
+      <h2 id="levelText">Level 1. 고요한 옥상</h2>
+      <p id="touchCount">보듬어준 횟수: 0</p>
     </div>
 
-    <script>
-        const garden = document.getElementById('garden');
-        const trunk = document.getElementById('tree-trunk');
-        const leaves = document.getElementById('tree-leaves');
-        const touchStat = document.getElementById('stat-touch');
-        const levelStat = document.getElementById('stat-level');
+    <img src="seer.png" alt="Seer on bench" class="character-bench">
 
-        let touchCount = 0;
-        let treeLevel = 1;
-        
-        // 브라우저 기본 사운드를 활용한 ASMR (초기 클릭 필요)
-        let audioCtx = null;
-        function playRustleSound() {
-            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            
-            // 바람소리와 유사한 노이즈 레시피
-            osc.type = 'triangle'; // 부드러운 톤
-            osc.frequency.setValueAtTime(Math.random() * 100 + 100, audioCtx.currentTime); 
-            osc.frequency.exponentialRampToValueAtTime(Math.random() * 50 + 50, audioCtx.currentTime + 0.1);
-            
-            gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime); // 아주 작게
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-            
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
+    <div id="grass-area"></div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "./firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    let count = 0;
+
+    // 1. 배경 및 사용자 데이터 로드 (보내주신 마이페이지 로직 적용)
+    onAuthStateChanged(auth, async u => {
+      if (!u) return location.href = "login.html";
+
+      const s = await getDoc(doc(db, "users", u.uid));
+      if (s.exists()) {
+        const d = s.data();
+        // 로컬 스토리지 배경 적용
+        const localBg = localStorage.getItem(`bg_${u.uid}`);
+        if (localBg) {
+          document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${localBg}')`;
         }
+        document.getElementById("hNick").innerText = d.nickname;
+        document.getElementById("hPoints").innerText = (d.points || 0) + "P";
+      }
+    });
 
-        // --- [1. ASMR 잔디밭 생성 (만지는 느낌 구현)] ---
-        const grassArea = document.getElementById('grass-area');
-        const bladeCount = window.innerWidth / 12; // 화면 너비에 맞춰 잔디 개수 조절
-        
-        for (let i = 0; i < bladeCount; i++) {
-            const blade = document.createElement('div');
-            blade.className = 'grass-blade';
-            blade.style.left = (i * 12) + 'px';
-            // 높이와 애니메이션 속도를 약간 랜덤하게 줘서 자연스럽게
-            blade.style.height = (Math.random() * 20 + 50) + 'px';
-            blade.style.animation = `sway ${Math.random() * 2 + 3}s ease-in-out infinite`;
-            blade.style.animationDelay = `${Math.random() * 2}s`;
-            
-            // 잔디를 만졌을 때 (Hover) 소리와 카운트 증가
-            blade.addEventListener('mouseover', () => {
-                playRustleSound();
-                updateStats();
-            });
-            
-            grassArea.appendChild(blade);
-        }
+    // 2. 스케치 기반 잔디 생성
+    const grassArea = document.getElementById('grass-area');
+    const bladeCount = 40; // 지그재그 개수
 
-        // --- [2. 통계 및 나무 성장 로직] ---
-        function updateStats() {
-            touchCount++;
-            touchStat.innerText = `만짐: ${touchCount}`;
-            
-            // 나무 레벨업 레시피 (레벨 * 50번 만질 때마다 레벨업)
-            const nextLevelReq = treeLevel * 50;
-            if (touchCount >= nextLevelReq) {
-                treeLevel++;
-                levelStat.innerText = `나무 레벨: ${treeLevel}`;
-                levelStat.style.color = '#4caf50';
-                levelStat.style.fontWeight = 'bold';
-                setTimeout(()=> levelStat.style.color = '#475569', 1000);
-                
-                growTree();
-            }
-        }
-
-        function growTree() {
-            // 레벨에 맞춰 기둥 높이와 잎사귀 가시성 조절
-            const newHeight = treeLevel * 20; 
-            trunk.style.height = newHeight + 'px';
-            
-            // 레벨 3부터 잎사귀가 나타남
-            if (treeLevel >= 3) {
-                leaves.style.opacity = '1';
-                leaves.style.transform = `translateY(-${newHeight}px)`; // 기둥 끝으로 이동
-            }
-        }
-
-        // 초기 나무 높이 설정
-        growTree();
-
-        // --- [3. 클릭 상호작용 (꽃 피우기)] ---
-        const flowers = ['🌸', '🌼', '🌻', '🌷', '🌿', '🍀'];
-        garden.addEventListener('click', (e) => {
-            // 패널 클릭 시엔 작동안함
-            if (e.target.closest('.interaction-panel')) return;
-            
-            // 잔디밭 영역(하단 50%)
-            if (e.clientY < window.innerHeight * 0.5) return;
-
-            // 만짐 카운트 5 증가 (클릭 보너스)
-            for(let i=0; i<5; i++) updateStats();
-
-            const plant = document.createElement('div');
-            plant.className = 'plant pop-effect';
-            plant.style.left = e.clientX + 'px';
-            plant.style.top = e.clientY + 'px';
-            plant.innerText = flowers[Math.floor(Math.random() * flowers.length)];
-            garden.appendChild(plant);
-
-            // 3초 후 꽃 제거
-            setTimeout(() => {
-                plant.style.opacity = '0';
-                plant.style.transition = 'opacity 1s';
-                setTimeout(() => plant.remove(), 1000);
-            }, 3000);
-        });
-
-    </script>
+    for (let i = 0; i < bladeCount; i++) {
+      const blade = document.createElement('div');
+      blade.className = 'grass-blade';
+      // 높이를 랜덤하게 주어 스케치 느낌 살림
+      blade.style.height = (Math.random() * 50 + 80) + 'px';
+      
+      blade.addEventListener('mouseover', () => {
+        count++;
+        document.getElementById('touchCount').innerText = `보듬어준 횟수: ${count}`;
+        // 간단한 ASMR 효과음 코드를 여기에 추가할 수 있습니다.
+      });
+      
+      grassArea.appendChild(blade);
+    }
+  </script>
 </body>
 </html>
