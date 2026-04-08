@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>求援 - 마이페이지 (ASMR)</title>
+  <title>求援 - 힐링 정원 (ASMR)</title>
   <link rel="stylesheet" href="style.css">
   <style>
     /* 기본 스타일 및 레이아웃 */
@@ -16,6 +16,8 @@
       background-size: cover; 
       background-position: center; 
     }
+    
+    /* 헤더 스타일 (기존 유지) */
     .header {
       height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6);
       backdrop-filter: blur(12px); display: flex; justify-content: space-between;
@@ -29,35 +31,31 @@
     .logout { cursor: pointer; padding: 6px 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold; }
 
     .layout { display: flex; height: calc(100vh - 70px); }
+    
+    /* 사이드바 (기존 유지) */
     .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
     .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; font-weight: 500; }
     .menu-item.active { color: #2563eb; font-weight: bold; background: rgba(255, 255, 255, 0.6); }
 
+    /* 메인 영역 */
     .main { flex: 1; position: relative; z-index: 10; padding: 20px; }
 
-    /* 프로필 카드 및 돌아가기 버튼 */
-    .profile-card {
-      background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      border-radius: 20px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05); max-width: 420px; margin: 40px auto; position: relative;
+    /* [수정] 왼쪽 상단 나가기 버튼 */
+    .exit-btn {
+      position: absolute; top: 20px; left: 20px; 
+      padding: 10px 20px; border-radius: 12px; border: none;
+      background: rgba(15, 23, 42, 0.8); color: white; 
+      font-weight: bold; cursor: pointer; font-size: 14px;
+      backdrop-filter: blur(5px); transition: 0.2s;
+      z-index: 150; /* 잔디보다 위에 */
     }
-    .back-btn {
-      position: absolute; top: 15px; left: 15px; background: none; border: none;
-      font-size: 18px; cursor: pointer; color: #64748b; transition: 0.2s;
-    }
-    .back-btn:hover { color: #0f172a; transform: translateX(-3px); }
+    .exit-btn:hover { background: rgba(15, 23, 42, 1); transform: translateY(-2px); }
 
-    .field { margin-bottom: 20px; }
-    .label { font-size: 13px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
-    .input-box, .upload-box {
-      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.4);
-      background: rgba(255, 255, 255, 0.5); box-sizing: border-box; font-size: 15px; outline: none;
-    }
-    .save-btn { width: 100%; padding: 14px; border-radius: 16px; border: none; background: #0f172a; color: white; font-weight: bold; cursor: pointer; }
-
-    /* 잔디 캔버스 레이어 */
+    /* 잔디 캔버스 레이어 (전체 화면 차지) */
     #garden-container { position: fixed; top: 70px; left: 220px; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
     canvas#grassCanvas { width: 100%; height: 100%; pointer-events: auto; }
+    
+    /* HUD (보듬은 횟수) */
     .hud { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center; border: 1px solid white; }
 
     @media (max-width: 768px) { .sidebar { display: none; } #garden-container { left: 0; } }
@@ -82,22 +80,7 @@
     </aside>
 
     <main class="main">
-      <div class="profile-card">
-        <button class="back-btn" onclick="location.href='main.html'">←</button>
-        <h2 style="margin:10px 0 25px 0; color:#0f172a; text-align:center;">프로필 설정</h2>
-        <div class="field">
-          <div class="label">닉네임 변경</div>
-          <input type="text" id="nickInput" class="input-box">
-        </div>
-        <div class="field">
-          <div class="label">나만의 배경 이미지</div>
-          <div class="upload-box" onclick="document.getElementById('fileInput').click()" style="cursor:pointer; text-align:center;">
-            <span id="fileName">🖼️ 사진 업로드</span>
-            <input type="file" id="fileInput" accept="image/*" style="display:none">
-          </div>
-        </div>
-        <button id="saveBtn" class="save-btn">변경사항 저장</button>
-      </div>
+      <button class="exit-btn" onclick="location.href='main.html'">나가기</button>
 
       <div id="garden-container">
         <div class="hud">
@@ -112,7 +95,7 @@
   <script type="module">
     import { auth, db } from "./firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     // --- [사용자 데이터 및 배경 연동] ---
     const applyBg = (uid) => {
@@ -128,24 +111,10 @@
         const d = snap.data();
         document.getElementById('hNick').innerText = d.nickname;
         document.getElementById('hPoints').innerText = (d.points || 0) + "P";
-        document.getElementById('nickInput').value = d.nickname;
       }
     });
 
-    document.getElementById('fileInput').onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          localStorage.setItem(`bg_${auth.currentUser.uid}`, ev.target.result);
-          applyBg(auth.currentUser.uid);
-          document.getElementById('fileName').innerText = "✅ 변경 완료";
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-
-    // --- [부드러운 잔디 ASMR 물리 엔진] ---
+    // --- [부드러운 잔디 ASMR 물리 엔진 - 길이 보존 버전] ---
     const canvas = document.getElementById('grassCanvas'), ctx = canvas.getContext('2d');
     let width, height, bgm, isBgm = false;
     const effectFiles = [
@@ -170,7 +139,7 @@
     class Blade {
       constructor(x) { 
         this.x = x; 
-        this.h = 100 + Math.random() * 90; 
+        this.h = 100 + Math.random() * 100; // 잔디 높이
         this.angle = 0; 
         this.targetAngle = 0; 
         this.stiffness = 0.1; // 흐느적거리는 정도
@@ -180,7 +149,7 @@
       update() {
         const dist = Math.abs(mouse.x - this.x);
         if(isMoving && dist < 120) {
-          // 마우스 방향에 따라 휘어짐 (길이 보존을 위한 각도 제한)
+          // 마우스 방향에 따라 자연스럽게 휘어짐 (길이 고정)
           this.targetAngle = (mouse.vx > 0 ? 1 : -1) * Math.min(Math.PI / 2.5, Math.abs(mouse.vx) * 0.05);
           
           if(Math.random() > 0.96) {
