@@ -8,26 +8,35 @@
   <style>
     body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f0f9ff; overflow: hidden; min-height: 100vh; background-size: cover; background-position: center; }
     .layout { display: flex; height: calc(100vh - 70px); }
-    .main { flex: 1; position: relative; z-index: 10; padding: 20px; overflow-y: auto; }
+    .main { flex: 1; position: relative; z-index: 10; padding: 20px; }
     
-    /* 프로필 카드 디자인 */
+    /* 프로필 카드 */
     .profile-card {
       background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
       border-radius: 20px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05); max-width: 450px; margin: 40px auto;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05); max-width: 420px; margin: 40px auto; position: relative;
     }
+
+    /* 돌아가기 버튼 */
+    .back-btn {
+      position: absolute; top: 15px; left: 15px; background: none; border: none;
+      font-size: 18px; cursor: pointer; color: #64748b; transition: 0.2s;
+    }
+    .back-btn:hover { color: #0f172a; transform: translateX(-3px); }
+
     .field { margin-bottom: 20px; }
-    .label { font-size: 14px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
+    .label { font-size: 13px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
     .input-box, .upload-box {
       width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.4);
-      background: rgba(255, 255, 255, 0.5); box-sizing: border-box; font-size: 15px;
+      background: rgba(255, 255, 255, 0.5); box-sizing: border-box; font-size: 15px; outline: none;
     }
-    .save-btn { width: 100%; padding: 14px; border-radius: 16px; border: none; background: #0f172a; color: white; font-weight: bold; cursor: pointer; }
+    .save-btn { width: 100%; padding: 14px; border-radius: 16px; border: none; background: #0f172a; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-    /* 잔디 컨테이너 */
+    /* 잔디 영역 */
     #garden-container { position: fixed; top: 70px; left: 220px; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
     canvas#grassCanvas { width: 100%; height: 100%; pointer-events: auto; }
-    .hud { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center; }
+    
+    .hud { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center; border: 1px solid white; }
 
     @media (max-width: 768px) { .sidebar { display: none; } #garden-container { left: 0; } }
   </style>
@@ -37,7 +46,7 @@
     <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
     <div class="header-right">
       <div class="points" id="hPoints">0P</div>
-      <div class="nickname" id="hNick">로딩 중...</div>
+      <div class="nickname" id="hNick">로딩...</div>
       <div class="logout" id="logoutBtn">로그아웃</div>
     </div>
   </header>
@@ -52,19 +61,20 @@
 
     <main class="main">
       <div class="profile-card">
-        <h2 style="margin:0 0 20px 0; color:#0f172a;">내 프로필 설정</h2>
+        <button class="back-btn" onclick="location.href='main.html'">←</button>
+        <h2 style="margin:10px 0 25px 0; color:#0f172a; text-align:center;">프로필 설정</h2>
         <div class="field">
-          <div class="label">닉네임 변경</div>
-          <input type="text" id="nickInput" class="input-box" placeholder="닉네임 입력">
+          <div class="label">닉네임</div>
+          <input type="text" id="nickInput" class="input-box">
         </div>
         <div class="field">
-          <div class="label">배경 이미지 설정</div>
+          <div class="label">배경 이미지</div>
           <div class="upload-box" onclick="document.getElementById('fileInput').click()" style="cursor:pointer; text-align:center;">
-            <span id="fileName">🖼️ 사진 선택</span>
+            <span id="fileName">🖼️ 사진 업로드</span>
             <input type="file" id="fileInput" accept="image/*" style="display:none">
           </div>
         </div>
-        <button id="saveBtn" class="save-btn">변경사항 저장하기</button>
+        <button id="saveBtn" class="save-btn">저장하기</button>
       </div>
 
       <div id="garden-container">
@@ -82,15 +92,15 @@
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    // --- 배경화면 로드 함수 ---
-    function loadBackground(uid) {
+    // 배경화면 로드
+    const applyBg = (uid) => {
       const bg = localStorage.getItem(`bg_${uid}`);
       if (bg) document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${bg}')`;
-    }
+    };
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return location.href = "login.html";
-      loadBackground(user.uid);
+      applyBg(user.uid);
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) {
         const d = snap.data();
@@ -100,31 +110,30 @@
       }
     });
 
-    // --- 파일 업로드 로직 ---
+    // 배경 업로드
     document.getElementById('fileInput').onchange = (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = (ev) => {
-          const base64 = ev.target.result;
-          localStorage.setItem(`bg_${auth.currentUser.uid}`, base64);
-          loadBackground(auth.currentUser.uid);
-          document.getElementById('fileName').innerText = "✅ 변경 완료!";
+          localStorage.setItem(`bg_${auth.currentUser.uid}`, ev.target.result);
+          applyBg(auth.currentUser.uid);
+          document.getElementById('fileName').innerText = "✅ 변경되었습니다";
         };
         reader.readAsDataURL(file);
       }
     };
 
-    // --- 잔디 및 ASMR 엔진 (빳빳한 물리 버전) ---
+    // --- [부드러운 잔디 ASMR 엔진] ---
     const canvas = document.getElementById('grassCanvas'), ctx = canvas.getContext('2d');
-    let width, height, audioCtx, bgm, isBgm = false;
+    let width, height, bgm, isBgm = false;
     const effectFiles = ['dragon-studio-grass-rustling-04-504019.mp3','dragon-studio-grass-rustling-04-511301.mp3','dragon-studio-grass-rustling-05-511299.mp3','dragon-studio-dry-grass-rustling-478361.mp3'];
     const effects = effectFiles.map(f => new Audio(f));
 
-    function startAudio() {
+    function startBgm() {
       if(!isBgm) {
         bgm = new Audio('dragon-studio-dry-field-grass-rustling-482893.mp3');
-        bgm.loop = true; bgm.volume = 0.15; bgm.play(); isBgm = true;
+        bgm.loop = true; bgm.volume = 0.12; bgm.play(); isBgm = true;
       }
     }
 
@@ -132,38 +141,47 @@
     let lastX = 0, isMoving = false, touches = 0, timer;
 
     class Blade {
-      constructor(x) { this.x = x; this.h = 110 + Math.random()*70; this.angle = 0; this.vx = 0; this.stiffness = 0.7; this.damping = 0.8; this.color = `rgba(187, 247, 208, ${0.7+Math.random()*0.3})`; }
+      constructor(x) { 
+        this.x = x; 
+        this.h = 100 + Math.random() * 100; 
+        this.angle = 0; 
+        this.targetAngle = 0; 
+        this.stiffness = 0.1; // [수정] 다시 흐느적거리도록 낮춤
+        this.color = `rgba(187, 247, 208, ${0.6 + Math.random() * 0.4})`;
+      }
       update() {
-        const tx = this.x + Math.sin(this.angle)*this.h, dist = Math.abs(mouse.x - tx);
-        if(isMoving && dist < 100) {
-          this.targetAngle = mouse.vx * 0.4;
-          if(Math.random() > 0.97) {
+        const dist = Math.abs(mouse.x - this.x);
+        if(isMoving && dist < 120) {
+          this.targetAngle = mouse.vx * 0.35; // 마우스 따라 부드럽게 휨
+          if(Math.random() > 0.96) {
             const s = effects[Math.floor(Math.random()*effects.length)].cloneNode();
-            s.volume = Math.min(0.4, Math.abs(mouse.vx)/100); s.play();
+            s.volume = Math.min(0.3, Math.abs(mouse.vx)/120); s.play();
           }
           touches += 0.002; document.getElementById('count').innerText = Math.floor(touches);
         } else { this.targetAngle = 0; }
-        this.vx += (this.targetAngle - this.angle) * this.stiffness;
-        this.vx *= this.damping; this.angle += this.vx;
+        // 부드러운 복원력
+        this.angle += (this.targetAngle - this.angle) * this.stiffness;
       }
       draw() {
         ctx.beginPath(); ctx.moveTo(this.x, height);
-        ctx.quadraticCurveTo(this.x, height-this.h/2, this.x+Math.sin(this.angle)*this.h, height-this.h);
+        const tipX = this.x + (this.angle * this.h * 0.8);
+        ctx.quadraticCurveTo(this.x, height - this.h / 2, tipX, height - this.h);
         ctx.strokeStyle = this.color; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.stroke();
       }
     }
 
     function init() {
       width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight;
-      blades.length = 0; for(let i=0; i<=width; i+=12) blades.push(new Blade(i+Math.random()*10));
+      blades.length = 0; for(let i=0; i<=width; i+=12) blades.push(new Blade(i + Math.random()*10));
     }
     function animate() { ctx.clearRect(0,0,width,height); blades.forEach(b => { b.update(); b.draw(); }); requestAnimationFrame(animate); }
     window.addEventListener('mousemove', (e) => {
-      startAudio(); isMoving = true; const x = e.clientX - canvas.getBoundingClientRect().left;
+      startBgm(); isMoving = true; const x = e.clientX - canvas.getBoundingClientRect().left;
       mouse.vx = x - lastX; mouse.x = x; lastX = x;
       clearTimeout(timer); timer = setTimeout(() => isMoving = false, 50);
     });
     window.onresize = init; init(); animate();
+    document.getElementById("logoutBtn").onclick = () => { if(confirm("로그아웃?")) signOut(auth).then(()=>location.href="login.html"); };
   </script>
 </body>
 </html>
