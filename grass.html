@@ -1,151 +1,157 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="icon" href="./favicon.ico">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>求援 - ASMR 힐링 정원</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>求援 - 마이페이지 (ASMR)</title>
+  <link rel="stylesheet" href="style.css">
   <style>
+    /* [1. 원래 UI 스타일 복구] */
     body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f0f9ff; overflow: hidden; }
-    .header {
-      height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top: 0; z-index: 1000;
+    
+    .profile-card {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+      position: relative;
+      z-index: 50; /* 잔디보다 위에 위치 */
+      max-width: 500px;
+      margin: 20px auto;
     }
-    .logo { font-size: 22px; font-weight: 800; color: #0f172a; cursor: pointer; }
-    .dot { color: #2563eb; }
-    .layout { display: flex; }
-    .sidebar {
-      width: 220px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px);
-      border-right: 1px solid rgba(255, 255, 255, 0.4); height: calc(100vh - 70px);
-    }
-    .menu-item { padding: 15px 20px; color: #374151; font-weight: 500; cursor: pointer; }
-    #garden-main { flex: 1; position: relative; height: calc(100vh - 70px); overflow: hidden; }
-    canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
 
-    /* 안내 문구 */
-    .audio-notice {
-      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.8); color: white; padding: 8px 16px;
-      border-radius: 20px; font-size: 12px; z-index: 100; pointer-events: none;
+    .field { margin-bottom: 20px; }
+    .label { font-size: 14px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
+    .input-box, .upload-box {
+      width: 100%; padding: 12px; border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.5);
+      box-sizing: border-box; font-size: 15px;
     }
+
+    .save-btn {
+      width: 100%; padding: 14px; border-radius: 16px; border: none;
+      background: #0f172a; color: white; font-weight: bold; cursor: pointer;
+    }
+
+    /* [2. 잔디 캔버스 레이아웃] */
+    #garden-container {
+      position: fixed; top: 70px; left: 220px; right: 0; bottom: 0;
+      z-index: 1; overflow: hidden;
+    }
+    canvas#grassCanvas { width: 100%; height: 100%; display: block; }
+
     .hud {
       position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8);
-      padding: 10px 20px; border-radius: 15px; border: 1px solid #e2e8f0; z-index: 100;
+      padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center;
     }
-    #count { font-size: 20px; font-weight: 900; color: #2563eb; }
 
-    @media (max-width: 768px) { .sidebar { display: none; } }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      #garden-container { left: 0; }
+    }
   </style>
 </head>
 <body>
-
   <header class="header">
-    <div class="logo">求援<span class="dot">.</span></div>
-    <div style="font-size: 13px; color: #64748b;">ASMR Sound Garden</div>
+    <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
+    <div class="header-right">
+      <div class="points" id="hPoints">0P</div>
+      <div class="nickname" id="hNick">로딩 중...</div>
+    </div>
   </header>
 
   <div class="layout">
     <aside class="sidebar">
-      <div class="menu-item">📄 문답</div>
-      <div class="menu-item">👤 잡담</div>
-      <div class="menu-item">⚙️ 마이페이지</div>
+      <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
+      <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
+      <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
+      <div class="menu-item active">⚙️ 마이페이지</div>
     </aside>
 
-    <main id="garden-main">
-      <div class="hud">
-        <div style="font-size: 11px; color: #64748b;">쓰다듬은 횟수</div>
-        <div id="count">0</div>
+    <main class="main" style="position:relative; z-index:10;">
+      <div class="profile-card">
+        <h2 style="margin-top:0; color:#0f172a;">내 프로필 설정</h2>
+        <div class="field">
+          <div class="label">닉네임 변경</div>
+          <input type="text" id="nickInput" class="input-box" placeholder="닉네임 입력">
+        </div>
+        <div class="field">
+          <div class="label">나만의 배경 이미지</div>
+          <div class="upload-box" onclick="document.getElementById('fileInput').click()" style="cursor:pointer;">
+            <span id="fileName">🖼️ 사진 선택</span>
+            <input type="file" id="fileInput" accept="image/*" style="display:none">
+          </div>
+        </div>
+        <button id="saveBtn" class="save-btn">변경사항 저장하기</button>
+        <p style="font-size: 12px; color: #64748b; margin-top: 15px; text-align: center;">
+          카드 밖의 잔디를 쓰다듬으면 소리가 납니다 🎧
+        </p>
       </div>
-      <div class="audio-notice">화면을 스와이프하면 사각사각 소리가 납니다 🎧</div>
-      <canvas id="grassCanvas"></canvas>
+
+      <div id="garden-container">
+        <div class="hud">
+          <div style="font-size: 11px; color: #64748b;">보듬어준 횟수</div>
+          <div id="count" style="font-size: 20px; font-weight: 900; color: #2563eb;">0</div>
+        </div>
+        <canvas id="grassCanvas"></canvas>
+      </div>
     </main>
   </div>
 
   <script>
+    // --- [ASMR 사운드 및 잔디 엔진] ---
     const canvas = document.getElementById('grassCanvas');
     const ctx = canvas.getContext('2d');
-    let width, height;
+    let width, height, audioCtx;
 
-    // --- [ASMR 사운드 엔진] ---
-    let audioCtx;
-    function initAudio() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    
     function playGrassSound(volume) {
       if (!audioCtx) return;
-      const bufferSize = audioCtx.sampleRate * 0.05; // 짧은 노이즈
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.05, audioCtx.sampleRate);
       const data = buffer.getChannelData(0);
-      
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1; // 화이트 노이즈
-      }
-
+      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
       const noise = audioCtx.createBufferSource();
       noise.buffer = buffer;
-
       const filter = audioCtx.createBiquadFilter();
-      filter.type = 'lowpass'; // 부드러운 사각거림을 위해 저역 통과 필터
-      filter.frequency.value = 1000 + (volume * 2000); 
-
+      filter.type = 'lowpass'; filter.frequency.value = 800 + (volume * 1500);
       const gainNode = audioCtx.createGain();
-      gainNode.gain.setValueAtTime(volume * 0.1, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-
-      noise.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
+      gainNode.gain.setValueAtTime(volume * 0.08, audioCtx.currentTime);
+      noise.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination);
       noise.start();
     }
 
-    // --- [잔디 로직] ---
     const mouse = { x: -1000, vx: 0 };
-    let lastX = 0;
-    let isMoving = false;
-    let timer;
-    let touches = 0;
-
+    let lastX = 0, isMoving = false, timer, touches = 0;
     const blades = [];
-    const bladeCount = 350;
 
     class Blade {
       constructor(x) {
-        this.x = x;
-        this.h = 130 + Math.random() * 80;
-        this.angle = 0;
-        this.targetAngle = 0;
-        this.stiffness = 0.07 + Math.random() * 0.05;
-        this.color = `rgba(187, 247, 208, ${0.7 + Math.random() * 0.3})`;
+        this.x = x; this.h = 100 + Math.random() * 120;
+        this.angle = 0; this.targetAngle = 0; this.stiffness = 0.08;
+        this.color = `rgba(187, 247, 208, ${0.6 + Math.random() * 0.4})`;
       }
-
       update() {
         const dist = Math.abs(mouse.x - this.x);
         if (isMoving && dist < 120) {
-          const force = (120 - dist) / 120;
-          this.targetAngle = (mouse.vx * force * 0.5);
-          
-          touches += 0.0015;
+          this.targetAngle = mouse.vx * 0.4;
+          touches += 0.001;
           document.getElementById('count').innerText = Math.floor(touches);
-          
-          // 소리 재생 (마우스 속도에 비례)
-          if (Math.random() > 0.95) playGrassSound(Math.abs(mouse.vx) / 50);
-        } else {
-          this.targetAngle = 0;
-        }
+          if (Math.random() > 0.94) playGrassSound(Math.abs(mouse.vx) / 40);
+        } else { this.targetAngle = 0; }
         this.angle += (this.targetAngle - this.angle) * this.stiffness;
       }
-
       draw() {
-        ctx.beginPath();
-        ctx.moveTo(this.x, height);
-        const tipX = this.x + (this.angle * this.h * 0.7);
-        const tipY = height - this.h + Math.abs(this.angle * 15);
+        ctx.beginPath(); ctx.moveTo(this.x, height);
+        const tipX = this.x + (this.angle * this.h * 0.8);
+        const tipY = height - this.h;
         ctx.quadraticCurveTo(this.x, height - this.h / 2, tipX, tipY);
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth = 7;
-        ctx.lineCap = 'round';
-        ctx.stroke();
+        ctx.strokeStyle = this.color; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.stroke();
       }
     }
 
@@ -153,9 +159,7 @@
       width = canvas.width = canvas.offsetWidth;
       height = canvas.height = canvas.offsetHeight;
       blades.length = 0;
-      for (let i = 0; i < width; i += width / bladeCount) {
-        blades.push(new Blade(i + (Math.random() * 15)));
-      }
+      for (let i = 0; i < width; i += 12) blades.push(new Blade(i + Math.random() * 10));
     }
 
     function animate() {
@@ -164,22 +168,16 @@
       requestAnimationFrame(animate);
     }
 
-    canvas.addEventListener('mousemove', (e) => {
-      initAudio(); // 첫 움직임에 오디오 엔진 활성화
+    window.addEventListener('mousemove', (e) => {
+      initAudio();
       const rect = canvas.getBoundingClientRect();
       const currX = e.clientX - rect.left;
-      isMoving = true;
-      mouse.vx = currX - lastX;
-      mouse.x = currX;
-      lastX = currX;
-
-      clearTimeout(timer);
-      timer = setTimeout(() => { isMoving = false; mouse.vx = 0; }, 50);
+      isMoving = true; mouse.vx = currX - lastX; mouse.x = currX; lastX = currX;
+      clearTimeout(timer); timer = setTimeout(() => { isMoving = false; }, 50);
     });
 
     window.addEventListener('resize', init);
-    init();
-    animate();
+    init(); animate();
   </script>
 </body>
 </html>
