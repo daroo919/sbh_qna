@@ -6,18 +6,41 @@
   <title>求援 - 마이페이지 (ASMR)</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f0f9ff; overflow: hidden; min-height: 100vh; background-size: cover; background-position: center; }
+    /* 기본 스타일 및 레이아웃 */
+    body { 
+      margin: 0; 
+      font-family: 'Pretendard', sans-serif; 
+      background: #f0f9ff; 
+      overflow: hidden; 
+      min-height: 100vh; 
+      background-size: cover; 
+      background-position: center; 
+    }
+    .header {
+      height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px); display: flex; justify-content: space-between;
+      align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo { font-size: 22px; font-weight: 800; color: #0f172a; cursor: pointer; }
+    .dot { color: #2563eb; }
+    .header-right { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+    .points { color: #2563eb; font-weight: 700; background: rgba(37, 99, 235, 0.1); padding: 4px 10px; border-radius: 20px; }
+    .logout { cursor: pointer; padding: 6px 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold; }
+
     .layout { display: flex; height: calc(100vh - 70px); }
+    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
+    .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; font-weight: 500; }
+    .menu-item.active { color: #2563eb; font-weight: bold; background: rgba(255, 255, 255, 0.6); }
+
     .main { flex: 1; position: relative; z-index: 10; padding: 20px; }
-    
-    /* 프로필 카드 */
+
+    /* 프로필 카드 및 돌아가기 버튼 */
     .profile-card {
       background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
       border-radius: 20px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05); max-width: 420px; margin: 40px auto; position: relative;
     }
-
-    /* 돌아가기 버튼 */
     .back-btn {
       position: absolute; top: 15px; left: 15px; background: none; border: none;
       font-size: 18px; cursor: pointer; color: #64748b; transition: 0.2s;
@@ -30,12 +53,11 @@
       width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.4);
       background: rgba(255, 255, 255, 0.5); box-sizing: border-box; font-size: 15px; outline: none;
     }
-    .save-btn { width: 100%; padding: 14px; border-radius: 16px; border: none; background: #0f172a; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .save-btn { width: 100%; padding: 14px; border-radius: 16px; border: none; background: #0f172a; color: white; font-weight: bold; cursor: pointer; }
 
-    /* 잔디 영역 */
+    /* 잔디 캔버스 레이어 */
     #garden-container { position: fixed; top: 70px; left: 220px; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
     canvas#grassCanvas { width: 100%; height: 100%; pointer-events: auto; }
-    
     .hud { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center; border: 1px solid white; }
 
     @media (max-width: 768px) { .sidebar { display: none; } #garden-container { left: 0; } }
@@ -64,17 +86,17 @@
         <button class="back-btn" onclick="location.href='main.html'">←</button>
         <h2 style="margin:10px 0 25px 0; color:#0f172a; text-align:center;">프로필 설정</h2>
         <div class="field">
-          <div class="label">닉네임</div>
+          <div class="label">닉네임 변경</div>
           <input type="text" id="nickInput" class="input-box">
         </div>
         <div class="field">
-          <div class="label">배경 이미지</div>
+          <div class="label">나만의 배경 이미지</div>
           <div class="upload-box" onclick="document.getElementById('fileInput').click()" style="cursor:pointer; text-align:center;">
             <span id="fileName">🖼️ 사진 업로드</span>
             <input type="file" id="fileInput" accept="image/*" style="display:none">
           </div>
         </div>
-        <button id="saveBtn" class="save-btn">저장하기</button>
+        <button id="saveBtn" class="save-btn">변경사항 저장</button>
       </div>
 
       <div id="garden-container">
@@ -92,7 +114,7 @@
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    // 배경화면 로드
+    // --- [사용자 데이터 및 배경 연동] ---
     const applyBg = (uid) => {
       const bg = localStorage.getItem(`bg_${uid}`);
       if (bg) document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${bg}')`;
@@ -110,7 +132,6 @@
       }
     });
 
-    // 배경 업로드
     document.getElementById('fileInput').onchange = (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -118,22 +139,28 @@
         reader.onload = (ev) => {
           localStorage.setItem(`bg_${auth.currentUser.uid}`, ev.target.result);
           applyBg(auth.currentUser.uid);
-          document.getElementById('fileName').innerText = "✅ 변경되었습니다";
+          document.getElementById('fileName').innerText = "✅ 변경 완료";
         };
         reader.readAsDataURL(file);
       }
     };
 
-    // --- [부드러운 잔디 ASMR 엔진] ---
+    // --- [부드러운 잔디 ASMR 물리 엔진] ---
     const canvas = document.getElementById('grassCanvas'), ctx = canvas.getContext('2d');
     let width, height, bgm, isBgm = false;
-    const effectFiles = ['dragon-studio-grass-rustling-04-504019.mp3','dragon-studio-grass-rustling-04-511301.mp3','dragon-studio-grass-rustling-05-511299.mp3','dragon-studio-dry-grass-rustling-478361.mp3'];
+    const effectFiles = [
+      'dragon-studio-grass-rustling-04-504019.mp3',
+      'dragon-studio-grass-rustling-04-511301.mp3',
+      'dragon-studio-grass-rustling-05-511299.mp3',
+      'dragon-studio-dry-grass-rustling-478361.mp3'
+    ];
     const effects = effectFiles.map(f => new Audio(f));
 
     function startBgm() {
       if(!isBgm) {
         bgm = new Audio('dragon-studio-dry-field-grass-rustling-482893.mp3');
-        bgm.loop = true; bgm.volume = 0.12; bgm.play(); isBgm = true;
+        bgm.loop = true; bgm.volume = 0.12; bgm.play().catch(()=>{});
+        isBgm = true;
       }
     }
 
@@ -143,45 +170,83 @@
     class Blade {
       constructor(x) { 
         this.x = x; 
-        this.h = 100 + Math.random() * 100; 
+        this.h = 100 + Math.random() * 90; 
         this.angle = 0; 
         this.targetAngle = 0; 
-        this.stiffness = 0.1; // [수정] 다시 흐느적거리도록 낮춤
+        this.stiffness = 0.1; // 흐느적거리는 정도
         this.color = `rgba(187, 247, 208, ${0.6 + Math.random() * 0.4})`;
       }
+
       update() {
         const dist = Math.abs(mouse.x - this.x);
         if(isMoving && dist < 120) {
-          this.targetAngle = mouse.vx * 0.35; // 마우스 따라 부드럽게 휨
+          // 마우스 방향에 따라 휘어짐 (길이 보존을 위한 각도 제한)
+          this.targetAngle = (mouse.vx > 0 ? 1 : -1) * Math.min(Math.PI / 2.5, Math.abs(mouse.vx) * 0.05);
+          
           if(Math.random() > 0.96) {
             const s = effects[Math.floor(Math.random()*effects.length)].cloneNode();
-            s.volume = Math.min(0.3, Math.abs(mouse.vx)/120); s.play();
+            s.volume = Math.min(0.25, Math.abs(mouse.vx)/130);
+            s.play().catch(()=>{});
           }
-          touches += 0.002; document.getElementById('count').innerText = Math.floor(touches);
-        } else { this.targetAngle = 0; }
-        // 부드러운 복원력
+          touches += 0.002;
+          document.getElementById('count').innerText = Math.floor(touches);
+        } else { 
+          this.targetAngle = 0; 
+        }
         this.angle += (this.targetAngle - this.angle) * this.stiffness;
       }
+
       draw() {
-        ctx.beginPath(); ctx.moveTo(this.x, height);
-        const tipX = this.x + (this.angle * this.h * 0.8);
-        ctx.quadraticCurveTo(this.x, height - this.h / 2, tipX, height - this.h);
-        ctx.strokeStyle = this.color; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(this.x, height);
+
+        // [길이 보존 공식] cos을 사용하여 옆으로 휠 때 끝점의 높이가 자연스럽게 내려가게 함
+        const tipX = this.x + Math.sin(this.angle) * this.h;
+        const tipY = height - Math.cos(this.angle) * this.h;
+
+        const cpX = this.x;
+        const cpY = height - this.h / 2;
+
+        ctx.quadraticCurveTo(cpX, cpY, tipX, tipY);
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.stroke();
       }
     }
 
     function init() {
-      width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight;
-      blades.length = 0; for(let i=0; i<=width; i+=12) blades.push(new Blade(i + Math.random()*10));
+      width = canvas.width = canvas.offsetWidth;
+      height = canvas.height = canvas.offsetHeight;
+      blades.length = 0;
+      for(let i=0; i<=width; i+=12) {
+        blades.push(new Blade(i + Math.random() * 10));
+      }
     }
-    function animate() { ctx.clearRect(0,0,width,height); blades.forEach(b => { b.update(); b.draw(); }); requestAnimationFrame(animate); }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      blades.forEach(b => { b.update(); b.draw(); });
+      requestAnimationFrame(animate);
+    }
+
     window.addEventListener('mousemove', (e) => {
-      startBgm(); isMoving = true; const x = e.clientX - canvas.getBoundingClientRect().left;
-      mouse.vx = x - lastX; mouse.x = x; lastX = x;
-      clearTimeout(timer); timer = setTimeout(() => isMoving = false, 50);
+      startBgm();
+      isMoving = true;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      mouse.vx = x - lastX;
+      mouse.x = x;
+      lastX = x;
+      clearTimeout(timer);
+      timer = setTimeout(() => isMoving = false, 50);
     });
-    window.onresize = init; init(); animate();
-    document.getElementById("logoutBtn").onclick = () => { if(confirm("로그아웃?")) signOut(auth).then(()=>location.href="login.html"); };
+
+    window.addEventListener('resize', init);
+    document.getElementById("logoutBtn").onclick = () => { if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); };
+    
+    init();
+    animate();
   </script>
 </body>
 </html>
