@@ -3,44 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>求援 - 힐링 정원</title>
+  <title>求援 - 딥 힐링 정원</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f0f9ff; overflow: hidden; min-height: 100vh; background-size: cover; background-position: center; }
-    
-    .header {
-      height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(12px); display: flex; justify-content: space-between;
-      align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-      position: sticky; top: 0; z-index: 100;
+    /* 기본 레이아웃 및 애니메이션 */
+    body { 
+      margin: 0; font-family: 'Pretendard', sans-serif; background: #f0f9ff; 
+      overflow: hidden; min-height: 100vh; background-size: cover; 
+      background-position: center; transition: background-image 0.5s ease;
     }
+
+    .header { height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.4); position: sticky; top: 0; z-index: 100; }
     .logo { font-size: 22px; font-weight: 800; color: #0f172a; cursor: pointer; }
     .dot { color: #2563eb; }
     .header-right { display: flex; align-items: center; gap: 12px; font-size: 13px; }
     .points { color: #2563eb; font-weight: 700; background: rgba(37, 99, 235, 0.1); padding: 4px 10px; border-radius: 20px; }
-    .logout { cursor: pointer; padding: 6px 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold; }
+    .logout { cursor: pointer; padding: 6px 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold; font-size: 12px; }
 
     .layout { display: flex; height: calc(100vh - 70px); position: relative; }
-    
-    .sidebar { width: 220px; padding-top: 60px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); position: relative; }
+    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
     .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; font-weight: 500; }
-    .menu-item.active { color: #2563eb; font-weight: bold; background: rgba(255, 255, 255, 0.6); }
+    .menu-item:hover { background: rgba(255, 255, 255, 0.6); color: #2563eb; }
+    .menu-item.active { color: #2563eb; font-weight: bold; }
 
-    /* [수정] 나가기 버튼 위치: 헤더 아래, 사이드바 영역의 왼쪽 위(사이드바 내부 상단) */
+    .main { flex: 1; position: relative; z-index: 10; }
+
+    /* 나가기 버튼 위치: 사이드바 상단 왼쪽 아래 */
     .exit-btn {
       position: absolute; top: 15px; left: 20px; 
       padding: 8px 18px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.1);
-      background: rgba(15, 23, 42, 0.05); color: #0f172a; 
-      font-weight: bold; cursor: pointer; font-size: 13px;
+      background: rgba(15, 23, 42, 0.05); color: #0f172a; font-weight: bold; cursor: pointer; font-size: 13px;
       transition: 0.2s; z-index: 110;
     }
     .exit-btn:hover { background: rgba(15, 23, 42, 0.9); color: white; }
 
-    .main { flex: 1; position: relative; z-index: 10; }
-
     /* 잔디 컨테이너 */
-    #garden-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
-    canvas#grassCanvas { width: 100%; height: 100%; pointer-events: auto; }
+    #garden-container { position: fixed; top: 70px; left: 220px; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
+    canvas#grassCanvas { width: 100%; height: 100%; pointer-events: auto; cursor: none; } /* 잔디 위에서는 마우스 숨김 */
     
     .hud { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center; border: 1px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
@@ -60,7 +59,6 @@
   <div class="layout">
     <aside class="sidebar">
       <button class="exit-btn" onclick="location.href='main.html'">← 나가기</button>
-      
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
       <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
       <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
@@ -83,14 +81,16 @@
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    const applyBg = (uid) => {
-      const bg = localStorage.getItem(`bg_${uid}`);
-      if (bg) document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${bg}')`;
-    };
-
     onAuthStateChanged(auth, async (user) => {
       if (!user) return location.href = "login.html";
+      
+      // 배경화면 로드 (캐릭터 포함)
+      const applyBg = (uid) => {
+        const bg = localStorage.getItem(`bg_${uid}`);
+        if (bg) document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${bg}')`;
+      };
       applyBg(user.uid);
+
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) {
         const d = snap.data();
@@ -99,29 +99,49 @@
       }
     });
 
-    // --- [ASMR 사운드 설정] ---
-    // 마우스 움직임(바스락 소리)용 파일들
+    // --- [초저지연 사운드 시스템 (Web Audio API)] ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const soundBuffers = [];
     const effectFiles = [
       'dragon-studio-grass-rustling-04-504019.mp3',
       'dragon-studio-grass-rustling-04-511301.mp3',
       'dragon-studio-grass-rustling-05-511299.mp3',
       'dragon-studio-dry-grass-rustling-478361.mp3'
     ];
-    const effects = effectFiles.map(f => new Audio(f));
 
-    // 배경음(지속적인 바람/풀소리)
-    let bgm, isBgm = false;
-    function startBgm() {
-      if(!isBgm) {
-        bgm = new Audio('dragon-studio-dry-field-grass-rustling-482893.mp3');
-        bgm.loop = true; 
-        bgm.volume = 0.15; 
-        bgm.play().catch(e => console.log("오디오 재생 시작을 위해 화면을 클릭해주세요."));
-        isBgm = true;
+    async function loadSounds() {
+      if (soundBuffers.length > 0) return;
+      for (const url of effectFiles) {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        soundBuffers.push(audioBuffer);
       }
     }
+    // 페이지 로딩 후 1초 뒤 사운드 미리 로드 시작
+    setTimeout(loadSounds, 1000);
 
-    // --- [잔디 물리 엔진] ---
+    function playGrassSound(volume) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (soundBuffers.length === 0) return;
+
+      const source = audioCtx.createBufferSource();
+      source.buffer = soundBuffers[Math.floor(Math.random() * soundBuffers.length)];
+      
+      const gainNode = audioCtx.createGain();
+      gainNode.gain.value = volume;
+      
+      source.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      source.start(0);
+    }
+
+    // 배경음 (바람소리 BGM)
+    let bgm = new Audio('dragon-studio-dry-field-grass-rustling-482893.mp3');
+    bgm.loop = true; bgm.volume = 0.15;
+    let isBgmStarted = false;
+
+    // --- [딥 힐링 잔디 엔진 (대폭 상향)] ---
     const canvas = document.getElementById('grassCanvas'), ctx = canvas.getContext('2d');
     let width, height;
     const mouse = { x: -1000, vx: 0 }, blades = [];
@@ -129,40 +149,51 @@
 
     class Blade {
       constructor(x) { 
-        this.x = x; 
-        this.h = 110 + Math.random() * 80; 
-        this.angle = 0; 
-        this.targetAngle = 0; 
-        this.stiffness = 0.1; 
-        this.color = `rgba(187, 247, 208, ${0.5 + Math.random() * 0.4})`;
+        this.x = x;
+        // [수정] 무릎~허리 높이까지 오도록 높이를 대폭 상향 (최소 180, 최대 400)
+        this.h = 180 + Math.random() * 220; 
+        this.angle = 0;
+        this.targetAngle = 0;
+        // 깊이감을 위한 stiffness 다양화
+        this.stiffness = 0.08 + Math.random() * 0.1; 
+        // 깊은 정원 느낌의 연한 연두색 (투명도 다양화)
+        this.color = `rgba(187, 247, 208, ${0.4 + Math.random() * 0.5})`;
       }
       update() {
         const dist = Math.abs(mouse.x - this.x);
-        if(isMoving && dist < 120) {
-          this.targetAngle = (mouse.vx > 0 ? 1 : -1) * Math.min(Math.PI / 2.5, Math.abs(mouse.vx) * 0.05);
-          if(Math.random() > 0.96) {
-            const s = effects[Math.floor(Math.random()*effects.length)].cloneNode();
-            s.volume = Math.min(0.2, Math.abs(mouse.vx)/150);
-            s.play().catch(()=>{});
+        // 무성한 잔디 특유의 부드럽고 딥한 반응
+        if(isMoving && dist < 140) {
+          this.targetAngle = mouse.vx * 0.25; // 휨 정도 살짝 줄여서 빳빳함 유지
+          if(Math.random() > 0.95) { // 무작위 사운드 재생
+             playGrassSound(Math.min(0.2, Math.abs(mouse.vx)/180));
           }
-          touches += 0.002;
-          document.getElementById('count').innerText = Math.floor(touches);
+          touches += 0.002; document.getElementById('count').innerText = Math.floor(touches);
         } else { this.targetAngle = 0; }
         this.angle += (this.targetAngle - this.angle) * this.stiffness;
       }
       draw() {
-        ctx.beginPath(); ctx.moveTo(this.x, height);
+        ctx.beginPath();
+        // 잔디 질감을 위해 곡선으로 그림
+        ctx.moveTo(this.x, height);
+        // 길이가 늘어나지 않게 삼각함수로 끝점 계산
         const tipX = this.x + Math.sin(this.angle) * this.h;
         const tipY = height - Math.cos(this.angle) * this.h;
+        
         ctx.quadraticCurveTo(this.x, height - this.h / 2, tipX, tipY);
-        ctx.strokeStyle = this.color; ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.stroke();
+        
+        ctx.strokeStyle = this.color;
+        // [수정] 보내주신 이미지처럼 두툼하고 질감이 느껴지도록 두께 상향
+        ctx.lineWidth = 12; 
+        ctx.lineCap = 'round';
+        ctx.stroke();
       }
     }
 
     function init() {
       width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight;
       blades.length = 0;
-      for(let i=0; i<=width; i+=12) blades.push(new Blade(i + Math.random() * 10));
+      // [수정] 보내주신 이미지처럼 엄청나게 꽉 차 보이도록 간격을 대폭 좁힘 (12 -> 8)
+      for(let i=0; i<=width; i+=8) blades.push(new Blade(i + Math.random() * 8));
     }
     function animate() {
       ctx.clearRect(0, 0, width, height);
@@ -171,16 +202,20 @@
     }
 
     window.addEventListener('mousemove', (e) => {
-      startBgm(); isMoving = true;
+      startSoundsAndBgm(); isMoving = true;
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       mouse.vx = x - lastX; mouse.x = x; lastX = x;
       clearTimeout(timer); timer = setTimeout(() => isMoving = false, 50);
     });
+    
+    // 첫 움직임에 BGM과 사운드 엔진 활성화
+    function startSoundsAndBgm() {
+       if(!isBgmStarted) { bgm.play(); isBgmStarted = true; loadSounds(); }
+    }
 
     window.addEventListener('resize', init);
     document.getElementById("logoutBtn").onclick = () => { if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); };
-    
     init(); animate();
   </script>
 </body>
