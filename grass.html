@@ -3,21 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>求援 - 힐링 정원 (ASMR)</title>
+  <title>求援 - 힐링 정원</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* 기본 스타일 및 레이아웃 */
-    body { 
-      margin: 0; 
-      font-family: 'Pretendard', sans-serif; 
-      background: #f0f9ff; 
-      overflow: hidden; 
-      min-height: 100vh; 
-      background-size: cover; 
-      background-position: center; 
-    }
+    body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f0f9ff; overflow: hidden; min-height: 100vh; background-size: cover; background-position: center; }
     
-    /* 헤더 스타일 (기존 유지) */
     .header {
       height: 70px; padding: 0 20px; background: rgba(255, 255, 255, 0.6);
       backdrop-filter: blur(12px); display: flex; justify-content: space-between;
@@ -30,33 +20,29 @@
     .points { color: #2563eb; font-weight: 700; background: rgba(37, 99, 235, 0.1); padding: 4px 10px; border-radius: 20px; }
     .logout { cursor: pointer; padding: 6px 12px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: bold; }
 
-    .layout { display: flex; height: calc(100vh - 70px); }
+    .layout { display: flex; height: calc(100vh - 70px); position: relative; }
     
-    /* 사이드바 (기존 유지) */
-    .sidebar { width: 220px; padding-top: 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); }
+    .sidebar { width: 220px; padding-top: 60px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.4); position: relative; }
     .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; color: #374151; font-weight: 500; }
     .menu-item.active { color: #2563eb; font-weight: bold; background: rgba(255, 255, 255, 0.6); }
 
-    /* 메인 영역 */
-    .main { flex: 1; position: relative; z-index: 10; padding: 20px; }
-
-    /* [수정] 왼쪽 상단 나가기 버튼 */
+    /* [수정] 나가기 버튼 위치: 헤더 아래, 사이드바 영역의 왼쪽 위(사이드바 내부 상단) */
     .exit-btn {
-      position: absolute; top: 20px; left: 20px; 
-      padding: 10px 20px; border-radius: 12px; border: none;
-      background: rgba(15, 23, 42, 0.8); color: white; 
-      font-weight: bold; cursor: pointer; font-size: 14px;
-      backdrop-filter: blur(5px); transition: 0.2s;
-      z-index: 150; /* 잔디보다 위에 */
+      position: absolute; top: 15px; left: 20px; 
+      padding: 8px 18px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.1);
+      background: rgba(15, 23, 42, 0.05); color: #0f172a; 
+      font-weight: bold; cursor: pointer; font-size: 13px;
+      transition: 0.2s; z-index: 110;
     }
-    .exit-btn:hover { background: rgba(15, 23, 42, 1); transform: translateY(-2px); }
+    .exit-btn:hover { background: rgba(15, 23, 42, 0.9); color: white; }
 
-    /* 잔디 캔버스 레이어 (전체 화면 차지) */
-    #garden-container { position: fixed; top: 70px; left: 220px; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
+    .main { flex: 1; position: relative; z-index: 10; }
+
+    /* 잔디 컨테이너 */
+    #garden-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
     canvas#grassCanvas { width: 100%; height: 100%; pointer-events: auto; }
     
-    /* HUD (보듬은 횟수) */
-    .hud { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center; border: 1px solid white; }
+    .hud { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center; border: 1px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
     @media (max-width: 768px) { .sidebar { display: none; } #garden-container { left: 0; } }
   </style>
@@ -73,6 +59,8 @@
 
   <div class="layout">
     <aside class="sidebar">
+      <button class="exit-btn" onclick="location.href='main.html'">← 나가기</button>
+      
       <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
       <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
       <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
@@ -80,8 +68,6 @@
     </aside>
 
     <main class="main">
-      <button class="exit-btn" onclick="location.href='main.html'">나가기</button>
-
       <div id="garden-container">
         <div class="hud">
           <div style="font-size: 11px; color: #64748b;">보듬어준 횟수</div>
@@ -97,7 +83,6 @@
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    // --- [사용자 데이터 및 배경 연동] ---
     const applyBg = (uid) => {
       const bg = localStorage.getItem(`bg_${uid}`);
       if (bg) document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${bg}')`;
@@ -114,9 +99,8 @@
       }
     });
 
-    // --- [부드러운 잔디 ASMR 물리 엔진 - 길이 보존 버전] ---
-    const canvas = document.getElementById('grassCanvas'), ctx = canvas.getContext('2d');
-    let width, height, bgm, isBgm = false;
+    // --- [ASMR 사운드 설정] ---
+    // 마우스 움직임(바스락 소리)용 파일들
     const effectFiles = [
       'dragon-studio-grass-rustling-04-504019.mp3',
       'dragon-studio-grass-rustling-04-511301.mp3',
@@ -125,74 +109,61 @@
     ];
     const effects = effectFiles.map(f => new Audio(f));
 
+    // 배경음(지속적인 바람/풀소리)
+    let bgm, isBgm = false;
     function startBgm() {
       if(!isBgm) {
         bgm = new Audio('dragon-studio-dry-field-grass-rustling-482893.mp3');
-        bgm.loop = true; bgm.volume = 0.12; bgm.play().catch(()=>{});
+        bgm.loop = true; 
+        bgm.volume = 0.15; 
+        bgm.play().catch(e => console.log("오디오 재생 시작을 위해 화면을 클릭해주세요."));
         isBgm = true;
       }
     }
 
+    // --- [잔디 물리 엔진] ---
+    const canvas = document.getElementById('grassCanvas'), ctx = canvas.getContext('2d');
+    let width, height;
     const mouse = { x: -1000, vx: 0 }, blades = [];
     let lastX = 0, isMoving = false, touches = 0, timer;
 
     class Blade {
       constructor(x) { 
         this.x = x; 
-        this.h = 100 + Math.random() * 100; // 잔디 높이
+        this.h = 110 + Math.random() * 80; 
         this.angle = 0; 
         this.targetAngle = 0; 
-        this.stiffness = 0.1; // 흐느적거리는 정도
-        this.color = `rgba(187, 247, 208, ${0.6 + Math.random() * 0.4})`;
+        this.stiffness = 0.1; 
+        this.color = `rgba(187, 247, 208, ${0.5 + Math.random() * 0.4})`;
       }
-
       update() {
         const dist = Math.abs(mouse.x - this.x);
         if(isMoving && dist < 120) {
-          // 마우스 방향에 따라 자연스럽게 휘어짐 (길이 고정)
           this.targetAngle = (mouse.vx > 0 ? 1 : -1) * Math.min(Math.PI / 2.5, Math.abs(mouse.vx) * 0.05);
-          
           if(Math.random() > 0.96) {
             const s = effects[Math.floor(Math.random()*effects.length)].cloneNode();
-            s.volume = Math.min(0.25, Math.abs(mouse.vx)/130);
+            s.volume = Math.min(0.2, Math.abs(mouse.vx)/150);
             s.play().catch(()=>{});
           }
           touches += 0.002;
           document.getElementById('count').innerText = Math.floor(touches);
-        } else { 
-          this.targetAngle = 0; 
-        }
+        } else { this.targetAngle = 0; }
         this.angle += (this.targetAngle - this.angle) * this.stiffness;
       }
-
       draw() {
-        ctx.beginPath();
-        ctx.moveTo(this.x, height);
-
-        // [길이 보존 공식] cos을 사용하여 옆으로 휠 때 끝점의 높이가 자연스럽게 내려가게 함
+        ctx.beginPath(); ctx.moveTo(this.x, height);
         const tipX = this.x + Math.sin(this.angle) * this.h;
         const tipY = height - Math.cos(this.angle) * this.h;
-
-        const cpX = this.x;
-        const cpY = height - this.h / 2;
-
-        ctx.quadraticCurveTo(cpX, cpY, tipX, tipY);
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth = 8;
-        ctx.lineCap = 'round';
-        ctx.stroke();
+        ctx.quadraticCurveTo(this.x, height - this.h / 2, tipX, tipY);
+        ctx.strokeStyle = this.color; ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.stroke();
       }
     }
 
     function init() {
-      width = canvas.width = canvas.offsetWidth;
-      height = canvas.height = canvas.offsetHeight;
+      width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight;
       blades.length = 0;
-      for(let i=0; i<=width; i+=12) {
-        blades.push(new Blade(i + Math.random() * 10));
-      }
+      for(let i=0; i<=width; i+=12) blades.push(new Blade(i + Math.random() * 10));
     }
-
     function animate() {
       ctx.clearRect(0, 0, width, height);
       blades.forEach(b => { b.update(); b.draw(); });
@@ -200,22 +171,17 @@
     }
 
     window.addEventListener('mousemove', (e) => {
-      startBgm();
-      isMoving = true;
+      startBgm(); isMoving = true;
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
-      mouse.vx = x - lastX;
-      mouse.x = x;
-      lastX = x;
-      clearTimeout(timer);
-      timer = setTimeout(() => isMoving = false, 50);
+      mouse.vx = x - lastX; mouse.x = x; lastX = x;
+      clearTimeout(timer); timer = setTimeout(() => isMoving = false, 50);
     });
 
     window.addEventListener('resize', init);
     document.getElementById("logoutBtn").onclick = () => { if(confirm("로그아웃 하시겠습니까?")) signOut(auth).then(()=>location.href="login.html"); };
     
-    init();
-    animate();
+    init(); animate();
   </script>
 </body>
 </html>
