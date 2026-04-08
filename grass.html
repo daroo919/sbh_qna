@@ -1,59 +1,35 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <link rel="icon" href="./favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>求援 - 마이페이지 (ASMR)</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* [1. 원래 UI 스타일 복구] */
-    body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f0f9ff; overflow: hidden; }
+    body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f0f9ff; overflow: hidden; min-height: 100vh; background-size: cover; background-position: center; }
+    .layout { display: flex; height: calc(100vh - 70px); }
+    .main { flex: 1; position: relative; z-index: 10; padding: 20px; overflow-y: auto; }
     
+    /* 프로필 카드 디자인 */
     .profile-card {
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border-radius: 20px;
-      padding: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
-      position: relative;
-      z-index: 50; /* 잔디보다 위에 위치 */
-      max-width: 500px;
-      margin: 20px auto;
+      background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05); max-width: 450px; margin: 40px auto;
     }
-
     .field { margin-bottom: 20px; }
     .label { font-size: 14px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
     .input-box, .upload-box {
-      width: 100%; padding: 12px; border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      background: rgba(255, 255, 255, 0.5);
-      box-sizing: border-box; font-size: 15px;
+      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.5); box-sizing: border-box; font-size: 15px;
     }
+    .save-btn { width: 100%; padding: 14px; border-radius: 16px; border: none; background: #0f172a; color: white; font-weight: bold; cursor: pointer; }
 
-    .save-btn {
-      width: 100%; padding: 14px; border-radius: 16px; border: none;
-      background: #0f172a; color: white; font-weight: bold; cursor: pointer;
-    }
+    /* 잔디 컨테이너 */
+    #garden-container { position: fixed; top: 70px; left: 220px; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
+    canvas#grassCanvas { width: 100%; height: 100%; pointer-events: auto; }
+    .hud { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center; }
 
-    /* [2. 잔디 캔버스 레이아웃] */
-    #garden-container {
-      position: fixed; top: 70px; left: 220px; right: 0; bottom: 0;
-      z-index: 1; overflow: hidden;
-    }
-    canvas#grassCanvas { width: 100%; height: 100%; display: block; }
-
-    .hud {
-      position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8);
-      padding: 10px 20px; border-radius: 15px; z-index: 100; text-align: center;
-    }
-
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-      #garden-container { left: 0; }
-    }
+    @media (max-width: 768px) { .sidebar { display: none; } #garden-container { left: 0; } }
   </style>
 </head>
 <body>
@@ -62,6 +38,7 @@
     <div class="header-right">
       <div class="points" id="hPoints">0P</div>
       <div class="nickname" id="hNick">로딩 중...</div>
+      <div class="logout" id="logoutBtn">로그아웃</div>
     </div>
   </header>
 
@@ -73,24 +50,21 @@
       <div class="menu-item active">⚙️ 마이페이지</div>
     </aside>
 
-    <main class="main" style="position:relative; z-index:10;">
+    <main class="main">
       <div class="profile-card">
-        <h2 style="margin-top:0; color:#0f172a;">내 프로필 설정</h2>
+        <h2 style="margin:0 0 20px 0; color:#0f172a;">내 프로필 설정</h2>
         <div class="field">
           <div class="label">닉네임 변경</div>
           <input type="text" id="nickInput" class="input-box" placeholder="닉네임 입력">
         </div>
         <div class="field">
-          <div class="label">나만의 배경 이미지</div>
-          <div class="upload-box" onclick="document.getElementById('fileInput').click()" style="cursor:pointer;">
+          <div class="label">배경 이미지 설정</div>
+          <div class="upload-box" onclick="document.getElementById('fileInput').click()" style="cursor:pointer; text-align:center;">
             <span id="fileName">🖼️ 사진 선택</span>
             <input type="file" id="fileInput" accept="image/*" style="display:none">
           </div>
         </div>
         <button id="saveBtn" class="save-btn">변경사항 저장하기</button>
-        <p style="font-size: 12px; color: #64748b; margin-top: 15px; text-align: center;">
-          카드 밖의 잔디를 쓰다듬으면 소리가 납니다 🎧
-        </p>
       </div>
 
       <div id="garden-container">
@@ -103,81 +77,93 @@
     </main>
   </div>
 
-  <script>
-    // --- [ASMR 사운드 및 잔디 엔진] ---
-    const canvas = document.getElementById('grassCanvas');
-    const ctx = canvas.getContext('2d');
-    let width, height, audioCtx;
+  <script type="module">
+    import { auth, db } from "./firebase.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    
-    function playGrassSound(volume) {
-      if (!audioCtx) return;
-      const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.05, audioCtx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-      const noise = audioCtx.createBufferSource();
-      noise.buffer = buffer;
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = 'lowpass'; filter.frequency.value = 800 + (volume * 1500);
-      const gainNode = audioCtx.createGain();
-      gainNode.gain.setValueAtTime(volume * 0.08, audioCtx.currentTime);
-      noise.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination);
-      noise.start();
+    // --- 배경화면 로드 함수 ---
+    function loadBackground(uid) {
+      const bg = localStorage.getItem(`bg_${uid}`);
+      if (bg) document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${bg}')`;
     }
 
-    const mouse = { x: -1000, vx: 0 };
-    let lastX = 0, isMoving = false, timer, touches = 0;
-    const blades = [];
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return location.href = "login.html";
+      loadBackground(user.uid);
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) {
+        const d = snap.data();
+        document.getElementById('hNick').innerText = d.nickname;
+        document.getElementById('hPoints').innerText = (d.points || 0) + "P";
+        document.getElementById('nickInput').value = d.nickname;
+      }
+    });
+
+    // --- 파일 업로드 로직 ---
+    document.getElementById('fileInput').onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const base64 = ev.target.result;
+          localStorage.setItem(`bg_${auth.currentUser.uid}`, base64);
+          loadBackground(auth.currentUser.uid);
+          document.getElementById('fileName').innerText = "✅ 변경 완료!";
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    // --- 잔디 및 ASMR 엔진 (빳빳한 물리 버전) ---
+    const canvas = document.getElementById('grassCanvas'), ctx = canvas.getContext('2d');
+    let width, height, audioCtx, bgm, isBgm = false;
+    const effectFiles = ['dragon-studio-grass-rustling-04-504019.mp3','dragon-studio-grass-rustling-04-511301.mp3','dragon-studio-grass-rustling-05-511299.mp3','dragon-studio-dry-grass-rustling-478361.mp3'];
+    const effects = effectFiles.map(f => new Audio(f));
+
+    function startAudio() {
+      if(!isBgm) {
+        bgm = new Audio('dragon-studio-dry-field-grass-rustling-482893.mp3');
+        bgm.loop = true; bgm.volume = 0.15; bgm.play(); isBgm = true;
+      }
+    }
+
+    const mouse = { x: -1000, vx: 0 }, blades = [];
+    let lastX = 0, isMoving = false, touches = 0, timer;
 
     class Blade {
-      constructor(x) {
-        this.x = x; this.h = 100 + Math.random() * 120;
-        this.angle = 0; this.targetAngle = 0; this.stiffness = 0.08;
-        this.color = `rgba(187, 247, 208, ${0.6 + Math.random() * 0.4})`;
-      }
+      constructor(x) { this.x = x; this.h = 110 + Math.random()*70; this.angle = 0; this.vx = 0; this.stiffness = 0.7; this.damping = 0.8; this.color = `rgba(187, 247, 208, ${0.7+Math.random()*0.3})`; }
       update() {
-        const dist = Math.abs(mouse.x - this.x);
-        if (isMoving && dist < 120) {
+        const tx = this.x + Math.sin(this.angle)*this.h, dist = Math.abs(mouse.x - tx);
+        if(isMoving && dist < 100) {
           this.targetAngle = mouse.vx * 0.4;
-          touches += 0.001;
-          document.getElementById('count').innerText = Math.floor(touches);
-          if (Math.random() > 0.94) playGrassSound(Math.abs(mouse.vx) / 40);
+          if(Math.random() > 0.97) {
+            const s = effects[Math.floor(Math.random()*effects.length)].cloneNode();
+            s.volume = Math.min(0.4, Math.abs(mouse.vx)/100); s.play();
+          }
+          touches += 0.002; document.getElementById('count').innerText = Math.floor(touches);
         } else { this.targetAngle = 0; }
-        this.angle += (this.targetAngle - this.angle) * this.stiffness;
+        this.vx += (this.targetAngle - this.angle) * this.stiffness;
+        this.vx *= this.damping; this.angle += this.vx;
       }
       draw() {
         ctx.beginPath(); ctx.moveTo(this.x, height);
-        const tipX = this.x + (this.angle * this.h * 0.8);
-        const tipY = height - this.h;
-        ctx.quadraticCurveTo(this.x, height - this.h / 2, tipX, tipY);
+        ctx.quadraticCurveTo(this.x, height-this.h/2, this.x+Math.sin(this.angle)*this.h, height-this.h);
         ctx.strokeStyle = this.color; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.stroke();
       }
     }
 
     function init() {
-      width = canvas.width = canvas.offsetWidth;
-      height = canvas.height = canvas.offsetHeight;
-      blades.length = 0;
-      for (let i = 0; i < width; i += 12) blades.push(new Blade(i + Math.random() * 10));
+      width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight;
+      blades.length = 0; for(let i=0; i<=width; i+=12) blades.push(new Blade(i+Math.random()*10));
     }
-
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      blades.forEach(b => { b.update(); b.draw(); });
-      requestAnimationFrame(animate);
-    }
-
+    function animate() { ctx.clearRect(0,0,width,height); blades.forEach(b => { b.update(); b.draw(); }); requestAnimationFrame(animate); }
     window.addEventListener('mousemove', (e) => {
-      initAudio();
-      const rect = canvas.getBoundingClientRect();
-      const currX = e.clientX - rect.left;
-      isMoving = true; mouse.vx = currX - lastX; mouse.x = currX; lastX = currX;
-      clearTimeout(timer); timer = setTimeout(() => { isMoving = false; }, 50);
+      startAudio(); isMoving = true; const x = e.clientX - canvas.getBoundingClientRect().left;
+      mouse.vx = x - lastX; mouse.x = x; lastX = x;
+      clearTimeout(timer); timer = setTimeout(() => isMoving = false, 50);
     });
-
-    window.addEventListener('resize', init);
-    init(); animate();
+    window.onresize = init; init(); animate();
   </script>
 </body>
 </html>
