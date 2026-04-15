@@ -1,171 +1,88 @@
-<!DOCTYPE html>
-<html>
+<style>
+  :root {
+    /* 최근 브라우저에서 상단 바를 제외한 실제 높이를 계산하는 단위 */
+    --screen-height: 100svh; 
+  }
 
-<head>
-  <link rel="icon" href="./favicon.ico">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>求援</title>
-  <style>
-    :root {
-      /* 최근 브라우저에서 상단 바를 제외한 실제 높이를 계산하는 단위 */
-      --screen-height: 100svh; 
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Pretendard', -apple-system, sans-serif;
-      
-      /* 기본 배경색 (이미지 로딩 전용) */
-      background-color: #f0f9ff;
-      
-      /* 핵심: dynamic viewport height를 사용하여 브라우저 바를 제외한 진짜 중앙 계산 */
-      height: 100vh; /* 기본 */
-      height: 100dvh; /* 최신 브라우저 대응 */
-      
-      display: flex;
-      flex-direction: column; /* 세로 방향 정렬 */
-      align-items: center;    /* 가로 중앙 */
-      justify-content: center; /* 세로 중앙 (이게 진짜 핵심) */
-      
-      overflow: hidden; /* 스크롤 절대 방지 */
-      box-sizing: border-box;
-      position: relative; /* 가상 요소를 위한 기준점 */
-    }
-
-    /* [추가된 부분] 순무 이미지를 배경으로 깔고 블러 처리 */
-    body::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      
-      /* 이미지 경로 설정: HTML과 같은 폴더에 있으므로 파일명만 입력 */
-      background-image: url('seer.png'); 
-      background-size: cover; /* 이미지가 화면을 가득 채우도록 */
-      background-position: center; /* 이미지 중앙을 기준으로 */
-      background-repeat: no-repeat;
-      
-      /* 블러 효과 적용 (필요에 따라 px 값을 조절하세요) */
-      filter: blur(8px); 
-      -webkit-filter: blur(8px); /* 사파리 대응 */
-      
-      /* 블러 처리된 가장자리가 하얗게 보이는 것을 방지하기 위해 살짝 키움 */
-      transform: scale(1.1);
-      
-      /* 콘텐츠(카드) 뒤로 보내기 */
-      z-index: -1; 
-    }
-
-    /* 기존의 그라데이션 애니메이션은 이미지를 사용하므로 제거하거나 주석 처리 */
-    /* @keyframes gradientMove { ... } */
-
-    .card {
-      /* 카드 배경 투명도를 살짝 낮춰 배경 이미지가 더 잘 보이게 함 */
-      background: rgba(255, 255, 255, 0.5); 
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px); /* 사파리 대응 */
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-radius: 24px;
-      padding: 50px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      
-      /* 반응형 너비 설정 */
-      width: 100%;
-      max-width: 360px; /* 데스크톱 최대 너비 */
-      max-height: 85dvh; 
-      box-sizing: border-box;
-      transition: transform 0.3s ease;
-      
-      /* 카드가 배경 위로 오도록 */
-      position: relative; 
-      z-index: 1;
-    }
-
-    h1 {
-      font-size: 40px;
-      font-weight: 800;
-      color: #0f172a;
-      margin-bottom: 30px;
-    }
-
-    .dot {
-      color: #2563eb;
-    }
-
-    .description {
-      font-size: 15px;
-      color: #475569;
-      line-height: 1.6;
-      margin-bottom: 35px;
-      word-break: keep-all; /* 모바일에서 글자가 어색하게 깨지지 않게 설정 */
-    }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', -apple-system, sans-serif;
     
-    .description b {
-      color: #1e293b;
-      font-weight: 600;
+    /* [기존 배경 복원] 그라데이션 배경 및 애니메이션 */
+    background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe);
+    background-size: 400% 400%;
+    animation: gradientMove 20s ease infinite;
+    
+    /* 핵심: dynamic viewport height를 사용하여 브라우저 바를 제외한 진짜 중앙 계산 */
+    height: 100vh; /* 기본 */
+    height: 100dvh; /* 최신 브라우저 대응 */
+    
+    display: flex;
+    flex-direction: column; /* 세로 방향 정렬 */
+    align-items: center;    /* 가로 중앙 */
+    justify-content: center; /* 세로 중앙 */
+    
+    overflow: hidden; /* 스크롤 절대 방지 */
+    box-sizing: border-box;
+    position: relative; /* 순무 이미지를 위한 기준점 */
+  }
+
+  /* 그라데이션 애니메이션 (기존 코드 복원) */
+  @keyframes gradientMove {
+    0% {
+      background-position: 0% 50%;
     }
-
-    a {
-      display: block;
-      margin: 15px 0;
-      text-decoration: none;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      padding: 14px;
-      border-radius: 12px;
-      transition: 0.3s;
+    50% {
+      background-position: 100% 50%;
     }
-
-    .btn-login {
-      background: #2563eb;
+    100% {
+      background-position: 0% 50%;
     }
+  }
 
-    .btn-login:hover {
-      background: #1d4ed8;
-      transform: translateY(-2px);
-    }
+  /* [핵심 코드 추가] 순무 이미지를 오른쪽 아래에 작게 고정 */
+  body::before {
+    content: "";
+    position: fixed; /* 화면에 고정 */
+    bottom: 20px;    /* 아래에서 20px 띄움 */
+    right: 20px;     /* 오른쪽에서 20px 띄움 */
+    width: 60px;     /* 가로 크기를 60px로 작게 설정 */
+    height: 60px;    /* 세로 크기 */
+    
+    /* 이미지 경로 설정: 'image' 폴더 안에 'seer.png' */
+    background-image: url('image/seer.png'); 
+    background-size: contain; /* 이미지가 비율을 유지하며 맞도록 */
+    background-position: center; /* 이미지 중앙 기준 */
+    background-repeat: no-repeat;
+    
+    /* 카드가 있을 경우 카드 뒤로 가지 않도록 적절한 z-index 설정 */
+    z-index: 10; 
+  }
 
-    .btn-signup {
-      background: #0f172a;
-    }
+  /* [기존 카드 스타일] */
+  .card {
+    background: rgba(255, 255, 255, 0.6); 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px); /* 사파리 대응 */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 24px;
+    padding: 50px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    
+    /* 반응형 너비 설정 */
+    width: 100%;
+    max-width: 360px; /* 데스크톱 최대 너비 */
+    max-height: 85dvh; 
+    box-sizing: border-box;
+    transition: transform 0.3s ease;
+    
+    /* 카드가 배경 위로 오도록 */
+    position: relative; 
+    z-index: 5;
+  }
 
-    .btn-signup:hover {
-      background: #1e293b;
-      transform: translateY(-2px);
-    }
+  /* ... 나머지 h1, dot, description, a, btn, media query 등 기존 스타일 동일 ... */
 
-    /* 모바일 환경 최적화 */
-    @media (max-width: 480px) {
-      .card {
-        padding: 40px 20px;
-      }
-      h1 {
-        font-size: 36px;
-      }
-      .description {
-        font-size: 14px;
-      }
-    }
-
-  </style>
-</head>
-
-<body>
-  <div class="card">
-    <h1>求援<span class="dot">.</span></h1>
-    <div class="description">
-      함께 답을 찾고 성장을 나누는<br>
-      우리들만의 <b>신백현 지식 커뮤니티</b>
-    </div>
-    <a href="login.html" class="btn-login">로그인</a>
-    <a href="signup.html" class="btn-signup">회원가입</a>
-  </div>
-</body>
-
-</html>
+</style>
