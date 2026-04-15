@@ -89,7 +89,7 @@ function validateSignup(email, password, nickname) {
   const domain = email.split("@")[1].toLowerCase();
   
   if (disposableDomains.includes(domain)) {
-    return "일회용 이메일 도메인은 사용할 수 없습니다.";
+    return "고작 일회용 이메일로 계정을 생성할려고 하는거냐.";
   }
 
   if (password.length < 6) {
