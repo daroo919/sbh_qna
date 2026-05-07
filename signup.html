@@ -1,140 +1,355 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>求援 - 회원가입</title>
-  
+
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+  <title>求援 - 승차권 발급</title>
+
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      font-family: 'Pretendard', sans-serif;
-      background: linear-gradient(135deg, #dbeafe, #f0f9ff, #e0f2fe, #c7d2fe);
-      background-size: 400% 400%;
-      animation: gradientMove 20s ease infinite;
-      
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100%;
       height: 100vh;
       height: 100dvh;
+
+      overflow: hidden;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      box-sizing: border-box;
+
+      position: relative;
+
       padding: 20px;
+
+      font-family: 'Pretendard', sans-serif;
+
+      background: #08111f;
     }
 
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    /* 배경 */
+    .background {
+      position: absolute;
+      inset: 0;
+
+      background:
+        linear-gradient(
+          rgba(5,10,20,0.5),
+          rgba(5,10,20,0.78)
+        ),
+        url("station.png");
+
+      background-size: cover;
+      background-position: center;
+
+      filter:
+        brightness(0.75)
+        blur(1.5px);
+
+      transform: scale(1.03);
     }
 
+    /* 안개 */
+    .fog {
+      position: absolute;
+      inset: 0;
+
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(255,255,255,0.05),
+          transparent 60%
+        );
+
+      pointer-events: none;
+    }
+
+    /* 카드 */
     .card {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 28px;
-      padding: 35px 24px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-      
+      position: relative;
+      z-index: 10;
+
       width: 100%;
       max-width: 400px;
-      box-sizing: border-box;
+
       max-height: 95dvh;
       overflow-y: auto;
+
+      padding: 38px 24px;
+
+      border-radius: 28px;
+
+      background: rgba(10,18,35,0.42);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      border: 1px solid rgba(255,255,255,0.08);
+
+      box-shadow:
+        0 12px 40px rgba(0,0,0,0.42);
     }
 
-    .card::-webkit-scrollbar { display: none; }
+    .card::-webkit-scrollbar {
+      display: none;
+    }
 
-    h2 { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 20px; text-align: center; }
-    
-    .input-wrap { position: relative; margin-bottom: 10px; }
-    
+    h2 {
+      text-align: center;
+
+      font-size: 28px;
+      font-weight: 800;
+
+      color: #f8fafc;
+
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      text-align: center;
+
+      font-size: 13px;
+      line-height: 1.7;
+
+      color: rgba(226,232,240,0.68);
+
+      margin-bottom: 28px;
+    }
+
+    .input-wrap {
+      position: relative;
+
+      margin-bottom: 12px;
+    }
+
     input {
       width: 100%;
-      padding: 14px;
-      border: 1px solid rgba(0, 0, 0, 0.05);
+
+      padding: 15px;
+
       border-radius: 14px;
-      background: rgba(255, 255, 255, 0.8);
+
+      border: 1px solid rgba(255,255,255,0.08);
+
+      background: rgba(255,255,255,0.05);
+
+      color: white;
+
       outline: none;
-      box-sizing: border-box;
-      transition: 0.3s;
+
       font-size: 16px;
+
+      transition: 0.25s;
     }
-    input:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-    
-    .toggle { 
-      position: absolute; 
-      right: 15px; 
-      top: 50%; 
-      transform: translateY(-50%); 
-      cursor: pointer; 
-      user-select: none; 
-      color: #94a3b8;
-      padding: 5px;
+
+    input::placeholder {
+      color: rgba(226,232,240,0.4);
     }
-    
+
+    input:focus {
+      border-color: rgba(96,165,250,0.5);
+
+      background: rgba(255,255,255,0.08);
+
+      box-shadow:
+        0 0 0 4px rgba(59,130,246,0.12);
+    }
+
+    .toggle {
+      position: absolute;
+
+      right: 15px;
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      cursor: pointer;
+
+      user-select: none;
+
+      color: rgba(255,255,255,0.45);
+
+      padding: 4px;
+    }
+
     button {
       width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 14px;
-      background: #0f172a;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
+
       margin-top: 10px;
+
+      padding: 15px;
+
+      border-radius: 14px;
+
+      border: 1px solid rgba(96,165,250,0.28);
+
+      background: rgba(59,130,246,0.22);
+
+      color: #eff6ff;
+
+      font-size: 15px;
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition: 0.25s;
     }
-    button:hover { background: #1e293b; transform: translateY(-2px); }
-    button:active { transform: scale(0.98); }
-    
-    .error { color: #ef4444; font-size: 13px; text-align: center; margin-top: 8px; min-height: 18px; font-weight: 500; }
-    .link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; text-decoration: none; font-weight: 500; }
-    .link:hover { color: #2563eb; }
+
+    button:hover {
+      transform: translateY(-2px);
+
+      background: rgba(59,130,246,0.34);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .error {
+      min-height: 18px;
+
+      margin-top: 8px;
+
+      text-align: center;
+
+      font-size: 13px;
+
+      color: #f87171;
+    }
+
+    .link {
+      display: block;
+
+      margin-top: 22px;
+
+      text-align: center;
+
+      text-decoration: none;
+
+      font-size: 13px;
+
+      color: rgba(226,232,240,0.6);
+
+      transition: 0.25s;
+    }
+
+    .link:hover {
+      color: #93c5fd;
+    }
+
+    .footer {
+      margin-top: 28px;
+
+      text-align: center;
+
+      font-size: 12px;
+      line-height: 1.8;
+
+      color: rgba(203,213,225,0.5);
+    }
 
     @media (max-height: 660px) {
-      .card { padding: 25px 20px; }
-      h2 { margin-bottom: 15px; font-size: 20px; }
-      input { padding: 12px; margin-bottom: 8px; }
+      .card {
+        padding: 28px 20px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
     }
   </style>
 </head>
+
 <body>
+
+  <div class="background"></div>
+
+  <div class="fog"></div>
+
   <div class="card">
-    <h2>회원가입</h2>
-    <div class="input-wrap"><input id="email" type="email" placeholder="이메일 입력"></div>
-    
+
+    <h2>승차권 발급</h2>
+
+    <div class="sub">
+      정류장에 남겨질 첫 기록을 작성합니다.
+    </div>
+
     <div class="input-wrap">
-      <input id="password" type="password" placeholder="비밀번호 (6자리 이상)">
+      <input
+        id="email"
+        type="email"
+        placeholder="승차권 번호">
+    </div>
+
+    <div class="input-wrap">
+      <input
+        id="password"
+        type="password"
+        placeholder="확인 암호 (6자리 이상)">
+
       <span id="togglePassword1" class="toggle">👁</span>
     </div>
-    
+
     <div class="input-wrap">
-      <input id="passwordConfirm" type="password" placeholder="비밀번호 확인">
+      <input
+        id="passwordConfirm"
+        type="password"
+        placeholder="확인 암호 재입력">
+
       <span id="togglePassword2" class="toggle">👁</span>
     </div>
 
-    <div class="input-wrap"><input id="nickname" placeholder="닉네임"></div>
+    <div class="input-wrap">
+      <input
+        id="nickname"
+        placeholder="정류장에서 불릴 이름">
+    </div>
+
     <p class="error" id="errorMsg"></p>
-    <button id="btnSignup">회원가입 완료</button>
-    <a href="login.html" class="link">이미 계정이 있나요? 로그인</a>
+
+    <button id="btnSignup">
+      정류장에 도착하기
+    </button>
+
+    <a href="login.html" class="link">
+      이미 승차권을 가지고 계신가요?
+    </a>
+
+    <div class="footer">
+      오늘도 몇 사람은<br>
+      막차가 지나간 정류장에 머물고 있습니다.
+    </div>
+
   </div>
 
   <script type="module">
-    // 비밀번호 토글 로직
     const setupToggle = (toggleId, inputId) => {
       const toggle = document.getElementById(toggleId);
       const input = document.getElementById(inputId);
+
       toggle.addEventListener('click', () => {
-        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        const type =
+          input.getAttribute('type') === 'password'
+          ? 'text'
+          : 'password';
+
         input.setAttribute('type', type);
-        toggle.textContent = type === 'password' ? '👁' : '🔒';
+
+        toggle.textContent =
+          type === 'password'
+          ? '👁'
+          : '🔒';
       });
     };
 
@@ -143,5 +358,7 @@
   </script>
 
   <script type="module" src="./js/signup.js"></script>
+
 </body>
+
 </html>
