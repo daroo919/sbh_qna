@@ -3,105 +3,374 @@
 
 <head>
   <link rel="icon" href="./favicon.ico">
+
   <meta charset="UTF-8">
+
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>求援 - 메인</title>
-  <link rel="stylesheet" href="style.css"> 
+
+  <title>求援 - 중앙 정류장</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      background:
+        linear-gradient(
+          rgba(5,10,20,0.72),
+          rgba(5,10,20,0.82)
+        ),
+        url("station.png");
+
+      background-size: cover;
+      background-position: center;
+
+      color: #f8fafc;
+    }
+
+    .header {
+      background: rgba(8,15,28,0.68);
+      backdrop-filter: blur(14px);
+
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .logo {
+      color: white;
+    }
+
+    .dot {
+      color: #60a5fa;
+    }
+
+    .points,
+    .nickname {
+      color: rgba(241,245,249,0.88);
+    }
+
+    .logout {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+
+      color: white;
+    }
+
+    .logout:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .sidebar {
+      background: rgba(8,15,28,0.45);
+      backdrop-filter: blur(16px);
+
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .menu-item {
+      color: rgba(226,232,240,0.8);
+
+      transition: 0.25s;
+    }
+
+    .menu-item:hover {
+      background: rgba(255,255,255,0.05);
+
+      color: white;
+    }
+
+    .banner {
+      background: rgba(15,23,42,0.55);
+
+      border: 1px solid rgba(255,255,255,0.06);
+
+      color: rgba(241,245,249,0.88);
+
+      backdrop-filter: blur(10px);
+    }
+
+    .notice,
+    .card {
+      background: rgba(8,15,28,0.52);
+
+      border: 1px solid rgba(255,255,255,0.06);
+
+      backdrop-filter: blur(16px);
+
+      color: rgba(226,232,240,0.88);
+    }
+
+    .card h3 {
+      color: white;
+    }
+
+    .date-blue {
+      color: #93c5fd;
+    }
+
+    .bottom-tab {
+      background: rgba(8,15,28,0.88);
+
+      border-top: 1px solid rgba(255,255,255,0.05);
+
+      backdrop-filter: blur(16px);
+    }
+
+    .tab-item {
+      color: rgba(226,232,240,0.72);
+    }
+
+    .tab-item:hover {
+      color: white;
+    }
+
+    .role-admin {
+      color: #f87171;
+    }
+
+    .role-teacher {
+      color: #facc15;
+    }
+
+    .role-student {
+      color: #93c5fd;
+    }
+  </style>
 </head>
 
 <body>
+
   <header class="header">
-    <div class="logo" onclick="location.href='main.html'">求援<span class="dot">.</span></div>
-    <div class="header-right">
-      <div class="points" id="hPoints">0P</div>
-      <div class="nickname" id="hNick" onclick="location.href='mypage.html'">로딩 중...</div>
-      <button class="logout" id="logoutBtn">로그아웃</button>
+
+    <div class="logo" onclick="location.href='main.html'">
+      求援<span class="dot">.</span>
     </div>
+
+    <div class="header-right">
+
+      <div class="points" id="hPoints">
+        0 기억
+      </div>
+
+      <div class="nickname"
+        id="hNick"
+        onclick="location.href='mypage.html'">
+
+        불러오는 중...
+      </div>
+
+      <button class="logout" id="logoutBtn">
+        열차 탑승
+      </button>
+
+    </div>
+
   </header>
 
   <div class="layout">
+
     <aside class="sidebar">
-      <div class="menu-item" onclick="location.href='qna.html'">📄 문답</div>
-      <div class="menu-item" onclick="location.href='talk.html'">👤 잡담</div>
-      <div class="menu-item" onclick="location.href='point.html'">💰 포인트 관리</div>
-      <div class="menu-item" onclick="location.href='mypage.html'">⚙️ 마이페이지</div>
+
+      <div class="menu-item"
+        onclick="location.href='qna.html'">
+
+        📖 기록 보관소
+      </div>
+
+      <div class="menu-item"
+        onclick="location.href='talk.html'">
+
+        🚉 대합실
+      </div>
+
+      <div class="menu-item"
+        onclick="location.href='point.html'">
+
+        🌙 남겨진 기억
+      </div>
+
+      <div class="menu-item"
+        onclick="location.href='mypage.html'">
+
+        🎫 승차 기록
+      </div>
+
     </aside>
 
     <main class="main">
-      <div class="banner">📢 환영합니다! 구원(求援)의 최신 소식을 확인하세요.</div>
+
+      <div class="banner">
+        🌙 오늘도 몇 사람은 막차 이후의 정류장에 머물고 있습니다.
+      </div>
 
       <div class="notice">
-        <b>📌 필독 공지사항</b>
-        <span style="font-size: 14px; color: #475569;">- 비속어 사용 금지 / 학번 공개 금지</span>
+
+        <b>📌 정류장 안내</b>
+
+        <span style="font-size: 14px; color: rgba(226,232,240,0.72);">
+          - 서로를 향한 지나친 말은 삼가주세요.<br>
+          - 누군가의 현실을 함부로 기록하지 말아주세요.
+        </span>
+
       </div>
 
       <div class="card">
-        <h3>🚀 최근 업데이트</h3>
-        <div class="update-item"><span class="date-blue">[2026.03.02]</span> 전 페이지 모바일 하단 탭 바 적용 및 UI 최적화</div>
-        <div class="update-item"><span class="date-blue">[2026.03.02]</span> 로그아웃 버튼 시각화 개선 및 중앙 정렬 보정</div>
-        <div class="update-item"><span class="date-blue">[2026.03.02]</span> 공지 및 카드 플로트 효과 최적화</div>
+
+        <h3>🚆 최근 운행 기록</h3>
+
+        <div class="update-item">
+          <span class="date-blue">[2026.03.02]</span>
+          모바일 플랫폼 구조가 안정화되었습니다.
+        </div>
+
+        <div class="update-item">
+          <span class="date-blue">[2026.03.02]</span>
+          정류장 인터페이스의 시야가 개선되었습니다.
+        </div>
+
+        <div class="update-item">
+          <span class="date-blue">[2026.03.02]</span>
+          대합실 내부 조명이 조정되었습니다.
+        </div>
+
       </div>
+
     </main>
+
   </div>
 
   <nav class="bottom-tab">
-    <div class="tab-item" onclick="location.href='qna.html'">
-      <span class="tab-icon">📄</span>
-      <span>문답</span>
+
+    <div class="tab-item"
+      onclick="location.href='qna.html'">
+
+      <span class="tab-icon">📖</span>
+      <span>기록</span>
     </div>
-    <div class="tab-item" onclick="location.href='talk.html'">
-      <span class="tab-icon">👤</span>
-      <span>잡담</span>
+
+    <div class="tab-item"
+      onclick="location.href='talk.html'">
+
+      <span class="tab-icon">🚉</span>
+      <span>대합실</span>
     </div>
-    <div class="tab-item" onclick="location.href='point.html'">
-      <span class="tab-icon">💰</span>
-      <span>포인트</span>
+
+    <div class="tab-item"
+      onclick="location.href='point.html'">
+
+      <span class="tab-icon">🌙</span>
+      <span>기억</span>
     </div>
-    <div class="tab-item" onclick="location.href='mypage.html'">
-      <span class="tab-icon">⚙️</span>
-      <span>마이</span>
+
+    <div class="tab-item"
+      onclick="location.href='mypage.html'">
+
+      <span class="tab-icon">🎫</span>
+      <span>기록</span>
     </div>
+
   </nav>
 
   <script type="module">
-    import { auth, db } from "./firebase.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    import { auth, db }
+      from "./firebase.js";
+
+    import {
+      onAuthStateChanged,
+      signOut
+    }
+      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+    import {
+      doc,
+      getDoc
+    }
+      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) {
-        const d = snap.data();
-        const role = d.role || "student";
-        const roleName = role === "admin" ? "관리자" : (role === "teacher" ? "선생님" : "학생");
-        document.getElementById("hNick").innerHTML = `<span class="role-text role-${role}">[${roleName}]</span> ${d.currentBadge || ''} ${d.nickname}`;
-        document.getElementById("hPoints").innerText = (d.points || 0) + "P";
 
-        // 로컬 스토리지에서 이미지 가져오기
-        const localBg = localStorage.getItem(`bg_${user.uid}`);
+      if (!user)
+        return window.location.href = "login.html";
+
+      const snap =
+        await getDoc(doc(db, "users", user.uid));
+
+      if (snap.exists()) {
+
+        const d = snap.data();
+
+        const role =
+          d.role || "student";
+
+        const roleName =
+          role === "admin"
+          ? "기관사"
+          : (
+            role === "teacher"
+            ? "매표원"
+            : "승객"
+          );
+
+        document.getElementById("hNick").innerHTML =
+          `<span class="role-${role}">
+            [${roleName}]
+          </span>
+          ${d.currentBadge || ''}
+          ${d.nickname}`;
+
+        document.getElementById("hPoints").innerText =
+          (d.points || 0) + " 기억";
+
+        const localBg =
+          localStorage.getItem(`bg_${user.uid}`);
+
         if (localBg) {
-          document.body.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('${localBg}')`;
+
+          document.body.style.backgroundImage =
+            `
+            linear-gradient(
+              rgba(5,10,20,0.72),
+              rgba(5,10,20,0.82)
+            ),
+            url('${localBg}')
+            `;
         }
       }
     });
 
-const logoutBtn = document.getElementById("logoutBtn");
+    const logoutBtn =
+      document.getElementById("logoutBtn");
+
     if (logoutBtn) {
+
       logoutBtn.addEventListener("click", () => {
-        if (confirm("로그아웃 하시겠습니까?")) {
+
+        if (confirm("정류장을 떠나시겠습니까?")) {
+
           signOut(auth)
+
             .then(() => {
-              alert("로그아웃 되었습니다."); // 확인용 알림창 추가
+
+              alert(
+                "막차가 조용히 출발했습니다."
+              );
+
               location.href = "login.html";
             })
+
             .catch((err) => {
-              console.error("로그아웃 실패:", err);
+
+              console.error(
+                "로그아웃 실패:",
+                err
+              );
             });
         }
       });
     }
+
   </script>
+
 </body>
+
 </html>
